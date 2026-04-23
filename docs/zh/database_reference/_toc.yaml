@@ -1,0 +1,5 @@
+label: 数据库参考
+isManual: true
+sections:
+  - label: 数据库参考
+    href: ./database_reference.md
