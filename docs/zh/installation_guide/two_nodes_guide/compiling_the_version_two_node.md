@@ -131,6 +131,7 @@ git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex --skip-br
 >    export LD_LIBRARY_PATH=/home/user_name/cmake-3.22.1/lib:$LD_LIBRARY_PATH
 >    export CMAKEROOT=/home/user_name/cmake-3.22.1
 >    ```
+
 ---
 
 ## 编译流程
@@ -167,12 +168,12 @@ tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 
 ### 执行编译脚本
 
-进入 `build` 目录，通过统一编译脚本生成安装包。
-
 > [!NOTE]说明
 > * 如果是Debug版本，请关闭保护虚拟内存选项，避免在某些环境上因VM page配置问题起库失败，请执行:
 > * cd [compile_path]/oGRAC/build
 > * sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
+
+进入 `build` 目录，通过统一编译脚本生成安装包。
 
 ```bash
 cd [compile_path]/oGRAC/build

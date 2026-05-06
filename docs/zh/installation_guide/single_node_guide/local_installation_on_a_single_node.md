@@ -16,7 +16,7 @@
 ## 环境准备
 
 在开始安装前，请确保操作系统和运行环境满足以下前置条件：
- 	 
+
 1. 当前安装目录限制为/home/下，需保证有足够空间安装（至少 20580M）
 2. 操作系统仅支持英文语言环境，否则会影响数据库启动
 3. 数据库可独占内存需满足 16 G
@@ -137,12 +137,10 @@ sh local_install.sh compile -b [release | debug]
 ### 执行安装脚本
 
 1. 在root用户下, 进入 `oGRAC/build` 目录
-2. 使用安装脚本进行部署，并指定安装用户或者兼容性
+2. 使用安装脚本进行部署，并指定安装用户
 
 ```bash
 sh local_install.sh install -u [user_name]
-
-# sh local_install.sh install -u [user_name] -c A  # 新建兼容性为A的数据库
 ```
 
 该脚本将自动完成以下工作：
