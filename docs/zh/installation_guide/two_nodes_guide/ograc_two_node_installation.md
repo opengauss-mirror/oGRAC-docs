@@ -287,21 +287,10 @@ vim ograc/install_config.json
 增加DBCOMPATIBILITY字段声明数据库的兼容性，支持指定为A/B/C兼容性，如下所示：
 ```json
 {
-  "R_INSTALL_PATH": "/opt/ograc/ograc/server",
-  "D_DATA_PATH": "/mnt/dbdata/local/ograc/tmp/data",
-  "l_LOG_FILE": "/opt/ograc/log/ograc/ograc_deploy.log",
-  "M_RUNING_MODE": "ogracd_in_cluster",
-  "p_PACKAGE_AND_VERSION": "-P",
-  "Z_KERNEL_PARAMETER1": "CHECKPOINT_PERIOD=1",
-  "Z_KERNEL_PARAMETER2": "OPTIMIZED_WORKER_THREADS=2000",
-  "OG_CLUSTER_STRICT_CHECK": "TRUE",
-  "UNINSTALL_F_CLEAN_DATABASE_AREA": "",
-  "UNINSTALL_D_LOCATION_DATABASE_AREA": "/mnt/dbdata/local/ograc/tmp/data",
-  "UNINSTALL_g_RUN_UNINSTALL_SCRIPT": "withoutroot",
-  "UNINSTALL_s_UNINSTALL_WITH_GSS": "",
   "DBCOMPATIBILITY": "A"
 }
 ```
+如果当前包第一次安装数据库，则需要提前创建`install_config.json`文件。若安装过则直接修改对应的DBCOMPATIBILITY字段即可。
 
 ## 7. 安装与启动集群
 安装部署中遇到的常见问题可参见 `oGRAC安装部署常见问题定位与解决` 章节。
