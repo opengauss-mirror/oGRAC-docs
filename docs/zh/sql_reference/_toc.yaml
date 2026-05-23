@@ -19,6 +19,8 @@ sections:
     href: ./date_types.md
   - label: 时间间隔类型
     href: ./interval_types.md
+  - label: 触发器
+    href: ./trigger.md
   - label: Hints
     href: ./hint.md
   - label: ALTER DATABASE
