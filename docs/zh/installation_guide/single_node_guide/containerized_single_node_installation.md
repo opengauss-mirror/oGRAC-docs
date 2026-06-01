@@ -10,17 +10,7 @@ wget https://repo.openeuler.org/openEuler-22.03-LTS/docker_img/aarch64/openEuler
 docker load < ./openEuler-docker.aarch64.tar.xz
 ```
 
-## 2. 启动 docker
-
-```shell
-docker run --name mirror_name -itd -v /home/uer_name/docker/data:/home --privileged=true --network=host --shm-size=128g IMAGE_ID
-```
-
-- -v 是 docker 的挂载，将宿主机的 `/home/uer_name/docker/data` 目录挂载到容器内的 `/home` 目录下
-- --shm-size 是 docker 的共享内存大小，这里设置为 128g，建议不要小于128g
-- IMAGE_ID 是 docker 镜像的 ID，可以通过 `docker images` 查看
-
-## 3. 查看镜像文件
+## 2. 查看镜像文件
 
 在 root 用户下输入：
 
@@ -31,48 +21,40 @@ docker images
 正常情况下会回显如下信息：
 
 ```shell
-REPOSITORY    TAG        IMAGE ID        CREATED                 SIZE
-mirror_name   lastest    xxxx            About a minute ago      3.71GB
+REPOSITORY            TAG        IMAGE ID        CREATED                 SIZE
+openeuler-22.03-lts   lastest    xxxx            About a minute ago      3.71GB
 ```
 
-## 4. 与容器的交互操作
-
-4.1 创建并进入新的容器
+## 3. 创建并启动 docker
 
 ```shell
-docker run -it --name=mirror_namenode mirror_name /bin/bash
+docker run --name mirror_name -itd -v /home/uer_name/docker/data:/home --privileged=true --network=host --shm-size=128g IMAGE_ID tail -f /dev/null
 ```
 
---name=mirror_namenode表示规定容器的名字是什么；
+- mirror_name 是 docker 的容器名，可以自定义
+- -v 是 docker 的挂载，将宿主机的 `/home/uer_name/docker/data` 目录挂载到容器内的 `/home` 目录下
+- --shm-size 是 docker 的共享内存大小，这里设置为 128g，建议不要小于128g
+- IMAGE_ID 是 docker 镜像的 ID，可以通过 `docker images` 查看
 
-mirror_name表示以哪个镜像实例化
+## 4. 查看并进入 docker
 
-4.2 退出并关闭容器
+4.1 查看 docker
 
 ```shell
-exit
+docker ps
 ```
 
-4.3 开启关闭的容器
+正常情况下会回显如下信息：
 
 ```shell
-docker start mirror_namenode
+CONTAINER ID        IMAGE               COMMAND               CREATED             STATUS              PORTS               NAMES
+f862ea8687aa        70802bc91797        "tail -f /dev/null"   33 minutes ago      Up 33 minutes                           mirror_name
 ```
 
-这里输入 IMAGE ID 也可以的。
-
-4.4 删除关闭的容器
+4.2 进入 docker
 
 ```shell
-docker rm mirror_namenode
-```
-
-这里输入 IMAGE ID 也可以的。
-
-4.5 进入开启中的容器
-
-```shell
-docker exec -it mirror_namenode /bin/bash
+docker exec -it mirror_name /bin/bash
 ```
 
 ## 5. Docker 镜像内配置
@@ -121,7 +103,7 @@ sed -i 's+USE_PROTECT_VM=ON+USE_PROTECT_VM=OFF+' Makefile.sh
 
 6.3 编译安装 oGRAC
 
-进入 `oGRAC/build` 目录下，执行下面的命令进行编译安装，示例为编译的 debug 版本，不指定 -b 默认是编译 release 版本；-u 指定安装用户名
+进入 `oGRAC/build` 目录下，执行下面的命令进行编译安装，示例为编译的 debug 版本，不指定 -b 默认是编译 release 版本；-u 指定安装用户名；-c 指定兼容性，支持指定A/B/C兼容性，不指定时默认为A兼容性
 
 ```shell
 sh local_install.sh prepare
@@ -129,6 +111,8 @@ sh local_install.sh prepare
 sh local_install.sh compile -b debug
 
 sh local_install.sh install -u user_name
+
+# sh local_install.sh install -u [user_name] -c A  # 新建兼容性为A的数据库
 ```
 
 至此容器内已编译安装好 oGRAC，后续可以根据需要进行配置和使用。
