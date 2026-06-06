@@ -258,11 +258,10 @@ vim config_params_lun.json
 其中，各字段含义如下：
 
 * deploy_mode：安装模式，当前应使用 `dss` 模式安装；
-* deploy_user：安装管理用户；
 * node_id：节点序号，从 `0` 开始；
 * cms_ip：当前业务网络与心跳网络未分离时，填写两节点主机 IP 即可；
-* mes_ssl_switch：MES 通信是否通过 SSL 加密；
 * db_type：数据库标识，不建议修改；
+* mes_ssl_switch：MES 通信是否通过 SSL 加密；
 * MAX_ARCH_FILES_SIZE：归档最大文件大小，建议不要超过归档盘大小；
 * redo_num：Redo 文件数量；
 * redo_size：Redo 文件大小。由于首次起库会通过 `dd` 抹除盘中所有内容，不建议设置过大，以免首次 `start` 时间过长；
