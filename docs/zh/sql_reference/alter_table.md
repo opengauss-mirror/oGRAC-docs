@@ -123,7 +123,7 @@ ALTER TABLE [ schema_name. ]table_name
     | truncate_partition_clause
     | coalesce_partition_clause
     | split_partition_clause
-    | modify_partition_claus
+    | modify_partition_clause
     }
     ```
 
@@ -154,7 +154,7 @@ ALTER TABLE [ schema_name. ]table_name
 
         - _storage_clause_ 语法组件：
 
-            ``` 
+            ```
             STORAGE ( { INITIAL integer [K | M | G | T]
             |MAXSIZE { UNLIMITED | integer [K | M | G | T] }
             } [ ...] )
@@ -180,7 +180,7 @@ ALTER TABLE [ schema_name. ]table_name
         MODIFY PARTITION partition_name COALESCE SUBPARTITION
         ```
 
-- split_partition_clause 语法组件：
+- _split_partition_clause_ 语法组件：
 
     ```
     SPLIT PARTITION partition_name 
@@ -208,18 +208,18 @@ ALTER TABLE [ schema_name. ]table_name
     MODIFY PARTITION partition_name { INITRANS integer | storage_alter_clause }
     ```
 
-  - _storage_alter_clause_ 语法组件：
+    - _storage_alter_clause_ 语法组件：
 
       ```
       STORAGE (MAXSIZE { UNLIMITED | integer [K | M | G | T] } )
       
-- _set_interval_clause_ 语法组件：
+    - _set_interval_clause_ 语法组件：
 
     ```
     SET INTERVAL([interval_value])
     ```
 
-- _logic_replication_clauses_ 语法组件：
+    - _logic_replication_clauses_ 语法组件：
 
     ```
     [([ partition_name | subpartition_name ][ , ... ])] ADD LOGICAL LOG(UNIQUE index_name)|
@@ -412,7 +412,7 @@ ALTER TABLE [ schema_name. ]table_name
         - **COMPRESS**
             添加一个压缩分区。需确保此压缩分区所处的表空间内具有压缩属性文件，否则插入数据时会报错。
 
-    - drop_parition_clause
+    - drop_partition_clause
 
         - DROP PARTITION partition_name
 
@@ -420,7 +420,7 @@ ALTER TABLE [ schema_name. ]table_name
 
         - DROP SUBPARTITION subparition_name
 
-            删除二级分区子分区，subpartiion_name为子分区的名字。
+            删除二级分区子分区，subpartition_name为子分区的名字。
 
     - split_partition_clause
 
@@ -435,7 +435,7 @@ ALTER TABLE [ schema_name. ]table_name
         - range_value
 
             分裂的边界值。
-        - UPADATE GLOBAL INDEXES
+        - UPDATE GLOBAL INDEXES
             - 如果指定update global indexes，且分区表有全局索引的时候，则数据重分布之后会自动重建全局索引。
             - 如果不指定，则全局索引处于invalid状态。
 
@@ -449,8 +449,8 @@ ALTER TABLE [ schema_name. ]table_name
         - INCLUDING | EXCLUDING INDEXES 
             - INCLUDING INDEXES
             
-                要交换索引 。
-            - EXLUDINGINDEXES
+                要交换索引。
+            - EXCLUDING INDEXES
     
                 不需要交换索引。
         - WITH | WITHOUT VALIDATION
@@ -495,7 +495,7 @@ ALTER TABLE [ schema_name. ]table_name
 
             需要修改的分区名称。
         
-        - INITRANS interger 
+        - INITRANS integer 
 
             对分区的初始数据页面上事务槽的个数进行修改，取值范围是[1,255]。
 
@@ -513,11 +513,11 @@ ALTER TABLE [ schema_name. ]table_name
 
             表的存储空间的最大值。
             
-            - UNLINITED
+            - UNLIMITED
 
                 说明不限制表存储空间的最大值。
 
-            - interger[K|M|G|T]
+            - integer[K|M|G|T]
 
                 设置表的存储空间最大值，取值范围[1M,1T]。
 
@@ -558,7 +558,7 @@ ALTER TABLE [ schema_name. ]table_name
 
         - 若在执行备份恢复操作前，未关闭对象的NOLOGGING INSERT属性，会导致该NOLOGGING属性扩散至恢复后的新环境中。用户需提前确认是否需要保留该属性的扩散效果：若无需将NOLOGGING属性同步到新环境，则应在备份操作执行前，先关闭对应对象的NOLOGGING属性。
 
-- logic_replication_caluses
+- logic_replication_clauses
 打开表逻辑复制开关或者关闭逻辑复制的开关，支持表级和表分区级逻辑复制开关的打开或关闭。
     - (sub)partition_name
       - 在表名后括号内填写表（子）分区名称，即可完成表分区级逻辑复制开关的设置。该操作支持针对未开启的表分区开关进行多次补充配置，但不支持直接在表级与表分区级开关之间切换。
@@ -570,10 +570,10 @@ ALTER TABLE [ schema_name. ]table_name
     - DROP LOGICAL LOG
       关闭表级和分区级逻辑复制开关。
 
-- rename_cloumn_clause
-  修改表名。只能修改自己schama下的表名，不能修改系统表空间下的表名。
+- rename_column_clause
+  修改表名。只能修改自己schema下的表名，不能修改系统表空间下的表名。
 
-- set_interval_caluse
+- set_interval_clause
 设置间隔分区，仅对分区表有效。
     - SET INTERVAL():将间隔分区表修改为范围分区表。
     - SET INTERVAL(interval_value):修改间隔分区表的间隔值，interval_value表示指定具体的间隔值数值。
@@ -587,21 +587,20 @@ ALTER TABLE [ schema_name. ]table_name
 DROP TABLE IF EXISTS test;
 --创建表test
 CREATE TABLE test(student_id INT NOT NULL, course_name VARCHAR(30), course_start_date DATETIME, score INT);
-- 修改列的数据类型
-```
-
-ALTER TABLE test MODIFY course_name VARCHAR(20);
-
-```
-- 添加主键约束
-```
-
-alter table t_or2union_1 add constraint pk_a primary key (a);
-
-```
-
 --添加列full_score
 ALTER TABLE test ADD full_score INT;
+```
+
+- 修改列的数据类型
+
+```
+ALTER TABLE test MODIFY course_name VARCHAR(20);
+```
+
+- 添加主键约束
+
+```
+ALTER TABLE t_or2union_1 ADD CONSTRAINT pk_a PRIMARY KEY (a);
 ```
 
 - 删除列
@@ -626,7 +625,7 @@ CREATE TABLE test_partition(
   student_id INT NOT NULL,
   course_name CHAR(20),
   exam_date DATETIME,
-  socre INT)
+  score INT)
 PARTITION BY RANGE(student_id)
 (
 PARTITION test_partition1 VALUES LESS THAN(100),
@@ -656,7 +655,7 @@ ALTER TABLE test_partition TRUNCATE PARTITION test_partition4;
 - 分裂分区
 
 ```
-ALTER TABLE test_partition SPLIT PARTITION test_partition5 AT(430) INTO (PARITIION p1, PARTITION p2);
+ALTER TABLE test_partition SPLIT PARTITION test_partition5 AT(430) INTO (PARTITION p1, PARTITION p2);
 ```
 
 - 修改表的分区的MAXSIZE值

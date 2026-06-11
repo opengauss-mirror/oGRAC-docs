@@ -2,10 +2,10 @@
 
 ## 访问 oGRAC
 
-连接数据库的客户端工具包括ogsql、应用程序接口（如JDBC）。
+连接数据库的客户端工具包括 ogsql、应用程序接口（如 JDBC）。
 
-- ogsql是oGRAC自带的客户端工具。使用ogsql连接数据库，可以交互式地输入、编辑、执行SQL语句。详情可以参考[ogsql使用说明](../tool_and_commandreference/client_tool/ogsql_instructions.md)
-- 用户可以使用标准的数据库应用程序接口（如JDBC），开发基于oGRAC的应用程序。详情可以参考[JDBC指南](../developer_guide/jdbc/development_process_jdbc.md)
+- ogsql 是 oGRAC 自带的客户端工具。使用 ogsql 连接数据库，可以交互式地输入、编辑、执行 SQL 语句。详情可以参考 [ogsql 使用说明](../tool_and_commandreference/client_tool/ogsql_instructions.md)。
+- 用户可以使用标准的数据库应用程序接口（如 JDBC），开发基于 oGRAC 的应用程序。详情可以参考 [JDBC 指南](../developer_guide/jdbc/development_process_jdbc.md)。
 
 ---
 
@@ -23,18 +23,18 @@
 
 2. 连接数据库。
 
-    数据库安装完成后，默认会拉起数据库，第一次连接可以连接到此数据库。
+    数据库安装完成后，默认会启动数据库，第一次连接可以连接到此数据库。
 
     执行如下命令连接数据库。
 
     ```shell
-    ogsql / as sysdba
+    $ ogsql / as sysdba
     ```
 
     另外，也可以使用如下命令连接数据库。
 
     ```shell
-    ogsql user_name/user_password@127.0.0.1:port
+    $ ogsql user_name/user_password@127.0.0.1:port
     ```
 
     连接成功后就进入了交互界面。
@@ -44,7 +44,7 @@
     执行如下命令创建数据库用户。
 
     ```shell
-    create user user_name identified by 'user_password';
+    $ create user user_name identified by 'user_password';
     ```
 
     当结果显示为如下信息，则表示创建成功。
@@ -56,15 +56,15 @@
     执行如下命令设置用户为系统管理员。
 
     ```shell
-    grant all to user_name;
+    $ grant all to user_name;
     ```
 
 4. 创建表。
 
-    执行如下命令创建一个名称为 mytable 的只有一列的表。字段名为 firstcol，字段类型为 integer。
+    执行如下命令创建一个名称为 mytable 且只有一列的表。字段名为 firstcol，字段类型为 integer。
 
     ```shell
-    create table mytable (firstcol int);
+    $ create table mytable (firstcol int);
     ```
 
     当结果显示为如下信息，则表示创建成功。
@@ -76,7 +76,7 @@
     执行如下命令向表中插入数据。
 
     ```shell
-    insert into mytable values (1);
+    $ insert into mytable values (1);
     ```
 
     当结果显示为如下信息，则表示插入成功。
@@ -86,9 +86,14 @@
     ```
 
     执行如下命令查询表中数据。
-    
+
     ```shell
-    select * from mytable;
+    $ select * from mytable;
+    ```
+
+    查询结果如下：
+
+    ```
     FIRSTCOL
     ------------
     1

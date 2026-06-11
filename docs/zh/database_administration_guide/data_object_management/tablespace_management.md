@@ -1,6 +1,6 @@
 # 表空间管理
 
-表空间（`TABLESPACE`）是数据库中用于管理物理存储空间的逻辑容器。它是数据库对象与磁盘文件之间的桥梁。`OGRAC`的表空间由一个或者多个数据文件组成，一个数据文件专属于一个表空间，从数据库的存储逻辑上看，数据库中所有的数据对象都存在表空间中，从物理存储上看，其均存储在对应的数据文件上。数据库中可以存在多个表的空间，表空间满足创建、删除、扩容等基本功能需求，一个表空间也专属于一个数据库。
+表空间（`TABLESPACE`）是数据库中用于管理物理存储空间的逻辑容器。它是数据库对象与磁盘文件之间的桥梁。`OGRAC`的表空间由一个或者多个数据文件组成，一个数据文件专属于一个表空间，从数据库的存储逻辑上看，数据库中所有的数据对象都存在表空间中，从物理存储上看，其均存储在对应的数据文件上。数据库中可以存在多个表空间，表空间满足创建、删除、扩容等基本功能需求，一个表空间也专属于一个数据库。
 
 ## 表空间类型
 
@@ -22,14 +22,14 @@
 CREATE TABLESPACE TABLESPACE_NAME EXTENTS PAGE_NUM DATAFILE 'DATA_FILE_NAME' SIZE FILE_SIZE AUTOEXTEND ON NEXT EXTEND_SIZE;
 ```
 
-- `EXTENTS`参数标识一个`EXTENT`中包含的`PAGE`数量，取值范围为[8,8192]，改制必须为2的整次幂，该参数不指定时默认为8。
+- `EXTENTS`参数标识一个`EXTENT`中包含的`PAGE`数量，取值范围为[8,8192]，该值必须为2的整次幂，该参数不指定时默认为8。
 - `EXTENTS`是表存储行数据向表空间申请空间的基本单位，适当增大可以提升IO性能，但是小表可能会造成空间浪费。
 - `DETAFILE 'DATA_FILE_NAME' SIZE FILE_SIZE`标识指定的数据文件的名称，其初始文件大小为`FILE_SIZE`。
-- `AUTOEXTEND ON NEXT EXTEND_SIZE`设置自动扩展，既表空间数据插满`FILE_SIZE`后自动扩展`EXTEND_SIZE`。
+- `AUTOEXTEND ON NEXT EXTEND_SIZE`设置自动扩展，即表空间数据插满`FILE_SIZE`后自动扩展`EXTEND_SIZE`。
 
 示例：
 
-创建一个名为`openGaussSpace`的表空间，一个`EXTENTS`包含`16`个`PAGE`，指定其数据文件为`openGaussSpace1`，数据文件的初始大小为`128M`，比设置自动扩展`64M`。
+创建一个名为`openGaussSpace`的表空间，一个`EXTENTS`包含`16`个`PAGE`，指定其数据文件为`openGaussSpace1`，数据文件的初始大小为`128M`，并设置自动扩展`64M`。
 
 ```sql
 CREATE TABLESPACE openGaussSpace EXTENTS 16 DATAFILE 'openGaussSpace1' SIZE 128M AUTOEXTEND ON NEXT 64M;
@@ -57,7 +57,7 @@ DEPT                                                             TABLE        16
 
 ### 表空间修改
 
-​    用户可使用 `ALTER TABLESPACE` 命令修改表空间的名称，扩展或缩小表空间
+​    用户可使用 `ALTER TABLESPACE` 命令修改表空间的名称、扩展或缩小表空间
 
 ```sql
 -- 表空间名称修改

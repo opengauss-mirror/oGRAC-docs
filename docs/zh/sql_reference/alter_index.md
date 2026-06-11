@@ -115,7 +115,7 @@ SQL> CREATE TABLE alter_index_test(id INT) PARTITION BY RANGE(id)
 SQL> CREATE INDEX idx ON alter_index_test(id) LOCAL;
 
 -- 重命名索引
-SQL> ALTER INDEX idx ON alter_index_test RENAME TO new_idx ;
+SQL> ALTER INDEX idx ON alter_index_test RENAME TO new_idx;
 
 -- 失效索引
 SQL> ALTER INDEX new_idx ON alter_index_test UNUSABLE;

@@ -21,7 +21,7 @@ CREATE [UNIQUE] INDEX [IF NOT EXISTS] [schema_name.]index_name ON index_table_cl
     [CRMODE PAGE]
     [PARALLEL n]
     [REVERSE]
-    [NOLOGING]
+    [NOLOGGING]
 ```
 
 **index_table_clause**
@@ -50,7 +50,7 @@ CREATE [UNIQUE] INDEX [IF NOT EXISTS] [schema_name.]index_name ON index_table_cl
 - CRMODE：MVCC模式。PAGE是页级MVCC, 默认和表的CRMODE一致
 - PARALLEL：并行创建索引的并行度。不支持函数索引/临时表索引/在线创建索引
 - REVERSE：反向索引
-- NOLOGING：创建索引时不记录REDO
+- NOLOGGING：创建索引时不记录REDO
 - LOCAL：分区索引，即每个分区上单独创建索引
 - PCTFREE: 指定索引块中为未来索引条目更新预留的空间百分比，单位%
 

@@ -13,7 +13,7 @@
 ## 语法格式<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s819ed4de9ed04006954df8016e5e4858"></a>
 
 ```
-create database clustered database_name 
+CREATE DATABASE CLUSTERED database_name 
              [ { [ character set ] |
                [ controlfile('file1','file2','file3',....) ] |
                [ system tablespace datafile ] |

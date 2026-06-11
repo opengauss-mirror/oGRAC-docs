@@ -34,7 +34,7 @@ java.sql.PreparedStatement是预处理语句接口。
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p39030867"><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p39030867"></a><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p39030867"></a>Yes</p>
 </td>
 </tr>
-<tr id="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_row55370035"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p12431114"><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p12431114"></a><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p12431114"></a>excuteUpdate()</p>
+<tr id="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_row55370035"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p12431114"><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p12431114"></a><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p12431114"></a>executeUpdate()</p>
 </td>
 <td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p46517201"><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p46517201"></a><a name="zh-cn_topic_0237120395_zh-cn_topic_0213179161_zh-cn_topic_0189250583_zh-cn_topic_0059777515_zh-cn_topic_0058965185_p46517201"></a>int</p>
 </td>
@@ -338,11 +338,11 @@ java.sql.PreparedStatement是预处理语句接口。
 </tbody>
 </table>
 
->[!NOTE]说明
+> [!NOTE]说明
 >
 >- addBatch\(\)、execute\(\)必须在clearBatch\(\)之后才能执行。
 >- 调用executeBatch\(\)方法并不会清除batch。用户必须显式使用clearBatch\(\)清除。
->- 在添加了一个batch的绑定变量后，用户若想重用这些值（再次添加一个batch），无需再次使用set\*\(\)方法 。
+>- 在添加了一个batch的绑定变量后，用户若想重用这些值（再次添加一个batch），无需再次使用set\*\(\)方法。
 >- 以下方法是从java.sql.Statement继承而来：close、execute、executeQuery、executeUpdate、getConnection、getResultSet、getUpdateCount、isClosed、setMaxRows、setFetchSize。
 >- executeLargeUpdate\(\)方法必须在JDBC4.2及以上使用。
 >- setObject(int parameterIndex, Object x, int targetSqlType)方法的targetSqlType参数不支持blob、clob类型。

@@ -10,7 +10,7 @@
 SQLRETURN SQLBindParameter(SQLHSTMT       StatementHandle,    
                            SQLUSMALLINT   ParameterNumber,     
                            SQLSMALLINT    InputOutputType,
-                           SQLSMALLINT    ValuetType,
+                           SQLSMALLINT    ValueType,
                            SQLSMALLINT    ParameterType,
                            SQLULEN        ColumnSize,
                            SQLSMALLINT    DecimalDigits,

@@ -10,7 +10,7 @@ CREATE TABLE用于创建表
 - 自增列只支持int/bigint类型，一个表只支持一个自增列，自增列必须是主键或唯一索引
 - 外键引用默认引用父表的主键，没有主键报错
 - CHECK约束限制字段数量最大16个
-- 创建本地临时表时需要开启LOCAL_TEMPORARY_TABLE_ENABLED, 表名以#开头，不支持ON COMMIT DELETE ROWS
+- 创建本地临时表时需要开启LOCAL_TEMPORARY_TABLE_ENABLED，表名以#开头，不支持ON COMMIT DELETE ROWS
 - 临时表的BLOB被定义为RAW(8000), CLOB被定义为VARCHAR(8000B)
 
 ## 语法格式
@@ -151,29 +151,29 @@ CREATE [[GLOBAL] TEMPORARY] TABLE [IF NOT EXISTS] [schema_name.]table_name
 ## 参数说明
 
 - TEMPORARY: 本地临时表
-- GLOBAL TEMPORARY: 全局临时表 
+- GLOBAL TEMPORARY: 全局临时表
 - ON COMMIT DELETE ROWS: 事务级临时表，事务结束时会清空数据，不会删除表定义。默认行为
 - ON COMMIT PRESERVE ROWS: 会话级临时表，会话结束时会清空数据，不会删除表定义
-- CRMODE：MVCC模式。PAGE是页级MVCC, 默认值为CR_MODE配置
+- CRMODE：MVCC模式。PAGE是页级MVCC，默认值为CR_MODE配置
 - SERIAL: 自增列，和AUTO_INCREMENT的区别在于SERIAL默认数据类型是BIGINT
-- DEFAULT expr [ON UPDATE expr]: 列默认值。ON UPDATE expr是兼容语法，UPDATE行数据不知道该列取update默认值填充
-- COLLATE：字符序，支持UTF8_BIN（区分大小写）, UTF8_GENERAL_CI（不区分大小写）, UTF8_UNICODE_CI（不区分大小写）, GBK_BIN（区分大小写）, GBK_CHINESE_CI（不区分大小写）
+- DEFAULT expr [ON UPDATE expr]: 列默认值。ON UPDATE expr是兼容语法，UPDATE行数据未指定该列时取update默认值填充
+- COLLATE：字符序，支持UTF8_BIN（区分大小写）、UTF8_GENERAL_CI（不区分大小写）、UTF8_UNICODE_CI（不区分大小写）、GBK_BIN（区分大小写）、GBK_CHINESE_CI（不区分大小写）
 - REFRENCES [schema_name.]table_name[(column_name)] ON DELETE CASCADE: 外键级联设置。外表删除时本表删除
 - REFRENCES [schema_name.]table_name[(column_name)] ON DELETE SET NULL：外键级联设置。外表删除时本表设置为NULL
 - USING INDEX：为约束指定索引属性
 - INITRANS: 初始化数据库事务槽个数
 - MAXTRANS: 数据库事务槽最大个数
-- FORMAT ({ASF|CSF}): 行格式, 默认为ASF(Aligned Stream Format)，临时表不支持CSF(Compact Stream Format)
+- FORMAT ({ASF|CSF}): 行格式，默认为ASF(Aligned Stream Format)，临时表不支持CSF(Compact Stream Format)
 - STORAGE ({INITIAL int [K|M|G|T] | MAXSIZE {UNLIMITED | int [K|M|G|T]}}[ ...]): INITIAL指定表初始大小, MAXSIZE表存储的最大值, UNLIMITED代表无限存储
-- RECORDS DELIMITED BY records_delimiter FIELDS TERMINATED BY fields_term: 外部表记录分割符和字段分隔符.records_delimiter支持单字符或者newline， fields_term支持单字符
-- ORGANIZATION EXTERNAL： 外部表相关。外部表列不支持LOB类型
+- RECORDS DELIMITED BY records_delimiter FIELDS TERMINATED BY fields_term: 外部表记录分隔符和字段分隔符。records_delimiter支持单字符或者newline，fields_term支持单字符
+- ORGANIZATION EXTERNAL：外部表相关。外部表列不支持LOB类型
 - TYPE LOADER: 数据库转换类型。LOADER是文本转换
 - DIRECTORY：外部表所在目录名称，需要使用CREATE DIRECTORY提前创建
 - ACCESS PARAMETERS: 转换参数
 - LOCATION: 文件名称
 - AUTO_INCREMENT [=] value: 自增初始值
-- APPENDONLY {ON|OFF}: 追加写。如果开启后不同线程写一张表会申请新的页做擦或许，减少锁等待，但页空间浪费较多。默认关闭
-- LOB (LOB_item) STORE AS： 指定lob字段（LOB_ITEM）单独segment存储
+- APPENDONLY {ON|OFF}: 追加写。如果开启后不同线程写一张表会申请新的页做写入，减少锁等待，但页空间浪费较多。默认关闭
+- LOB (LOB_item) STORE AS：指定lob字段（LOB_ITEM）单独segment存储
     - ENABLE  STORAGE IN ROW：行内存储
     - DISABLE STORAGE IN ROW：行外存储
 

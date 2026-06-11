@@ -11,10 +11,10 @@
 - 单表触发器数量上限为 **8** 个。
 - “OF col” 列数据类型不能为 LOB。
 - 不能在本地临时表（名称以 `#` 开头）上创建触发器。
-- 触发器体内对正在被 DML 修改的基表执行部分 SQL，可能触发变异表错误（`ERR_TAB_MUTATING`）。
+- 触发器体内对正在被DML修改的基表执行部分SQL，可能触发变异表错误（`ERR_TAB_MUTATING`）。
 - 触发器内部不能出现 DDL 和 DCL 语句，普通用户不能创建系统用户对象。
 - 每个触发器对象只能绑定一种时机（语句级或行级之一），不支持复合触发器（`COMPOUND TRIGGER`）。
-- 创建触发器时，最后的 “/” 符号为必须添加的结束符，否则会报错。
+- 创建触发器时，最后的”/”符号为必须添加的结束符，否则会报错。
 
 ---
 
@@ -68,7 +68,7 @@ CREATE [OR REPLACE] TRIGGER [IF NOT EXISTS] [schema.]trigger_name
   - **UPDATE**：更新行时触发。
   - **UPDATE OF** ***col1*** **[,** ***col2*** **...]**
 
-    仅当 SET 子句中修改了所列列时才触发；列必须存在于基表、可见，且不能为 LOB 类型。
+    仅当SET子句中修改了所列列时才触发；列必须存在于基表、可见，且不能为LOB类型。
 
 - **[ OR { INSERT | DELETE | UPDATE [OF ...] } ... ]**
 
@@ -86,10 +86,10 @@ CREATE [OR REPLACE] TRIGGER [IF NOT EXISTS] [schema.]trigger_name
 
   可选。指定为**行级**触发器；省略则为**语句级**触发器。
 
-  - 行级：每影响一行执行一次触发器体；可使用 `:NEW`、`:OLD`。
-  - 语句级：每条 DML 语句只执行一次；不能使用 `:NEW`、`:OLD`。
-  - `BEFORE` / `AFTER` 的行级触发器必须显式写出 `FOR EACH ROW`。
-  - `INSTEAD OF` 触发器通常为行级，写法上同样使用 `FOR EACH ROW`。
+  - 行级：每影响一行执行一次触发器体；可使用`:NEW`、`:OLD`。
+  - 语句级：每条DML语句只执行一次；不能使用`:NEW`、`:OLD`。
+  - `BEFORE` / `AFTER`的行级触发器必须显式写出`FOR EACH ROW`。
+  - `INSTEAD OF`触发器通常为行级，写法上同样使用`FOR EACH ROW`。
 
 - **[ DECLARE ... ]**
 
@@ -97,7 +97,7 @@ CREATE [OR REPLACE] TRIGGER [IF NOT EXISTS] [schema.]trigger_name
 
 - **BEGIN ... END**
 
-  触发器执行体，PL/SQL 语句序列。语句须以 `/` 结束提交（与 SQL*Plus 习惯一致）。
+  触发器执行体，PL/SQL语句序列。语句须以`/`结束提交（与SQL*Plus习惯一致）。
 
 示例：
 
@@ -113,7 +113,7 @@ CREATE [OR REPLACE] TRIGGER [IF NOT EXISTS] [schema.]trigger_name
     );
     ```
 
-- **test_trigger_br**：行级 BEFORE INSERT，每插入一行前将 `emp_name`、`job` 转为大写。
+- **test_trigger_br**：行级BEFORE INSERT，每插入一行前将`emp_name`、`job`转为大写。
 
     ```sql
     DROP TRIGGER IF EXISTS test_trigger_br;
@@ -351,10 +351,10 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
     END;
     /
 
-    --开启服务端输出（否则 DBE_OUTPUT.PRINT_LINE 不会显示在客户端）。
+    -- 开启服务端输出（否则 DBE_OUTPUT.PRINT_LINE 不会显示在客户端）。
     SET SERVEROUTPUT ON;
 
-    --更新表TEST_TRIGGER，触发器打印更新前后A列取值（只执行下面一条 UPDATE，分号结束）。
+    -- 更新表TEST_TRIGGER，触发器打印更新前后A列取值（只执行下面一条 UPDATE，分号结束）。
     UPDATE TEST_TRIGGER SET A = 10 WHERE A = 1;
     ```
 
@@ -364,7 +364,7 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
     ```sql
     :OLD.A = 1
     :NEW.A = 10
-    
+
     1 rows affected.
     ```
 
@@ -393,10 +393,10 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
     END;
     /
 
-    --开启服务端输出
+    -- 开启服务端输出
     SET SERVEROUTPUT ON;
 
-    --更新表TEST_TRIGGER，触发器打印更新前后rowid/rowscn.
+    -- 更新表TEST_TRIGGER，触发器打印更新前后rowid/rowscn。
     UPDATE TEST_TRIGGER SET A = 10 WHERE A = 1;
     ```
 

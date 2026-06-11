@@ -99,7 +99,7 @@ COMMIT;
     ```
 
 - [WHERE condition]: (可选) WHERE子句构成一个行选择表达式，用来缩小SELECT查询的范围。condition是返回值为布尔型的任意表达式，任何不满足该条件的行都不会被检索。
-    - 常用的条件包括：= 、 <>[!=]、>、<、>=、<=、AND、OR、BETWEEN AND、IN、LIKE [ESCAPE]、IS [NOT] NULL、[NOT] IN、[NOT] EXISTS等
+    - 常用的条件包括：=、<>[!=]、>、<、>=、<=、AND、OR、BETWEEN AND、IN、LIKE [ESCAPE]、IS [NOT] NULL、[NOT] IN、[NOT] EXISTS等
 
     ```sql
     SELECT * FROM employees WHERE department_id = [!=] | [>] | [<] | [>=] | [<=] 10;
@@ -112,9 +112,9 @@ COMMIT;
 - [START WITH condition]: (可选) 用于指定递归查询的起始条件。
     - START WITH子句通常与CONNECT BY子句同时出现，数据进行层次递归遍历查询，START WITH代表递归的初始条件。若省略该子句，单独使用CONNECT BY子句，则表示以表中的所有行作为初始集合。
 - [CONNECT BY [NOCYCLE] condition]: (可选) 用于指定递归查询的连接条件。
-    - CONNECT BY代表递归连接条件，和START WITH一起子句一起使用，实现数据遍历递归的功能。 除此之外，PRIOR关键字还可以用在目标列中，允许用户通过目标列获取上一层的值。
+    - CONNECT BY代表递归连接条件，和START WITH子句一起使用，实现数据遍历递归的功能。除此之外，PRIOR关键字还可以用在目标列中，允许用户通过目标列获取上一层的值。
 - [ORDER SIBLINGS BY expression]: (可选) 用于对递归查询结果的子行进行排序。
-    - ORDER SIBLINGS BY通常和START WITH、CONNECT BY子句同时使用, 用法和ORDER BY子句一样, 用于在递归过程中的层级排序。
+    - ORDER SIBLINGS BY通常和START WITH、CONNECT BY子句同时使用，用法和ORDER BY子句一样，用于在递归过程中的层级排序。
 
     ```sql
     SQL> SELECT LPAD(' ', 2 * LEVEL) || name AS employee_name, department_id
@@ -153,7 +153,7 @@ COMMIT;
     4 rows fetched.
     ```
 
-    - CUBE (expression, ...): CUBE是自动对group by子句中列出的字段进行分组汇总，结果集将包含维度列中各值的所有可能组合，以及与这些维度值组合相匹配的基础行中的聚合值。它会为每个分组返回一行汇总信息， 用户可以使用CUBE来产生交叉表值。比如，在CUBE子句中给出三个表达式（n = 3），运算结果为2n = 23 = 8组。 以n个表达式的值分组的行称为常规行，其余的行称为超级聚集行。
+    - CUBE (expression, ...): CUBE是自动对GROUP BY子句中列出的字段进行分组汇总，结果集将包含维度列中各值的所有可能组合，以及与这些维度值组合相匹配的基础行中的聚合值。它会为每个分组返回一行汇总信息，用户可以使用CUBE来产生交叉表值。比如，在CUBE子句中给出三个表达式（n = 3），运算结果为2n = 23 = 8组。以n个表达式的值分组的行称为常规行，其余的行称为超级聚集行。
 
     ```sql
     -- GROUP BY CUBE 逻辑等价
@@ -179,7 +179,7 @@ COMMIT;
     10 rows fetched.
     ```
 
-    - ROLLUP是生成多个分组集合的快捷功能。与CUBE子句的差异是，ROLLUP不生成基于特定列所有可能的分组集合，生成分组集合为其子集。ROLLUP假设输入列之间存在层次结构，从而生成有意义的所有分组集合
+    - ROLLUP是生成多个分组集合的快捷功能。与CUBE子句的差异是，ROLLUP不生成基于特定列所有可能的分组集合，生成分组集合为其子集。ROLLUP假设输入列之间存在层次结构，从而生成有意义的所有分组集合。
 
     ```sql
     -- GROUP BY ROLLUP 逻辑等价
@@ -202,7 +202,7 @@ COMMIT;
     7 rows fetched.
     ```
 
-    - 如果SELECT列表的表达式中引用了那些没有分组的字段，SQL会报错，除非使用了聚集函数或者它函数依赖于分组的字段，因为对于未分组的字段，可能返回多个数值。
+    - 如果SELECT列表的表达式中引用了那些没有分组的字段，SQL会报错，除非使用了聚集函数或者该字段函数依赖于分组的字段，因为对于未分组的字段，可能返回多个数值。
 - [HAVING condition]: (可选) 用于对分组后的结果进行筛选。
     - 与GROUP BY子句配合用来选择特殊的组。HAVING子句将组的一些属性与一个常数值比较，只有满足HAVING子句中的逻辑表达式的组才会被提取出来。
 
@@ -221,9 +221,9 @@ COMMIT;
     2 rows fetched.
     ```
 
-- [{ UNION | INTERSECT | EXCEPT | MINUS } [ ALL | DISTINCT ] select]: (可选) 用于多个查询结果集的集合操作，要求子查询两端的列数和数据类型必须一致或兼容。
+- [{ UNION | INTERSECT | EXCEPT | MINUS } [ ALL | DISTINCT ] SELECT]: (可选) 用于多个查询结果集的集合操作，要求子查询两端的列数和数据类型必须一致或兼容。
     - UNION计算多个SELECT语句返回行集合的并集。
-        - 除非声明了ALL子句，否则缺省的UNION结果不包含重复的行
+        - 除非声明了ALL子句，否则默认的UNION结果不包含重复的行
         - 同一个SELECT语句中的多个UNION操作符是从左向右计算的，除非用()进行优先级标识
 
     ```sql
@@ -233,7 +233,7 @@ COMMIT;
     ```
 
     - INTERSECT计算多个SELECT语句返回行集合的交集
-        - 除非声明了ALL子句，否则缺省的INTERSECT结果不包含重复的行
+        - 除非声明了ALL子句，否则默认的INTERSECT结果不包含重复的行
         - 同一个SELECT语句中的多个INTERSECT操作符是从左向右计算的，除非用()进行优先级标识
         - 当对多个SELECT语句的执行结果进行UNION和INTERSECT操作的时候，会优先处理INTERSECT
 
@@ -244,9 +244,9 @@ COMMIT;
     ```
 
     - EXCEPT计算多个SELECT语句返回行集合的差集
-        - 除非声明了ALL子句，否则缺省的EXCEPT结果不包含重复的行
+        - 除非声明了ALL子句，否则默认的EXCEPT结果不包含重复的行
         - EXCEPT操作符计算存在于左边SELECT语句的输出而不存在于右边SELECT语句输出的行
-        - 使用ALL时，一个在左边表中有m个重复而在右边表中有n个重复的行将在结果中出现max(m-n,0) 次。
+        - 使用ALL时，一个在左边表中有m个重复而在右边表中有n个重复的行将在结果中出现max(m-n,0) 次
         - 同一个SELECT语句中的多个EXCEPT操作符是从左向右计算的，除非用()进行优先级标识
         - EXCEPT和UNION的绑定级别相同
 
@@ -260,9 +260,9 @@ COMMIT;
 - [ORDER BY column_list | expression [ASC|DESC]]: (可选) 用于对查询结果进行排序。
     - 当ORDER BY表达式中包含多列或者表达式时，排序优先级从左到右。
     - 在与DISTINCT关键字一起使用的情况下，ORDER BY中排序的列必须包括在SELECT语句所检索的结果集的列中。
-        - ORDER BY 可以支持表达式，其中引用的列必须在 DISTINCT 中
+        - ORDER BY可以支持表达式，其中引用的列必须在DISTINCT中
     - 在与GROUP BY子句一起使用的情况下，ORDER BY中排序的列必须包括在SELECT语句所检索的结果集的列中。
-- [LIMIT offset, count]: (可选) 用于限制查询结果返回的行数，offset 表示起始位置，count 表示返回的行数。
+- [LIMIT offset, count]: (可选) 用于限制查询结果返回的行数，offset表示起始位置，count表示返回的行数。
     - 当LIMIT子句中只指定一个参数时，默认从结果集的第一行开始返回。
 
     ```sql
@@ -310,11 +310,11 @@ FROM [Schema.]{table1 | view1 | subquery1} [alias1]
 [ORDER BY columns];
 ```
 
-- {JOIN TYPE}: 用于指定连接类型，包括 [ INNER ] JOIN、LEFT [ OUTER ] JOIN、RIGHT [ OUTER ] JOIN、FULL [ OUTER ] JOIN等。
+- {JOIN TYPE}: 用于指定连接类型，包括[ INNER ] JOIN、LEFT [ OUTER ] JOIN、RIGHT [ OUTER ] JOIN、FULL [ OUTER ] JOIN等。
     - INNER JOIN：返回两个表中连接条件完全匹配的行，即两个表的交集部分。
-    - LEFT  [ OUTER ] JOIN：返回左表（FROM 后第一个表）的所有行，即使右表没有匹配的行。右表不匹配的部分用 NULL 填充。
-    - RIGHT [ OUTER ] JOIN：返回右表（JOIN 后第二个表）的所有行，即使左表没有匹配的行。左表不匹配的部分用 NULL 填充。
-    - FULL [ OUTER ] JOIN：返回左表和右表所有行，不匹配的部分用 NULL 填充。
+    - LEFT [ OUTER ] JOIN：返回左表（FROM后第一个表）的所有行，即使右表没有匹配的行。右表不匹配的部分用NULL填充。
+    - RIGHT [ OUTER ] JOIN：返回右表（JOIN后第二个表）的所有行，即使左表没有匹配的行。左表不匹配的部分用NULL填充。
+    - FULL [ OUTER ] JOIN：返回左表和右表所有行，不匹配的部分用NULL填充。
 - aliasN: （可选）用于为表、视图或子查询指定别名，以便在后续的查询中引用。
 - alias(N-1).{column | expression | function} = aliasN.{column | expression | function}: 用于指定连接条件，即两个表中用于匹配的结果，可以是列、表达式、函数等。
 
@@ -408,8 +408,8 @@ A            B            C            A            B            C
 ### CROSS JOIN
 
 - 返回两个表的笛卡尔积（所有可能的行组合），不指定连接条件，即 SQL 语句中没有 ON 子句。
-- CROSS JOIN等效于INNER JOIN ON（TRUE） ，即左右两张表的所有的行组合。这种连接类型只是符号上的方便，因为它们与简单的FROM和WHERE的效果相同。
-- 最后返回的结果集行数为左表行数乘以右表行数
+- CROSS JOIN等效于INNER JOIN ON（TRUE），即左右两张表的所有行组合。这种连接类型只是符号上的方便，因为它们与简单的FROM和WHERE的效果相同。
+- 最后返回的结果集行数为左表行数乘以右表行数。
 
 ```sql
 -- 以表t_join_1为左表, 表t_join_2为右表, 进行交叉连接
@@ -441,9 +441,9 @@ A            B            C            A            B            C
 
 ## WHERE (+) 语法
 
-OGRAC 支持在 WHERE 子句中可以通过指定 “(+)” 操作符的方法将表的连接关系转换为外连接。该语法并不是SQL的标准语法，在做平台迁移的时候可能面临语法兼容性的问题。同时，使用“(+)”有很多限制：
+oGRAC支持在WHERE子句中通过指定”(+)”操作符的方法将表的连接关系转换为外连接。该语法并不是SQL的标准语法，在做平台迁移的时候可能面临语法兼容性问题。同时，使用”(+)”有很多限制：
 
-- “(+)”只能出现在where子句中。如果from子句中已经有指定表连接关系，那么不能再在where子句中使用“(+)”。
+- “(+)”只能出现在WHERE子句中。如果FROM子句中已经指定了表连接关系，那么不能再在WHERE子句中使用”(+)”。
 
 ```sql
 -- 错误示例：在from子句中已经有指定表连接关系，不能再在where子句中使用 "(+)" 会报错
@@ -454,7 +454,7 @@ OG-00601, Sql syntax error: the 'join' keyword is not allowed when exist '(+)'
 
 ```
 
-- “(+)”只能作用在表或者视图的列上，不能作用在表达式上。
+- “(+)”只能作用在表或视图的列上，不能作用在表达式上。
 
 ```sql
 -- 错误示例：在表达式中使用 "(+)" 会报错
@@ -493,7 +493,7 @@ A            B            C            A            B            C
 
 ```
 
-- “(+)”作用的表达式不能直接通过“OR”连接。
+- “(+)”作用的表达式不能通过”OR”直接连接。
 
 ```sql
 -- 错误示例：直接通过 "OR" 连接 "(+)" 表达式会报错
@@ -522,7 +522,7 @@ A            B            C            A            B            C
 
 ```
 
-- “(+)”只能转化为左外连接或者右外连接，不能转化为全连接，即不能在一个表达式的两个表上同时指定“(+)”。
+- “(+)”只能转化为左外连接或右外连接，不能转化为全连接，即不能在一个表达式的两个表上同时指定”(+)”。
 
 ```sql
 -- 错误示例：在一个表达式的两个表上同时指定 "(+)" 会报错
@@ -564,7 +564,7 @@ SELECT s.sale_id, p.product_name, s.amount FROM sales SUBPARTITION (p_2024_q3_no
 
 ## EXPLAIN 语句
 
-EXPLAIN 语句用于显示 SQL 语句的执行计划。通过分析 SQL 语句的 EXPLAIN 信息，可以了解 SQL 语句的执行计划、索引使用情况、索引扫描方式、表JOIN连接方式等信息，从而优化 SQL 语句执行的性能。
+EXPLAIN语句用于显示SQL语句的执行计划。通过分析SQL语句的EXPLAIN信息，可以了解SQL语句的执行计划、索引使用情况、索引扫描方式、表JOIN连接方式等信息，从而优化SQL语句执行的性能。
 
 ### 基本语法
 

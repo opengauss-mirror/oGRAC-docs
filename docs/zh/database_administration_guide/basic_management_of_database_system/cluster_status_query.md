@@ -7,10 +7,10 @@ oGRAC可以通过cms工具查看整个集群、节点以及cms状态，通过查
 使用方法：
 
 ```
-cms stat
-cms stat -node [NODE_ID]
-cms stat -res [RESOURCE_NAME]
-cms stat -server [SERVER_ID]
+$ cms stat
+$ cms stat -node [NODE_ID]
+$ cms stat -res [RESOURCE_NAME]
+$ cms stat -server [SERVER_ID]
 ```
 
 选项参数：
@@ -109,15 +109,15 @@ LAST_CHECK            STAT_CHANGE
 ```
 
 查看指定dss资源状态：
-```
-$ cms stat -res db
-NODE_ID  RESOURCE_NAME  STAT   PRE_STAT  TARGET_STAT  WORK_STAT                      
-0           dss                ONLINE  OFFLINE  ONLINE        1
-1           dss                OFFLINE UNKNOWN  UNKNOWN       0
-LAST_CHECK            STAT_CHANGE
-2025-10-22 20:58:08.909    2025-10-22 19:57:58.712 
-2025-10-22 19:26:49.315    2025-10-22 19:26:50.395 
 
+```
+$ cms stat -res dss
+NODE_ID  RESOURCE_NAME  STAT   PRE_STAT  TARGET_STAT  WORK_STAT
+0        dss            ONLINE  OFFLINE  ONLINE       1
+1        dss            OFFLINE UNKNOWN  UNKNOWN      0
+LAST_CHECK                 STAT_CHANGE
+2025-10-22 20:58:08.909    2025-10-22 19:57:58.712
+2025-10-22 19:26:49.315    2025-10-22 19:26:50.395
 ```
 
 结果说明：

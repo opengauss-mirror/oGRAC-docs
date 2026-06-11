@@ -1,6 +1,6 @@
 # 索引管理
 
-索引是一种数据库对象，它能够为表中的某一列或多个列建立一个有序的数据结构，使得数据库引擎能够快速定位到满足条件的数据行，而无需扫描整张表，创建合适的索引是数据库中提升数据检索速度的核心技术与手段。 
+索引是一种数据库对象，它能够为表中的某一列或多个列建立一个有序的数据结构，使得数据库引擎能够快速定位到满足条件的数据行，而无需扫描整张表。创建合适的索引是数据库中提升数据检索速度的核心技术与手段。 
 
 ## 索引创建
 
@@ -26,7 +26,7 @@ CREATE INDEX INDEX_NAME ON [Schema.]TABLE_NAME ({COLUMN_NAME | (COLUMN_NAME1, CO
 DROP TABLE IF EXISTS USERS;
 CREATE TABLE USERS 
 (
-    ID INT CONSTRAINT PK_IDX PRIMARY KEY , -- 主键可以在创表时直接指定，其更像是一种约束
+    ID INT CONSTRAINT PK_IDX PRIMARY KEY, -- 主键可以在创表时直接指定，其更像是一种约束
     AGE INT ,
     NAME VARCHAR(10),
     ADDRESS VARCHAR(50),
@@ -138,7 +138,7 @@ Succeed.
 
 ## 索引失效
 
-用户可通过`UNUSABLE`命令失效索引。索引失效后，数据库不会对该表进行的增删改等操作的同时维护索引结构。如果用户后续重新启用索引，并须通过命令重建索引（重建索引后自动生效）或删除索引后重新创建。
+用户可通过`UNUSABLE`命令失效索引。索引失效后，数据库不会对该表进行的增删改等操作的同时维护索引结构。如果用户后续重新启用索引，必须通过命令重建索引（重建索引后自动生效）或删除索引后重新创建。
 
 ```sql
 ALTER INDEX AGE_IDX ON USERS UNUSABLE; -- 索引失效
@@ -192,5 +192,5 @@ IDX_REGION_UPPER                                                 NORMAL     SYST
 - Index Unique Scan（唯一索引扫描）：查询条件使用唯一索引的全部列的等值查询。
 - Index Range Scan（索引范围扫描）：非唯一索引 或 唯一索引但未提供全部列。查询条件含 =, >, >=, <, <=, BETWEEN, IN 等范围或等值操作。
 - Index Full Scan（索引全扫描）：通常按照索引的物理存储顺序进行扫描，不依赖查询条件。
-- Index Fast Full Scan（索引快速全扫描）：使用块扫描方式，并且要求查询的所有字段都包含在索引中，扫描结果是无序的，order by使用索引排序时冲突、hint_no_ffs冲突。
+- Index Fast Full Scan（索引快速全扫描）：使用块扫描方式，并且要求查询的所有字段都包含在索引中，扫描结果是无序的，与 ORDER BY 使用索引排序时冲突、hint_no_ffs 冲突。
 - Index Skip Scan（索引跳跃扫描）：用于范围查询在前，等值查询在后，查询条件不包含前导第一列的查询场景。

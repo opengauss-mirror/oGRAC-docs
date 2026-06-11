@@ -55,7 +55,7 @@
  DROP TABLE IF EXISTS tester.student;
 
 -- 创建表tester.student
- CREATE TABLE tester.student (student_id INT, student_name CHAR(100) NOT NULL, class_name VARCHAR(64), birthday_data DATETIME, other_info VARCHAR(100));
+ CREATE TABLE tester.student (student_id INT, student_name CHAR(100) NOT NULL, class_name VARCHAR(64), birthday_date DATETIME, other_info VARCHAR(100));
 
 -- 分析收集tester.student的表统计信息
  ANALYZE TABLE tester.student COMPUTE STATISTICS;
@@ -66,6 +66,6 @@
  CREATE INDEX tester.idx on tester.student (student_id);
 
 -- 分析收集tester.idx的索引统计信息
- ANALYZE TABLE tester.idx COMPUTE STATISTICS;
- ANALYZE TABLE tester.idx ESTIMATE STATISTICS 10;
+ ANALYZE INDEX tester.idx COMPUTE STATISTICS;
+ ANALYZE INDEX tester.idx ESTIMATE STATISTICS 10;
 ```

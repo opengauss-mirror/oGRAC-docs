@@ -7,7 +7,7 @@
 ## 原型<a name="zh-cn_topic_0238272884_zh-cn_topic_0237120414_zh-cn_topic_0059778058_s311ac101dcb74b3abb5b3d2ee9781c2c"></a>
 
 ```c
-SQLRETURN SQLFreeStmt(SQLHSTMT      StatementHandle，
+SQLRETURN SQLFreeStmt(SQLHSTMT      StatementHandle,
                       SQLUSMALLINT  Option);
 ```
 

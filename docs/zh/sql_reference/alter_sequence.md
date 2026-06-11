@@ -58,24 +58,24 @@
 ## 示例<a name="zh-cn_topic_0283137303_zh-cn_topic_0237122071_zh-cn_topic_0062358310_sd7a0dca78f6844d79a0ec70fb4213769"></a>
 
 ```
---创建一个名为serial的递增序列，从101开始。
+-- 创建一个名为serial的递增序列，从101开始。
 SQL> CREATE SEQUENCE serial START WITH 101;
 
---修改序列步长为2
+-- 修改序列步长为2
 SQL> ALTER SEQUENCE serial INCREMENT BY 2;
 
---修改序列最小值为90
+-- 修改序列最小值为90
 SQL> ALTER SEQUENCE serial MINVALUE 90;
 
---修改序列最大值为200
+-- 修改序列最大值为200
 SQL> ALTER SEQUENCE serial MAXVALUE 200;
 
---修改序列缓冲值为10
+-- 修改序列缓冲值为10
 SQL> ALTER SEQUENCE serial CACHE 10;
 
---修改序列循环
+-- 修改序列循环
 SQL> ALTER SEQUENCE serial CYCLE;
 
---删除序列
+-- 删除序列
 SQL> DROP SEQUENCE serial;
 ```

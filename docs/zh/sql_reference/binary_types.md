@@ -39,6 +39,6 @@ A                                        B                                      
 1 rows fetched.
 
 --删除表。
-openGauss=#  DROP TABLE blob_type_t1;
+SQL> DROP TABLE blob_type_t1;
 
 ```

@@ -13,12 +13,12 @@
     以unixODBC-2.3.6版本为例，在客户端执行如下命令安装unixODBC。默认安装到“/usr/local”目录下，生成数据源文件到 “/usr/local/etc”目录下，库文件生成在“/usr/local/lib”目录。
 
     ```shell
-    tar zxvf unixODBC-2.3.6.tar.gz
-    cd unixODBC-2.3.6
-    ./configure --enable-gui=no
-    make
+    $ tar zxvf unixODBC-2.3.6.tar.gz
+    $ cd unixODBC-2.3.6
+    $ ./configure --enable-gui=no
+    $ make
     #安装可能需要root权限
-    make install
+    $ make install
     ```
 
 3.  替换客户端odbc驱动程序。
@@ -26,7 +26,7 @@
     将ograc提供的ODBC驱动libogodbc.so复制到“/usr/local/lib”目录下，查看是否完整。
     
     ```shell
-    ldd /usr/local/lib/libogodbc.so
+    $ ldd /usr/local/lib/libogodbc.so
     ```
 
 4.  配置数据源。
@@ -149,7 +149,7 @@
         </tr>
         <tr id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_rd27aa89b945d4ac6b33000b6df5c916e"><td class="cellrowborder" valign="top" width="30.570000000000004%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a5f7c150a5b5f471fa60adba4fd913dd4"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a5f7c150a5b5f471fa60adba4fd913dd4"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a5f7c150a5b5f471fa60adba4fd913dd4"></a>sslmode</p>
         </td>
-        <td class="cellrowborder" valign="top" width="33.37%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a>开启SSL模式</p>
+        <td class="cellrowborder" valign="top" width="33.37%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a>开启SSL模式。</p>
         </td>
         <td class="cellrowborder" valign="top" width="36.059999999999995%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a53d9561f3715460d9f7b8a022292214c"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a53d9561f3715460d9f7b8a022292214c"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a53d9561f3715460d9f7b8a022292214c"></a>sslmode=VERIFY_CA</p>
         </td>
@@ -172,7 +172,7 @@
         </td>
         <td class="cellrowborder" valign="top" width="33.37%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p67427101397"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p67427101397"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p67427101397"></a>指定ODBC侧私钥文件，用以数字签名和对公钥加密的数据进行解密。</p>
         </td>
-        <td class="cellrowborder" valign="top" width="36.059999999999995%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a>sslkey==/usr/test/certificate/client.key</p>
+        <td class="cellrowborder" valign="top" width="36.059999999999995%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a>sslkey=/usr/test/certificate/client.key</p>
         </td>
         </tr>
         
@@ -238,11 +238,11 @@
     
        ```shell
        #在主机生成CA证书ca.crt和私钥ca.key
-       openssl req -newkey rsa:3072 -passout pass:12345678 -keyout ca.key -x509 -days 365 -out ca.crt -subj "/C=CN/ST=BJ/O=huawei/OU=huawei/CN=CA/emailAddress=123456@xxx.com"
+       $ openssl req -newkey rsa:3072 -passout pass:12345678 -keyout ca.key -x509 -days 365 -out ca.crt -subj "/C=CN/ST=BJ/O=huawei/OU=huawei/CN=CA/emailAddress=123456@xxx.com"
        #在主机生成私钥mes.key和证书请求mes.csr
-       openssl req -newkey rsa:3072 -nodes -keyout mes.key -out mes.csr -subj "/C=CN/ST=BJ/L=BJ/O=huawei/OU=huawei/CN=Server/emailAddress=123456@xxx.com"
+       $ openssl req -newkey rsa:3072 -nodes -keyout mes.key -out mes.csr -subj "/C=CN/ST=BJ/L=BJ/O=huawei/OU=huawei/CN=Server/emailAddress=123456@xxx.com"
        #在主机生成证书mes.crt
-       openssl x509 -req -days 365 -in mes.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out mes.crt
+       $ openssl x509 -req -days 365 -in mes.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out mes.crt
        ```
 
     2. 服务器参数配置
@@ -251,27 +251,27 @@
 
        ```shell
        #修改文件夹权限，其中ogracdba为数据库安装用户
-       chmod 700 /opt/ograc/data
-       chown ogracdba:ogracdba /opt/ograc/data
+       $ chmod 700 /opt/ograc/data
+       $ chown ogracdba:ogracdba /opt/ograc/data
        
        #修改证书权限
-       chmod 400 /opt/ograc/data/*
-       chown ogracdba:ogracdba /opt/ograc/data/*
+       $ chmod 400 /opt/ograc/data/*
+       $ chown ogracdba:ogracdba /opt/ograc/data/*
        ```
        
     3. 添加ssl参数，开启数据库ssl模式。
     
        ```shell
        #登录数据库
-       ogsql test/test123@127.0.0.1:1611 -q
+       $ ogsql test/test123@127.0.0.1:1611 -q
        #执行如下sql添加参数
        alter system set SSL_CA = '/opt/ograc/data/ca.crt';
        alter system set SSL_CERT = '/opt/ograc/data/mes.crt';
        alter system set SSL_KEY='/opt/ograc/data/mes.key';
        
        #重启数据库
-       cms res -stop db
-       cms res -start db
+       $ cms res -stop db
+       $ cms res -start db
        ```
        重启之后执行sql命令：show parameter ssl，如果查询结果HAVE_SSL的值为TRUE，则说明SSL功能成功打开。
     
@@ -280,21 +280,21 @@
        在ODBC所在客户端机器上任意创建一个目录/usr/test/certificate，使用scp将服务端生成的ca.crt传到ODBC所在客户端机器上，执行如下操作：
 
        ```shell
-       mkdir -p /usr/test/certificate
-       cd /usr/test/certificate
-       scp root@xxx.xxx.xx.xx:/opt/ograc/data/ca.crt .
+       $ mkdir -p /usr/test/certificate
+       $ cd /usr/test/certificate
+       $ scp root@xxx.xxx.xx.xx:/opt/ograc/data/ca.crt .
        ```
        
        在客户端上生成私钥client.key和证书请求client.csr:
 
        ```shell
-       openssl req -newkey rsa:3072 -nodes -keyout client.key -out client.csr -subj "/C=CN/ST=BJ/L=BJ/O=huawei/OU=huawei/CN=Server/emailAddress=123456@xxx.com"
+       $ openssl req -newkey rsa:3072 -nodes -keyout client.key -out client.csr -subj "/C=CN/ST=BJ/L=BJ/O=huawei/OU=huawei/CN=Server/emailAddress=123456@xxx.com"
        ```
        
        使用scp将client.csr传到数据库所在的服务器上/opt/ograc/data路径下：
 
        ```shell
-       scp client.csr root@xxx.xxx.xx.xx:/opt/ograc/data/
+       $ scp client.csr root@xxx.xxx.xx.xx:/opt/ograc/data/
        ```
 
     5. 生成客户端证书。
@@ -302,8 +302,8 @@
        在数据库所在服务器的/opt/ograc/data路径下生成证书client.crt，并传到客户端机器上：
 
        ```shell
-       cd /opt/ograc/data
-       openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt
+       $ cd /opt/ograc/data
+       $ openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt
        ```
 
     6. 将证书传到客户端机器上。
@@ -311,8 +311,8 @@
        将生成的证书client.crt传到客户端机器上：
 
        ```shell
-       cd /usr/test/certificate
-       scp root@xxx.xxx.xx.xx:/opt/ograc/data/client.crt .
+       $ cd /usr/test/certificate
+       $ scp root@xxx.xxx.xx.xx:/opt/ograc/data/client.crt .
        ```
        
     7. 客户端ODBC参数配置
@@ -320,7 +320,7 @@
        给证书添加权限：
 
        ```shell
-       chmod 400 /usr/test/certificate/*
+       $ chmod 400 /usr/test/certificate/*
        ```
        
        在文件odbc.ini中添加参数：
@@ -335,7 +335,7 @@
 6.  在客户端配置环境变量。
 
     ```shell
-    vim ~/.bashrc
+    $ vim ~/.bashrc
     ```
 
     在配置文件中追加以下内容。
@@ -347,13 +347,13 @@
     执行如下命令使设置生效。
 
     ```shell
-    source ~/.bashrc
+    $ source ~/.bashrc
     ```
     
 7.  注册驱动。
     
     ```shell
-    odbcinst -i -d -f /usr/local/etc/odbcinst.ini
+    $ odbcinst -i -d -f /usr/local/etc/odbcinst.ini
     ```
 
 ## 测试数据源配置<a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_scfaeeaa70a9448889e6fdd7e37d172c5"></a>
