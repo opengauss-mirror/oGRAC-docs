@@ -109,6 +109,7 @@ LAST_CHECK            STAT_CHANGE
 ```
 
 查看指定dss资源状态：
+```
 $ cms stat -res db
 NODE_ID  RESOURCE_NAME  STAT   PRE_STAT  TARGET_STAT  WORK_STAT                      
 0           dss                ONLINE  OFFLINE  ONLINE        1
