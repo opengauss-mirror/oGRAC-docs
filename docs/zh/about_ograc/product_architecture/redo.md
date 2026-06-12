@@ -18,7 +18,7 @@ buffer_enter_page时会对页面添加排他锁，其他连接无法读写该页
 
 多个会话在生成日志记录时，需要直接抢全局 buffer 的锁，每个日志记录追加时都可能争用。如果生成一条日志包含多次修改（比如一个事务的多个步骤），那么每条日志写入时都要抢锁，并发高时锁竞争激烈。
 
-oGRAC在日志的原子操作开始时，会将日志写入session的私有buffer，原子操作结束时再从私有buffer拷贝到全局buffer，这在一定程度上减少了全局buffer锁争用。在拷贝到全局buffer时，多个session并发操作还是会导致锁争用，降低性能。为解决这个问题，oGRAC提供了多log buffer机制，将全局buffer划分为多个part，通过哈希算法负载均衡拷贝操作。为了保证log有序，oGRAC在重启恢复时会对log重排序，这样可以提高数据库运行效率。
+oGRAC 在日志的原子操作开始时，会将日志写入 session 的私有 buffer，原子操作结束时再从私有 buffer 拷贝到全局 buffer，这在一定程度上减少了全局 buffer 锁争用。在拷贝到全局 buffer 时，多个 session 并发操作还是会导致锁争用，降低性能。为解决这个问题，oGRAC 提供了多 log buffer 机制，将全局 buffer 划分为多个 part，通过哈希算法负载均衡拷贝操作。为了保证 log 有序，oGRAC 在重启恢复时会对 log 重排序，这样可以提高数据库运行效率。
 
 ## REDO日志管理
 

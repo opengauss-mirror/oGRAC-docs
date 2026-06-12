@@ -245,7 +245,7 @@ PARTITION sales_jan_2024 VALUES LESS THAN (TO_DATE('2024-02-01', 'YYYY-MM-DD'))
 
 分区表的删除和普通表删除语法相同
 
-```BNF
+```bnf
 DropTableStmt ::=
     'DROP' 'TABLE' ( 'IF' 'EXISTS' )* TableName ( ',' TableName )* ( 'CASCADE' | 'RESTRICT' )* 'PURGE'*
 
@@ -385,7 +385,7 @@ ALTER TABLE sales_range TRUNCATE PARTITION sales_q2;
 
 分区表查询和普通表查询相似，需要添加PartitionClause子句：
 
-```BNF
+```bnf
 PartitionClause ::=
     'PARTITION'
     ( '(' PartitionName ')'
@@ -410,7 +410,7 @@ SELECT * FROM sales_range PARTITION FOR (TO_DATE('2024-04-01', 'YYYY-MM-DD'));
 
 #### 语法描述
 
-```BNF
+```bnf
 PartitionIndexClause ::=
     ( 'LOCAL' '(' 'PARTITION' PartitionName (  ',' 'PARTITION' PartitionName )* ')' )*
 ```
