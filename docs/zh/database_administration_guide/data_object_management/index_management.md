@@ -1,15 +1,15 @@
 # 索引管理
 
-索引是一种数据库对象，它能够为表中的某一列或多个列建立一个有序的数据结构，使得数据库引擎能够快速定位到满足条件的数据行，而无需扫描整张表。创建合适的索引是数据库中提升数据检索速度的核心技术与手段。 
+索引是一种数据库对象，它能够为表中的某一列或多个列建立一个有序的数据结构，使得数据库引擎能够快速定位到满足条件的数据行，而无需扫描整张表。创建合适的索引是数据库中提升数据检索速度的核心技术与手段。
 
 ## 索引创建
 
-从索引所占据的列的数量划分，可以分为单列索引和联合索引；从索引类型上看，可分为普通索引，函数索引，唯一索引（包括主键），分区索引。`OGRAC`支持上述索引类型，各种索引的创建方式如下：
+从索引所占据的列的数量划分，可以分为单列索引和联合索引；从索引类型上看，可分为普通索引，函数索引，唯一索引（包括主键），分区索引。`oGRAC` 支持上述索引类型，各种索引的创建方式如下：
 
 ### 基本语法
 
 ```sql
-CREATE INDEX INDEX_NAME ON [Schema.]TABLE_NAME ({COLUMN_NAME | (COLUMN_NAME1, COLUMAN_NAME2, ...) | EXPRESSION | FUNCTION}) [TABLESPACE TABLESPACE_NAME];
+CREATE INDEX INDEX_NAME ON [Schema.]TABLE_NAME ({COLUMN_NAME | (COLUMN_NAME1, COLUMN_NAME2, ...) | EXPRESSION | FUNCTION}) [TABLESPACE TABLESPACE_NAME];
 ```
 
 - `INDEX_NAME`：索引的名称，用户自定义，在一个表中必须是唯一的。
@@ -18,7 +18,7 @@ CREATE INDEX INDEX_NAME ON [Schema.]TABLE_NAME ({COLUMN_NAME | (COLUMN_NAME1, CO
 - `COLUMN_NAME`：索引所基于的列名，创建联合索引时多个列名之间用逗号分隔。
 - `EXPRESSION`：基于表达式的索引。
 - `FUNCTION`：基于函数的索引。
-- `TABLESPACE OPENGAUSSSPACE`：可选参数，指定索引所在的表空间，默认使用当前表空间。
+- `TABLESPACE OGRACSPACE`：可选参数，指定索引所在的表空间，默认使用当前表空间。
 
 ### 示例
 
@@ -32,22 +32,22 @@ CREATE TABLE USERS
     ADDRESS VARCHAR(50),
     SALARY NUMBER(20,4),
     USER_ID INT
-) TABLESPACE OPENGAUSSSPACE;
+) TABLESPACE OGRACSPACE;
 
 -- 用户可通过CREATE INDEX创建索引
-CREATE INDEX AGE_IDX ON USERS(AGE) TABLESPACE OPENGAUSSSPACE; -- 单列普通索引
-CREATE INDEX ADDRESS_UPPER_IDX ON USERS(UPPER(ADDRESS)) TABLESPACE OPENGAUSSSPACE; -- 函数索引
-CREATE INDEX ID_AGE_IDX2 ON USERS(ID, AGE) TABLESPACE OPENGAUSSSPACE; -- 联合索引
-CREATE UNIQUE INDEX USER_IDX ON USERS(USER_ID) TABLESPACE OPENGAUSSSPACE; -- 唯一索引
+CREATE INDEX AGE_IDX ON USERS(AGE) TABLESPACE OGRACSPACE; -- 单列普通索引
+CREATE INDEX ADDRESS_UPPER_IDX ON USERS(UPPER(ADDRESS)) TABLESPACE OGRACSPACE; -- 函数索引
+CREATE INDEX ID_AGE_IDX2 ON USERS(ID, AGE) TABLESPACE OGRACSPACE; -- 联合索引
+CREATE UNIQUE INDEX USER_IDX ON USERS(USER_ID) TABLESPACE OGRACSPACE; -- 唯一索引
 ```
 
-注意：`OGRAC`要求联合索引的最大列数为`16`。
+注意：`oGRAC`要求联合索引的最大列数为`16`。
 
 ## 分区索引创建
 
 分区索引是指在分区表上创建的索引，创建方式与普通表索引相同。
 
-```SQL
+```sql
 CREATE TABLE orders (
     order_id    NUMBER,
     order_date  DATE,
@@ -88,7 +88,7 @@ ALTER INDEX INDEX_NAME ON TABLE_NAME REBUILD;
 
 ## 索引修改
 
-`OGRAC`不支持修改已创建索引的结构，只允许修改已创建索引的名称。
+`oGRAC`不支持修改已创建索引的结构，只允许修改已创建索引的名称。
 
 ```sql
 ALTER INDEX AGE_IDX ON USERS RENAME TO AGE_IDX_NEW;
@@ -100,7 +100,7 @@ ALTER INDEX idx_order_date ON orders RENAME TO idx_order_date_new;
 
 用户可使用`DROP INDEX`删除索引。数据库重启回滚期间不支持删除索引，删除表时索引会一并删除。
 
-```SQL
+```sql
 -- 普通表索引删除
 DROP INDEX AGE_IDX ON USERS;
 DROP INDEX USER_IDX ON USERS;
@@ -115,7 +115,7 @@ ALTER TABLE USERS DROP CONSTRAINT PK_IDX;
 
 部分场景下主键约束可以不指定名称，比如：
 
-```SQL
+```sql
 DROP TABLE IF EXISTS TEST;
 CREATE TABLE TEST(COL1 INT PRIMARY KEY, COL2 INT);
 ```
@@ -152,16 +152,16 @@ ALTER INDEX idx_order_date ON orders REBUILD;  -- 分区表索引重建
 
 用户可通过`ADM_INDEXES`或者`DB_INDEXES`查看索引的相关信息。
 
-```SQL
+```sql
 SQL> SELECT INDEX_NAME, INDEX_TYPE, TABLESPACE_NAME, IS_PRIMARY, IS_UNIQUE, COLUMNS FROM ADM_INDEXES WHERE TABLE_NAME = 'USERS';
 
 INDEX_NAME                                                       INDEX_TYPE TABLESPACE_NAME                                                  IS_PRIMARY IS_UNIQUE COLUMNS                                                         
 ---------------------------------------------------------------- ---------- ---------------------------------------------------------------- ---------- --------- ----------------------------------------------------------------
-PK_IDX                                                           NORMAL     OPENGAUSSSPACE                                                   Y          N         ID                                                              
-USER_IDX                                                         NORMAL     OPENGAUSSSPACE                                                   N          Y         USER_ID                                                         
-ID_AGE_IDX2                                                      NORMAL     OPENGAUSSSPACE                                                   N          N         ID, AGE                                                         
-ADDRESS_UPPER_IDX                                                NORMAL     OPENGAUSSSPACE                                                   N          N         UPPER(ADDRESS)                                                  
-AGE_IDX                                                          NORMAL     OPENGAUSSSPACE                                                   N          N         AGE                                                             
+PK_IDX                                                           NORMAL     OGRACSPACE                                                       Y          N         ID                                                              
+USER_IDX                                                         NORMAL     OGRACSPACE                                                       N          Y         USER_ID                                                         
+ID_AGE_IDX2                                                      NORMAL     OGRACSPACE                                                       N          N         ID, AGE                                                         
+ADDRESS_UPPER_IDX                                                NORMAL     OGRACSPACE                                                       N          N         UPPER(ADDRESS)                                                  
+AGE_IDX                                                          NORMAL     OGRACSPACE                                                       N          N         AGE                                                             
 
 5 rows fetched.
 
@@ -187,7 +187,7 @@ IDX_REGION_UPPER                                                 NORMAL     SYST
 
 ## 索引扫描方式
 
-当前`OGRAC`支持的索引扫描方式如下：
+当前`oGRAC`支持的索引扫描方式如下：
 
 - Index Unique Scan（唯一索引扫描）：查询条件使用唯一索引的全部列的等值查询。
 - Index Range Scan（索引范围扫描）：非唯一索引 或 唯一索引但未提供全部列。查询条件含 =, >, >=, <, <=, BETWEEN, IN 等范围或等值操作。

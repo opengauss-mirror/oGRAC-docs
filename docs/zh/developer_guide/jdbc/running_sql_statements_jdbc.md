@@ -53,7 +53,7 @@
 
 ## 调用存储过程<a name="zh-cn_topic_0283137004_zh-cn_topic_0237120383_zh-cn_topic_0213179129_zh-cn_topic_0189250824_zh-cn_topic_0059777674_sed43ac42d9414b01bfad409279941f46"></a>
 
-ograc支持通过JDBC直接调用事先创建的存储过程，步骤如下：
+oGRAC 支持通过 JDBC 直接调用事先创建的存储过程，步骤如下：
 
 1. 调用Connection的prepareCall方法创建调用语句对象。
 

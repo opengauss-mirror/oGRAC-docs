@@ -10,7 +10,7 @@ CREATE OR REPLACE VIEW USER_V1 AS SELECT ID, AGE, NAME FROM USERS WHERE AGE > 18
 
 用户可通过`DB_VIEWS`或`MY_VIEWS`以及`DESC`命令查询视图的相关信息。
 
-```SQL
+```sql
 SQL> SELECT * FROM DB_VIEWS WHERE VIEW_NAME = 'USER_V1';
 
 OWNER                                                            VIEW_NAME                                                        VIEW_TYPE COLUMN_COUNT TEXT                                                             TEXT_LENGTH  CREATED_TIME           LAST_DDL_TIME         

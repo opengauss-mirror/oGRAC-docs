@@ -2,7 +2,7 @@
 
 ## 示例1<a name="zh-cn_topic_0283136826_zh-cn_topic_0237120386_zh-cn_topic_0213179152_zh-cn_topic_0189251739_section8820452474"></a>
 
-此示例将演示如何基于ograc提供的JDBC接口开发应用程序。
+此示例将演示如何基于 oGRAC 提供的 JDBC 接口开发应用程序。
 
 ```java
 // DBtest.java

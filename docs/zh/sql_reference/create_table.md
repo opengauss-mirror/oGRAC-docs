@@ -179,7 +179,7 @@ CREATE [[GLOBAL] TEMPORARY] TABLE [IF NOT EXISTS] [schema_name.]table_name
 
 ## 示例
 
-```SQL
+```sql
 -- 1. 简单员工表
 CREATE TABLE employees (
     id SERIAL PRIMARY KEY,

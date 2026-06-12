@@ -31,7 +31,7 @@ TO {
 
 ## 示例
 
-```SQL
+```sql
 
 -- 恢复drop的表
 flashback table tb1 to before drop;

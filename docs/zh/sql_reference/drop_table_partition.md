@@ -28,7 +28,7 @@ DROP TABLE
 
 ## 示例
 
-```SQL
+```sql
 -- 删除单个表
 DROP TABLE employees;
 

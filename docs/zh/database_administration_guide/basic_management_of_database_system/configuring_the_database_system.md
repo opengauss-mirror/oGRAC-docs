@@ -26,7 +26,7 @@ oGRAC数据库提供了多种系统参数可供用户进行查询或者修改，
 
 配置参数指令语法格式如下：
 
-```SQL
+```sql
 ALTER SYSTEM SET parameter_name = parameter_value [SCOPE = {PFILE | MEMORY | BOTH}];
 
 --示例

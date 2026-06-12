@@ -56,7 +56,7 @@ CREATE [UNIQUE] INDEX [IF NOT EXISTS] [schema_name.]index_name ON index_table_cl
 
 ## 示例
 
-```SQL
+```sql
 -- 在employees表的last_name列上创建普通索引
 CREATE INDEX idx_emp_lastname ON employees(last_name);
 

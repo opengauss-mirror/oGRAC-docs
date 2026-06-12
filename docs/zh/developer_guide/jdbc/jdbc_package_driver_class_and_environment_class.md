@@ -1,10 +1,10 @@
 # JDBC包、驱动类和环境类<a name="ZH-CN_TOPIC_0289900723"></a>
 
-JDBC（Java Database Connectivity，Java数据库连接）是一种用于执行SQL语句的Java API，可以为多种关系数据库提供统一访问接口，应用程序可基于它操作数据。oGRAC提供了对JDBC 4.0特性的支持，需要使用JDK1.8版本编译程序代码，不支持JDBC桥接ODBC方式。
+JDBC（Java Database Connectivity，Java 数据库连接）是一种用于执行 SQL 语句的 Java API，可以为多种关系数据库提供统一访问接口，应用程序可基于它操作数据。oGRAC 提供了对 JDBC 4.0 特性的支持，需要使用 JDK1.8 版本编译程序代码，不支持 JDBC 桥接 ODBC 方式。
 
 ## JDBC包<a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_zh-cn_topic_0189249669_zh-cn_topic_0059778950_s9694406852de4db0afcc99b19079f446"></a>
 
-ograc提供两种JDBC jar包：postgresql.jar和openGauss-jdbc-x.x.x.jar，两种jar包功能一致，仅仅是为了解决和PostgreSQL之间的JDBC驱动包名冲突。
+oGRAC 提供两种 JDBC jar 包：postgresql.jar 和 openGauss-jdbc-x.x.x.jar，两种 jar 包功能一致，仅仅是为了解决和 PostgreSQL 之间的 JDBC 驱动包名冲突。
 
 在Linux服务器端源代码目录下执行build.sh，获得驱动jar包postgresql.jar和opengauss-jdbc-x.x.x.jar，包位置在源代码内output目录下。也可以从官网发布包中获取，包名为oGRAC-x.x.x-JDBC.tar.gz。
 

@@ -20,14 +20,14 @@
 
 重命名表空间：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
     RENAME TO 'new_tablespace_name'
 ```
 
 收缩表空间大小和压缩表空间大小：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
     { SHRINK SPACE KEEP integer [ K | M | G | T ]
     | PUNCH { SIZE integer [ K | M | G ] } }
@@ -35,7 +35,7 @@
 
 修改表空间的AUTOOFFLINE和AUTOEXTEND属性：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
     { AUTOOFFLINE { ON | OFF }
      | AUTOEXTEND 
@@ -47,7 +47,7 @@
 
 向表空间中添加和删除数据文件：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
    { ADD DATAFILE 
       { 'file_name' SIZE integer [ K | M | G ] [COMPRESS] 
@@ -62,7 +62,7 @@
 
 重命名表空间中数据文件：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
    RENAME DATAFILE 'old_file_name' TO 'new_file_name'
 ```

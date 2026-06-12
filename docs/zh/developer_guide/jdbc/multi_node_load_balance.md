@@ -1,4 +1,4 @@
-# JDBC主备集群负载均衡
+# JDBC 多节点负载均衡
 
 > [!NOTE]说明
 > 以下示例场景中node代表”host:port”，host为数据库服务器名称或IP地址，port为数据库服务器端口。

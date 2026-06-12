@@ -11,7 +11,7 @@
 
 ![](public_sys-resources/logic_arch2.png)
 
-- 当前支持的驱动有JDBC驱动和C语言的oGRAC驱动，ODBC在研发中，后续还会支持Go和Python驱动；
+- 当前支持的驱动有 JDBC 驱动、C 语言的 oGRAC 驱动和 ODBC 驱动，后续还会支持 Go 和 Python 驱动；
 - oGRAC的实例管理模块包括通信管理和服务调度，线程池管理，Session会话池管理以及全局内存管理SGA和私有内存管理PGA；
 - SQL引擎模块：支持词法解析，语法解析，语义解析，逻辑优化，物理优化，执行器以及存储过程；
 - 存储引擎模块：表空间管理，堆表（Heap）管理，索引管理，Page Buffer缓存管理，DC元数据管理，事务管理，Redo管理，Checkpoint；

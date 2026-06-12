@@ -357,7 +357,7 @@ Remaster过程是Reform机制中的核心环节，负责在节点角色或集群
 
 #### 2.6.9 Reform性能监控
 
-oGRAC提供了丰富的Reform性能监控指标，便于跟踪和分析Reform过程：
+oGRAC 提供了丰富的Reform性能监控指标，便于跟踪和分析Reform过程：
 
 - 准备阶段耗时
 - 恢复阶段耗时

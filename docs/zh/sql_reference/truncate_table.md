@@ -34,7 +34,7 @@ TRUNCATE TABLE [schema_name.]table_name [PURGE] [{DROP|REUSE} STORAGE]
 
 ## 示例
 
-```SQL
+```sql
 -- 清空表
 TRUNCATE TABLE test_data;
 

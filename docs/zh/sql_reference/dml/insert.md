@@ -6,7 +6,7 @@ INSERT用于在数据库表中插入新的数据行。
 
 最基本的 INSERT 语句形式如下：
 
-```SQL
+```sql
 INSERT INTO [schema.]table_name [(column1, column2, ..., columnN)] 
 VALUES (value1, value2, ..., valueN)[, (value1, value2, ..., valueN)];
 ```

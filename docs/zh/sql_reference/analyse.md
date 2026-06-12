@@ -14,13 +14,13 @@
 
 收集表统计信息：
 
-```SQL
+```sql
  ANALYZE { TABLE [ schema_name. ]table_name COMPUTE STATISTICS } [ FOR REPORT [ SAMPLE sample_percent ]]
 ```
 
 收集索引统计信息：
 
-```SQL
+```sql
  ANALYZE { INDEX [ schema_name. ]index_name { COMPUTE STATISTICS | ESTIMATE STATISTICS sample_percent }}
 ```
 

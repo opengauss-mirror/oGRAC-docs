@@ -31,7 +31,7 @@ DROP TABLESPACE name
 
 ## 示例
 
-```SQL
+```sql
 -- 1. 基本删除表空间（仅删除元数据，保留物理文件）
 DROP TABLESPACE tbs1;
 

@@ -71,7 +71,7 @@ CREATE [UNDO] TABLESPACE name
 
 ## 示例
 
-```SQL
+```sql
 -- 1. 创建基础表空间
 CREATE TABLESPACE tbs1
     DATAFILE '/home/ogracdba/data/tbs1.dbf' SIZE 100M;

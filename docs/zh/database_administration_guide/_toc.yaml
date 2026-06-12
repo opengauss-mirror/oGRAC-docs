@@ -8,12 +8,12 @@ sections:
       - label: 表空间管理
         href: ./data_object_management/tablespace_management.md
       - label: 分区表管理
-        href: ./data_object_management/artitioned_tables_management.md        
+        href: ./data_object_management/partitioned_tables_management.md
       - label: 视图管理
         href: ./data_object_management/view_management.md
       - label: 日志管理
         href: ./data_object_management/log_management.md
-      - label: Heap Management
+      - label: 堆管理
         href: ./data_object_management/heap_management.md
       - label: 索引管理
         href: ./data_object_management/index_management.md
