@@ -43,8 +43,8 @@
 
     执行如下命令创建数据库用户。
 
-    ```shell
-    $ create user user_name identified by 'user_password';
+    ```sql
+    create user user_name identified by 'user_password';
     ```
 
     当结果显示为如下信息，则表示创建成功。
@@ -55,16 +55,16 @@
 
     执行如下命令设置用户为系统管理员。
 
-    ```shell
-    $ grant all to user_name;
+    ```sql
+    grant all to user_name;
     ```
 
 4. 创建表。
 
     执行如下命令创建一个名称为 mytable 且只有一列的表。字段名为 firstcol，字段类型为 integer。
 
-    ```shell
-    $ create table mytable (firstcol int);
+    ```sql
+    create table mytable (firstcol int);
     ```
 
     当结果显示为如下信息，则表示创建成功。
@@ -75,8 +75,8 @@
 
     执行如下命令向表中插入数据。
 
-    ```shell
-    $ insert into mytable values (1);
+    ```sql
+    insert into mytable values (1);
     ```
 
     当结果显示为如下信息，则表示插入成功。
@@ -87,8 +87,8 @@
 
     执行如下命令查询表中数据。
 
-    ```shell
-    $ select * from mytable;
+    ```sql
+    select * from mytable;
     ```
 
     查询结果如下：

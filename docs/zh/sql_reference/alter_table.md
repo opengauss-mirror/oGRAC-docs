@@ -212,14 +212,15 @@ ALTER TABLE [ schema_name. ]table_name
 
       ```
       STORAGE (MAXSIZE { UNLIMITED | integer [K | M | G | T] } )
+      ```
 
-    - _set_interval_clause_ 语法组件：
+- _set_interval_clause_ 语法组件：
 
     ```
     SET INTERVAL([interval_value])
     ```
 
-    - _logic_replication_clauses_ 语法组件：
+- _logic_replication_clauses_ 语法组件：
 
     ```
     [([ partition_name | subpartition_name ][ , ... ])] ADD LOGICAL LOG(UNIQUE index_name)|
