@@ -176,14 +176,39 @@ tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 
 ```bash
 cd [compile_path]/oGRAC/build
+# 基本用法（三方库解压在 oGRAC 目录内）
 sh build_ograc.sh [release|debug] --with-dss
+
+# 指定三方库所在目录（路径必须在 oGRAC 目录内，指向包含三方库文件夹的父目录即可）
+sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH}
 ```
 
 参数说明：
 
-* `release`：编译发布版本，适用于功能验证和交付
-* `debug`：编译调试版本，包含调试符号，便于 gdb 调试
-* `--with-dss`：启用 DSS 相关组件（两节点及以上部署必须）
+| 参数 | 说明 |
+|------|------|
+| `release` | 编译发布版本，适用于功能验证和交付 |
+| `debug` | 编译调试版本，包含调试符号，便于 gdb 调试 |
+| `--with-dss` | 启用 DSS 相关组件（两节点及以上部署必须） |
+| `--third-party-path <path>` | 指定三方库依赖的查找路径，指向包含 `openGauss-third_party_binarylibs_*` 文件夹的父目录即可，**路径必须在 oGRAC 目录内**；不指定时默认在 oGRAC 目录根目录查找 |
+| `-h`, `--help` | 显示帮助信息 |
+
+> **编译前环境检查**
+>
+> 编译脚本已内置环境预检功能，会在编译前自动检查三方库依赖、OS 版本兼容性等。如三方库已解压到 oGRAC 目录内，脚本会自动查找，无需额外指定。
+>
+> 如需提前验证环境配置是否正确，也可单独运行环境检查（不执行编译）：
+> ```bash
+> cd [compile_path]/oGRAC/build
+> sh build_dss.sh [release|debug] --check-only
+> ```
+>
+> 如果三方库不在默认路径，可通过 `--third-party-path` 指定（该参数非必填）：
+> ```bash
+> sh build_dss.sh [release|debug] --check-only --third-party-path <path>
+> ```
+>
+> `--check-only` 仅执行编译前环境检查，不执行实际编译流程。
 
 > [!NOTE]说明
 >
