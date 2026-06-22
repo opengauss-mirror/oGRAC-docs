@@ -3,3 +3,5 @@ isManual: true
 sections:
   - label: ogsql使用说明
     href: ./client_tool/ogsql_instructions.md
+  - label: gbps使用说明
+    href: ./server_tool/gbps_instructions.md
