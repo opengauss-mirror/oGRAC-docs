@@ -196,6 +196,23 @@
 **默认值**  
 `TYPICAL`
 
+## use\_bison\_parser<a name="use_bison_parser"></a>
+
+**参数说明**：是否使用Bison解析器解析普通SQL语句。
+
+该参数设置后立即生效，请参考[配置数据库系统参数](../database_administration_guide/basic_management_of_database_system/configuring_the_database_system.md#配置数据库系统参数)中对应设置方法进行设置。
+
+**取值范围**：布尔型
+
+- on/true表示使用Bison解析器。
+- off/false表示使用原生解析器。
+
+**默认值**：on
+
+>[!NOTE]说明
+>
+>普通SQL语句中，以f/d结尾的浮点数字面量由该参数控制。
+
 ### **BUF_POOL_NUM**
 
 **参数描述**  
