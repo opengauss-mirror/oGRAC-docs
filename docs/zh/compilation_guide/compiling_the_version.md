@@ -5,9 +5,9 @@
 ## 获取源码
 
 ```shell
-$ chmod 755 -R compile_path
-$ cd compile_path
-$ git clone https://gitcode.com/opengauss/oGRAC.git
+chmod 755 -R compile_path
+cd compile_path
+git clone https://gitcode.com/opengauss/oGRAC.git
 ```
 
 ## 配置修改
@@ -15,8 +15,8 @@ $ git clone https://gitcode.com/opengauss/oGRAC.git
 如需关闭保护虚拟内存选项（编译安装 debug 版本时建议关闭）：
 
 ```shell
-$ cd oGRAC/build
-$ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
+cd oGRAC/build
+sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 ```
 
 ## 编译
@@ -26,9 +26,9 @@ $ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 当前 oGRAC 单节点仅支持单机开发调试，不支持打包功能。
 
 ```shell
-$ cd build
-$ sh local_install.sh prepare
-$ sh local_install.sh compile -b debug
+cd build
+sh local_install.sh prepare
+sh local_install.sh compile -b debug
 ```
 
 - `-b, --build_type=<type>`：指定编译类型（release/debug，默认release）
@@ -44,28 +44,28 @@ $ sh local_install.sh compile -b debug
 - ARM 环境：
 
 ```bash
-$ cd oGRAC/
-$ wget --no-check-certificate https://opengauss.obs.cn-south-1.myhuaweicloud.com/6.0.0/binarylibs/gcc10.3/openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
-$ tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
+cd oGRAC/
+wget --no-check-certificate https://opengauss.obs.cn-south-1.myhuaweicloud.com/6.0.0/binarylibs/gcc10.3/openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
+tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 ```
 
 - CentOS 环境：
 
 ```bash
-$ cd oGRAC/
-$ wget --no-check-certificate https://opengauss.obs.cn-south-1.myhuaweicloud.com/6.0.0/binarylibs/gcc10.3/openGauss-third_party_binarylibs_Centos7.6_x86_64.tar.gz
-$ tar -zxf openGauss-third_party_binarylibs_Centos7.6_x86_64.tar.gz
+cd oGRAC/
+wget --no-check-certificate https://opengauss.obs.cn-south-1.myhuaweicloud.com/6.0.0/binarylibs/gcc10.3/openGauss-third_party_binarylibs_Centos7.6_x86_64.tar.gz
+tar -zxf openGauss-third_party_binarylibs_Centos7.6_x86_64.tar.gz
 ```
 
 #### 执行编译脚本
 
 ```bash
-$ cd oGRAC/build
+cd oGRAC/build
 # 基本用法（三方库解压在 oGRAC 目录内）
-$ sh build_ograc.sh [release|debug] --with-dss
+sh build_ograc.sh [release|debug] --with-dss
 
 # 指定三方库所在目录（路径必须在 oGRAC 目录内，指向包含三方库文件夹的父目录即可）
-$ sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH}
+sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH}
 ```
 
 参数说明：

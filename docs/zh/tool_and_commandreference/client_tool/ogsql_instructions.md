@@ -12,14 +12,14 @@ ogsql 支持三种主要的使用方式：
 
 ```bash
 # 方式1：显示帮助或版本信息
-$ ogsql -h
-$ ogsql -v
+ogsql -h
+ogsql -v
 
 # 方式2：进入交互式模式
-$ ogsql
+ogsql
 
 # 方式3：指定登录信息和选项，可以以非交互模式执行 SQL 语句
-$ ogsql [ <logon> [<options>] [<start>] ]
+ogsql [ <logon> [<options>] [<start>] ]
 ```
 
 ### 登录信息格式
@@ -83,33 +83,33 @@ ogsql 支持以下启动选项（同一时间只能使用其中一种）：
 
 ```bash
 # 以管理员身份无密码登录
-$ ogsql / as sysdba
+ogsql / as sysdba
 
 # 通过IP地址和端口以指定用户登录
-$ ogsql user/user_pwd@127.0.0.1:1611
+ogsql user/user_pwd@127.0.0.1:1611
 ```
 
 ### 执行SQL语句
 
 ```bash
 # 登录后执行单个 SQL 语句
-$ ogsql user/user_pwd@127.0.0.1:1611 -c "SELECT 1 FROM SYS_DUMMY"
+ogsql user/user_pwd@127.0.0.1:1611 -c "SELECT 1 FROM SYS_DUMMY"
 
 # 执行SQL脚本文件
-$ ogsql user/user_pwd@127.0.0.1:1611 -f "/home/user/example.sql"
+ogsql user/user_pwd@127.0.0.1:1611 -f "/home/user/example.sql"
 
 # 打印并执行SQL脚本文件中的语句
-$ ogsql user/user_pwd@127.0.0.1:1611 -a -f "/home/user/example.sql"
+ogsql user/user_pwd@127.0.0.1:1611 -a -f "/home/user/example.sql"
 ```
 
 ### 设置连接超时
 
 ```bash
 # 设置连接超时为30秒
-$ ogsql user/user_pwd@127.0.0.1:1611 -w 30
+ogsql user/user_pwd@127.0.0.1:1611 -w 30
 
 # 设置无限超时
-$ ogsql user/user_pwd@127.0.0.1:1611 -w -1
+ogsql user/user_pwd@127.0.0.1:1611 -w -1
 ```
 
 ## 交互式命令

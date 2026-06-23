@@ -11,7 +11,7 @@ oGRAC 的表空间层级结构可以分为 `TableSpace->Segment->Extent->Page->R
 查询当前数据库的 `page size`：
 
 ```shell
-$ SHOW PARAMETER PAGE_SIZE;
+SHOW PARAMETER PAGE_SIZE;
 ```
 
 ## Heap Page 主要结构

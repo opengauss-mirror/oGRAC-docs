@@ -23,10 +23,10 @@
 在开始编译前，需要关闭可能影响编译或运行的系统安全策略。请在 **root 用户** 下执行以下命令：
 
 ```shell
-$ setenforce 0
-$ sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-$ systemctl stop firewalld
-$ systemctl disable firewalld
+setenforce 0
+sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+systemctl stop firewalld
+systemctl disable firewalld
 ```
 
 > [!NOTE]说明
@@ -41,11 +41,11 @@ $ systemctl disable firewalld
 为保证权限隔离和环境整洁，建议使用**独立的系统用户**进行源码编译和出包操作。
 
 ```shell
-$ mkdir -p [compile_path]
-$ chmod 755 -R [compile_path]
-$ useradd [user_name]
-$ passwd [user_name]
-$ chown -R [user_name]:[user_name] [compile_path]
+mkdir -p [compile_path]
+chmod 755 -R [compile_path]
+useradd [user_name]
+passwd [user_name]
+chown -R [user_name]:[user_name] [compile_path]
 ```
 
 > [!NOTE]说明
@@ -60,7 +60,7 @@ $ chown -R [user_name]:[user_name] [compile_path]
 oGRAC 编译依赖较多的系统库及构建工具，请在编译主机上执行以下命令一次性安装：
 
 ```shell
-$ yum install -y libaio-devel openssl openssl-devel ndctl-devel unixODBC-devel unixODBC \
+yum install -y libaio-devel openssl openssl-devel ndctl-devel unixODBC-devel unixODBC \
 ncurses ncurses-devel libtirpc-devel expect ant bison iputils  \
 iproute wget make gcc gcc-c++ gdb gdb-gdbserver python3 python3-devel \
 git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex --skip-broken
@@ -149,18 +149,18 @@ oGRAC 依赖 openGauss 提供的第三方二进制库，请先下载并解压至
 请注意，当前主干分支包含 `master` 和 `1.0.0` 两个分支，当前官网文档以 `1.0.0` 为基线进行安装部署指引。
 
 ```bash
-$ su - [user_name]
-$ cd [compile_path]
+su - [user_name]
+cd [compile_path]
 
-$ git clone https://gitcode.com/opengauss/oGRAC.git
+git clone https://gitcode.com/opengauss/oGRAC.git
 
-$ cd oGRAC
+cd oGRAC
 # 根据所需自行切换分支
 # git reset --hard origin/1.0.0
-$ wget --no-check-certificate \
+wget --no-check-certificate \
 https://opengauss.obs.cn-south-1.myhuaweicloud.com/6.0.0/binarylibs/gcc10.3/openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 
-$ tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
+tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 ```
 
 > [!WARNING]注意
@@ -184,12 +184,12 @@ $ tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 >   ```
 
 ```bash
-$ cd [compile_path]/oGRAC/build
+cd [compile_path]/oGRAC/build
 # 基本用法（三方库解压在 oGRAC 目录内）
-$ sh build_ograc.sh [release|debug] --with-dss
+sh build_ograc.sh [release|debug] --with-dss
 
 # 指定三方库所在目录（路径必须在 oGRAC 目录内，指向包含三方库文件夹的父目录即可）
-$ sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH}
+sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH}
 ```
 
 参数说明：

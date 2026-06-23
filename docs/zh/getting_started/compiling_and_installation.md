@@ -7,26 +7,26 @@
 关闭 SELinux 和防火墙：
 
 ```bash
-$ setenforce 0
-$ sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-$ systemctl stop firewalld
-$ systemctl disable firewalld
+setenforce 0
+sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+systemctl stop firewalld
+systemctl disable firewalld
 ```
 
 ### 创建目录和用户
 
 ```bash
-$ mkdir -p [compile_path]
-$ chmod 755 -R [compile_path]
-$ useradd [user_name]
-$ passwd [user_password]
-$ chown -R [user_name]:[user_name] [compile_path]
+mkdir -p [compile_path]
+chmod 755 -R [compile_path]
+useradd [user_name]
+passwd [user_password]
+chown -R [user_name]:[user_name] [compile_path]
 ```
 
 ### 安装必要依赖
 
 ```bash
-$ yum install -y libaio-devel openssl openssl-devel ndctl-devel \
+yum install -y libaio-devel openssl openssl-devel ndctl-devel \
 ncurses ncurses-devel libtirpc-devel expect ant bison iputils \
 iproute wget make gcc gcc-c++ gdb gdb-gdbserver python3 python3-devel \
 git net-tools cmake automake byacc libtool --skip-broken unixODBC unixODBC-devel
@@ -39,8 +39,8 @@ git net-tools cmake automake byacc libtool --skip-broken unixODBC unixODBC-devel
 ### 获取源码
 
 ```bash
-$ cd [compile_path]
-$ git clone https://gitcode.com/openGauss/oGRAC.git
+cd [compile_path]
+git clone https://gitcode.com/opengauss/oGRAC.git
 ```
 
 ### 修改编译配置
@@ -48,8 +48,8 @@ $ git clone https://gitcode.com/openGauss/oGRAC.git
 如需关闭保护虚拟内存选项（如果编译安装的是 debug 版本建议关闭保护虚拟内存选项）：
 
 ```bash
-$ cd oGRAC/build
-$ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
+cd oGRAC/build
+sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 ```
 
 ---
@@ -61,13 +61,13 @@ $ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 安装所有编译、运行 oGRAC 所需依赖。
 
 ```bash
-$ sh local_install.sh prepare
+sh local_install.sh prepare
 ```
 
 ### 编译
 
 ```bash
-$ sh local_install.sh compile -b debug
+sh local_install.sh compile -b debug
 ```
 
 - `-b, --build_type=<type>`：指定编译类型（release/debug，默认 release）
@@ -78,7 +78,7 @@ $ sh local_install.sh compile -b debug
 ### 安装
 
 ```bash
-$ sh local_install.sh install -u [user_name]
+sh local_install.sh install -u [user_name]
 ```
 
 - `-u, --user=<user>`：指定安装和运行的系统用户，默认 `ogracdba`
@@ -114,5 +114,5 @@ $ sh local_install.sh install -u [user_name]
 停止服务并删除数据、安装目录及相关环境变量。
 
 ```bash
-$ sh local_install.sh clean -u [user_name]
+sh local_install.sh clean -u [user_name]
 ```

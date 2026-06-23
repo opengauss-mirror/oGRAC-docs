@@ -5,9 +5,9 @@
 ## 1. 下载 docker 镜像
 
 ```shell
-$ wget https://repo.openeuler.org/openEuler-22.03-LTS/docker_img/aarch64/openEuler-docker.aarch64.tar.xz
+wget https://repo.openeuler.org/openEuler-22.03-LTS/docker_img/aarch64/openEuler-docker.aarch64.tar.xz
 
-$ docker load < ./openEuler-docker.aarch64.tar.xz
+docker load < ./openEuler-docker.aarch64.tar.xz
 ```
 
 ## 2. 查看镜像文件
@@ -15,7 +15,7 @@ $ docker load < ./openEuler-docker.aarch64.tar.xz
 在 root 用户下输入：
 
 ```shell
-$ docker images
+docker images
 ```
 
 正常情况下会回显如下信息：
@@ -28,7 +28,7 @@ openeuler-22.03-lts   lastest    xxxx            About a minute ago      3.71GB
 ## 3. 创建并启动 docker
 
 ```shell
-$ docker run --name mirror_name -itd -v /home/user_name/docker/data:/home --privileged=true --network=host --shm-size=128g IMAGE_ID tail -f /dev/null
+docker run --name mirror_name -itd -v /home/user_name/docker/data:/home --privileged=true --network=host --shm-size=128g IMAGE_ID tail -f /dev/null
 ```
 
 - mirror_name 是 docker 的容器名，可以自定义
@@ -41,7 +41,7 @@ $ docker run --name mirror_name -itd -v /home/user_name/docker/data:/home --priv
 4.1 查看 docker
 
 ```shell
-$ docker ps
+docker ps
 ```
 
 正常情况下会回显如下信息：
@@ -54,7 +54,7 @@ f862ea8687aa        70802bc91797        "tail -f /dev/null"   33 minutes ago    
 4.2 进入 docker
 
 ```shell
-$ docker exec -it mirror_name /bin/bash
+docker exec -it mirror_name /bin/bash
 ```
 
 ## 5. Docker 镜像内配置
@@ -64,10 +64,10 @@ $ docker exec -it mirror_name /bin/bash
 5.1 若为编译安装则还需安装依赖：
 
 ```shell
-$ yum install -y libaio-devel openssl openssl-devel ndctl-devel \
+yum install -y libaio-devel openssl openssl-devel ndctl-devel \
 ncurses ncurses-devel libtirpc-devel expect ant bison iputils \
 iproute wget make gcc gcc-c++ gdb gdb-gdbserver python3 python3-devel \
-git net-tools cmake automake byacc libtool unzip vim lz4 lz4-devel patch \
+git net-tools cmake automake byacc libtool git unzip vim lz4 lz4-devel patch \
 xz flex unixODBC-devel unixODBC --skip-broken
 ```
 
@@ -78,7 +78,7 @@ lz4 版本在 1.8.3 及以上。
 5.2 若为安装包安装则还需安装依赖：
 
 ```bash
-$ yum install -y wget git python3 python3-devel iputils iproute --skip-broken
+yum install -y wget python3 python3-devel iputils iproute --skip-broken
 ```
 
 ## 6. 编译 oGRAC
@@ -90,7 +90,7 @@ $ yum install -y wget git python3 python3-devel iputils iproute --skip-broken
 下载地址为
 
 ```shell
-$ git clone https://gitcode.com/opengauss/oGRAC.git
+git clone https://gitcode.com/opengauss/oGRAC.git
 ```
 
 6.2 修改 Makefile.sh
@@ -98,7 +98,7 @@ $ git clone https://gitcode.com/opengauss/oGRAC.git
 进入 `oGRAC/build` 目录下，执行以下命令替换文件里的 `USE_PROTECT_VM=ON` 为 `USE_PROTECT_VM=OFF`
 
 ```shell
-$ sed -i 's+USE_PROTECT_VM=ON+USE_PROTECT_VM=OFF+' Makefile.sh
+sed -i 's+USE_PROTECT_VM=ON+USE_PROTECT_VM=OFF+' Makefile.sh
 ```
 
 6.3 编译安装 oGRAC
@@ -106,11 +106,11 @@ $ sed -i 's+USE_PROTECT_VM=ON+USE_PROTECT_VM=OFF+' Makefile.sh
 进入 `oGRAC/build` 目录下，执行以下命令进行编译安装。示例为编译 debug 版本，不指定 `-b` 时默认编译 release 版本；`-u` 指定安装用户名；`-c` 指定兼容性，支持指定 A/B/C 兼容性，不指定时默认为 A 兼容性
 
 ```shell
-$ sh local_install.sh prepare
+sh local_install.sh prepare
 
-$ sh local_install.sh compile -b debug
+sh local_install.sh compile -b debug
 
-$ sh local_install.sh install -u user_name
+sh local_install.sh install -u user_name
 
 # sh local_install.sh install -u [user_name] -c A  # 新建兼容性为A的数据库
 ```
@@ -126,5 +126,5 @@ $ sh local_install.sh install -u user_name
 下载安装包后，使用 tar 解压安装包，然后进入 `oGRAC/build` 目录下，执行如下命令即可：
 
 ```shell
-$ sh local_install.sh install -u user_name
+sh local_install.sh install -u user_name
 ```

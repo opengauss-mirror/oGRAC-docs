@@ -28,13 +28,13 @@
     执行如下命令连接数据库。
 
     ```shell
-    $ ogsql / as sysdba
+    ogsql / as sysdba
     ```
 
     另外，也可以使用如下命令连接数据库。
 
     ```shell
-    $ ogsql user_name/user_password@127.0.0.1:port
+    ogsql user_name/user_password@127.0.0.1:port
     ```
 
     连接成功后就进入了交互界面。

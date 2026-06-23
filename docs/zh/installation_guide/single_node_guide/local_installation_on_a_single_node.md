@@ -28,10 +28,10 @@
 执行以下命令完成相关配置：
 
 ```bash
-$ setenforce 0
-$ sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-$ systemctl stop firewalld
-$ systemctl disable firewalld
+setenforce 0
+sed -i 's/^SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+systemctl stop firewalld
+systemctl disable firewalld
 ```
 
 > [!NOTE]说明
@@ -53,11 +53,11 @@ $ systemctl disable firewalld
 示例如下：
 
 ```bash
-$ mkdir -p [compile_path]
-$ useradd [user_name]
-$ passwd [user_password]
+mkdir -p [compile_path]
+useradd [user_name]
+passwd [user_password]
 # 建议进行权限设置，否则会出现 install 阶段权限不足的报错
-$ chmod -R 777 [compile_path]
+chmod -R 777 [compile_path]
 ```
 
 > [!NOTE]说明
@@ -72,7 +72,7 @@ $ chmod -R 777 [compile_path]
 oGRAC 的编译和运行依赖 Python、网络工具及部分基础库，请提前安装以下软件包：
 
 ```bash
-$ yum install -y wget python3 python3-devel iputils iproute \
+yum install -y wget python3 python3-devel iputils iproute \
 unixODBC-devel unixODBC lz4 lz4-devel patch xz flex --skip-broken
 ```
 
@@ -92,8 +92,8 @@ unixODBC-devel unixODBC lz4 lz4-devel patch xz flex --skip-broken
 切换至前文创建的编译目录，拉取 oGRAC 官方源码仓库：
 
 ```bash
-$ cd [compile_path]
-$ git clone https://gitcode.com/openGauss/oGRAC.git
+cd [compile_path]
+git clone https://gitcode.com/opengauss/oGRAC.git
 ```
 
 下载完成后，目录结构中将包含 `build`、`src` 等核心子目录。
@@ -101,8 +101,8 @@ $ git clone https://gitcode.com/openGauss/oGRAC.git
 然后进行 prepare 阶段准备，用于安装环境的依赖信息：
 
 ```bash
-$ cd oGRAC/build
-$ sh local_install.sh prepare
+cd oGRAC/build
+sh local_install.sh prepare
 ```
 
 ---
@@ -114,8 +114,8 @@ $ sh local_install.sh prepare
 进入编译配置目录并修改参数：
 
 ```bash
-$ cd oGRAC/build
-$ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
+cd oGRAC/build
+sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 ```
 
 ### 进行编译
@@ -123,7 +123,7 @@ $ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 在 `oGRAC/build` 目录下进行编译，用于后续二进制安装：
 
 ```bash
-$ sh local_install.sh compile -b [release | debug]
+sh local_install.sh compile -b [release | debug]
 ```
 
 > [!NOTE]说明
@@ -140,7 +140,7 @@ $ sh local_install.sh compile -b [release | debug]
 2. 使用安装脚本进行部署，并指定安装用户或者兼容性
 
 ```bash
-$ sh local_install.sh install -u [user_name]
+sh local_install.sh install -u [user_name]
 
 # sh local_install.sh install -u [user_name] -c A  # 新建兼容性为A的数据库
 ```
@@ -158,7 +158,7 @@ $ sh local_install.sh install -u [user_name]
 当需要重启时，可以使用如下命令启动数据库：
 
 ```shell
-$ /home/[user_name]/install/bin/ogracd -D /home/[user_name]/data &
+/home/[user_name]/install/bin/ogracd -D /home/[user_name]/data &
 ```
 ---
 
@@ -167,7 +167,7 @@ $ /home/[user_name]/install/bin/ogracd -D /home/[user_name]/data &
 如需重新部署或清理环境，可执行卸载脚本：
 
 ```bash
-$ sh local_install.sh clean -u [user_name]
+sh local_install.sh clean -u [user_name]
 ```
 
 该操作将停止服务，并删除数据目录、安装目录以及相关环境变量。
@@ -181,9 +181,9 @@ $ sh local_install.sh clean -u [user_name]
 为避免该问题，建议在调试前调整 CM 的超时时间参数：
 
 ```bash
-$ su - [user_name]
-$ cms res -edit db -attr HB_TIMEOUT=100000000
-$ cms res -edit db -attr CHECK_TIMEOUT=10000000
+su - [user_name]
+cms res -edit db -attr HB_TIMEOUT=100000000
+cms res -edit db -attr CHECK_TIMEOUT=10000000
 ```
 
 > [!NOTE]说明
