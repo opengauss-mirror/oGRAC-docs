@@ -8,19 +8,19 @@ oGRAC 提供两种 JDBC jar 包：postgresql.jar 和 openGauss-jdbc-x.x.x.jar，
 
 在Linux服务器端源代码目录下执行build.sh，获得驱动jar包postgresql.jar和opengauss-jdbc-x.x.x.jar，包位置在源代码内output目录下。也可以从官网发布包中获取，包名为oGRAC-x.x.x-JDBC.tar.gz。
 
-- postgresql.jar：主类名为“org.postgresql.Driver”，数据库连接的url前缀为"jdbc:oGRAC"。
-- opengauss-jdbc-x.x.x.jar：主类名为“org.opengauss.Driver”，数据库连接的url前缀为"jdbc:oGRAC"。
+- postgresql.jar：主类名为"org.postgresql.Driver"，数据库连接的url前缀为"jdbc:oGRAC"。
+- opengauss-jdbc-x.x.x.jar：主类名为"org.opengauss.Driver"，数据库连接的url前缀为"jdbc:oGRAC"。
 
 ## 环境类<a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_section20655192913405"></a>
 
 客户端需配置JDK1.8，配置方法如下：
 
-1. DOS窗口输入“java -version”，查看JDK版本，确认为JDK1.8版本。如果未安装JDK，请从官方网站下载安装包并安装。
+1. DOS窗口输入"java -version"，查看JDK版本，确认为JDK1.8版本。如果未安装JDK，请从官方网站下载安装包并安装。
 2. 根据如下步骤配置系统环境变量。
-    1. 右键单击”此电脑”，选择”属性”。
-    2. 在”系统”页面左侧导航栏单击”高级系统设置”。
-    3. 在”系统属性”页面，”高级”页签上单击”环境变量”。
-    4. 在”环境变量”页面上，”系统变量”区域单击”新建”或”编辑”配置系统变量。变量说明请参见[表1](#zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_table1625616152473)。
+    1. 右键单击"此电脑"，选择"属性"。
+    2. 在"系统"页面左侧导航栏单击"高级系统设置"。
+    3. 在"系统属性"页面，"高级"页签上单击"环境变量"。
+    4. 在"环境变量"页面上，"系统变量"区域单击"新建"或"编辑"配置系统变量。变量说明请参见[表1](#zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_table1625616152473)。
 
         **表 1**  变量说明
 
@@ -35,7 +35,7 @@ oGRAC 提供两种 JDBC jar 包：postgresql.jar 和 openGauss-jdbc-x.x.x.jar，
         </thead>
         <tbody><tr id="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_row925712153479"><td class="cellrowborder" valign="top" width="15.701570157015702%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p182575153474"><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p182575153474"></a><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p182575153474"></a>JAVA_HOME</p>
         </td>
-        <td class="cellrowborder" valign="top" width="32.753275327532755%" headers="mcps1.2.4.1.2 "><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_ul16913207507"></a><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_ul16913207507"></a><ul id="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_ul16913207507"><li>若存在，则单击“编辑”。</li><li>若不存在，则单击“新建”。</li></ul>
+        <td class="cellrowborder" valign="top" width="32.753275327532755%" headers="mcps1.2.4.1.2 "><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_ul16913207507"></a><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_ul16913207507"></a><ul id="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_ul16913207507"><li>若存在，则单击"编辑"。</li><li>若不存在，则单击"新建"。</li></ul>
         </td>
         <td class="cellrowborder" valign="top" width="51.54515451545154%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p0217595132"><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p0217595132"></a><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p0217595132"></a>JAVA的安装目录。</p>
         <p id="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p1981211652"><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p1981211652"></a><a name="zh-cn_topic_0283136979_zh-cn_topic_0237120378_zh-cn_topic_0213179123_p1981211652"></a>例如：C:\Program Files\Java\jdk1.8.0_131</p>

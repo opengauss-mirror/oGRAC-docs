@@ -51,7 +51,7 @@ GRANT { READ } ON DIRECTORY dir_name TO grantee [ WITH GRANT OPTION ]
 
 #### system_privilege_name
 
-   系统权限名称。下表展示了系统目前支持的系统权限以及角色或用户对权限的拥有情况，其中“T”表示拥有此权限，“F”表示没有权限。
+   系统权限名称。下表展示了系统目前支持的系统权限以及角色或用户对权限的拥有情况，其中"T"表示拥有此权限，"F"表示没有权限。
 
 **系统权限表**
 

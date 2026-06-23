@@ -272,7 +272,7 @@ ALTER TABLE [ schema_name. ]table_name
             启用独立空间扩展模式。
 
             重要提示：
-            - 对于分区表，启用 APPENDONLY ON 后，在并行插入场景下需特别注意。用户需预先规划数据，确保每个并行线程插入的数据不会跨越多个分区，即实现“一个线程对应一个分区”。
+            - 对于分区表，启用 APPENDONLY ON 后，在并行插入场景下需特别注意。用户需预先规划数据，确保每个并行线程插入的数据不会跨越多个分区，即实现"一个线程对应一个分区"。
             - 不建议对 HASH 分区表启用 APPENDONLY ON 选项。
 
         - **OFF**
@@ -304,7 +304,7 @@ ALTER TABLE [ schema_name. ]table_name
         列的默认值支持使用表达式。在创建 DDL 时，若 DEFAULT 是常量表达式，系统会进行列数据类型的兼容性检查。
 
         - `[ON UPDATE expr]`：此为语法兼容项。当更新行数据且未显式指定该列值时，将使用此更新默认表达式填充该列。
-        - `INSERT` 和 `UPDATE` 操作中，`DEFAULT` 后面的表达式文本最大长度限制为 1024 个英文字符。若超过此限制，将报错：“GS-00611, default value string is too long, exceed 1024.”。
+        - `INSERT` 和 `UPDATE` 操作中，`DEFAULT` 后面的表达式文本最大长度限制为 1024 个英文字符。若超过此限制，将报错："GS-00611, default value string is too long, exceed 1024."。
 
     - **COMMENT _'string'_**
 

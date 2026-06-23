@@ -101,7 +101,7 @@ sh local_install.sh install -u [user_name]
 | -M \<mode>            | ogracd_in_cluster                    | 运行模式，ogracd：单机模式；ogracd_in_cluster：集群模式  |
 | -N 0                 | 0                                    | 节点 ID，只能是0或1        |
 | -W \<IP>              | 192.168.0.1                          | 配置数据库IP白名单         |
-| -g withoutroot       | withoutroot                          | 表示允许无 root 权限运行安装脚本，但必须对安装文件夹有权限，参数值只能为 withoutroot，若要使用必须精确使用 “-g withoutroot”         |
+| -g withoutroot       | withoutroot                          | 表示允许无 root 权限运行安装脚本，但必须对安装文件夹有权限，参数值只能为 withoutroot，若要使用必须精确使用 "-g withoutroot"         |
 | -d                   | 无参数值                              | 表示在后台运行                   |
 | -c                   | 无参数值                              | 表示不使用基于 SSL 的安全连接，自动进行相关配置                   |
 | -Z _SYS_PASSWORD=... | _SYS_PASSWORD=huawei@1234            | 管理员账号默认密码，建议自行修改配置   |
