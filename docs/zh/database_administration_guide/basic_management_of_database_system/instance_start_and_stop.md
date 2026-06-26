@@ -26,7 +26,7 @@ cms res -stop RESOURCE_NAME -node NODE_ID
 | 参数            | 说明                        |
 | ------------- | ------------------------- |
 | RESOURCE_NAME | 资源名称，当前仅有db和dss资源         |
-| NODE_ID       | 节点id，`$OGDB_DATA/cfg/cluster.ini`文件中该参数的值代表该节点的节点id值              |
+| NODE_ID       | 节点id，可通过 `cms stat -node` 命令查询获取 |
 | TIMEOUT       | 启动超时阈值（启动时间超过阈值会返回，否则会等待，默认值为600秒） |
 
 ## 命令参考
@@ -35,14 +35,14 @@ cms res -stop RESOURCE_NAME -node NODE_ID
 
     **注意事项**
 
-    - 执行该命令前，检查待启动节点的CMS server是否存活（执行ps -ef|grep 'cms server'命令查看是否存在cms server进程来判断）。
+    - 执行该命令前，检查待启动节点的CMS server是否存活（执行 `ps -ef|grep 'cms server'` 命令查看是否存在cms server进程来判断）。
 
     - 启动指定节点的资源，默认等待时间为600秒，600秒仍未成功启动，该命令超时报错退出。
 
     启动cms资源（如需后台挂载，则使用 cms server -start &）：
 
     ```
-    $ cms server -start
+    cms server -start
     start resource succeed.
     NODE_ID     = 0
     CMS_HOME    = /opt/oGRAC/data
@@ -55,35 +55,35 @@ cms res -stop RESOURCE_NAME -node NODE_ID
     启动集群内所有db节点：
 
     ```
-    $ cms res -start db
+    cms res -start db
     start resource succeed.
     ```
 
     启动指定db节点：
 
     ```
-    $ cms res -start db -node 0
+    cms res -start db -node 0
     start resource succeed.
     ```
 
     启动集群内所有dss节点：
 
     ```
-    $ cms res -start dss
+    cms res -start dss
     start resource succeed.
     ```
 
     启动集群内指定dss节点：
 
     ```
-    $ cms res -start dss -node 0
+    cms res -start dss -node 0
     start resource succeed.
     ```
 
     指定等待时间启动集群内节点：
 
     ```
-    $ cms res -start db 120000
+    cms res -start db 120000
     start resource succeed.
     ```
 
@@ -91,35 +91,35 @@ cms res -stop RESOURCE_NAME -node NODE_ID
     停止cms资源：
 
     ```
-    $ cms server -stop
+    cms server -stop
     stop cms server succeed.
     ```
 
     停止集群内所有db节点：
 
     ```
-    $ cms res -stop db
+    cms res -stop db
     stop resource succeed.
     ```
 
     停止指定db节点：
 
     ```
-    $ cms res -stop db -node 0
+    cms res -stop db -node 0
     stop resource succeed.
     ```
 
     停止集群内所有dss节点：
 
     ```
-    $ cms res -stop dss
+    cms res -stop dss
     stop resource succeed.
     ```
 
     停止指定dss节点：
 
     ```
-    $ cms res -stop dss -node 0
+    cms res -stop dss -node 0
     stop resource succeed.
     ```
 > [!WARNING]注意

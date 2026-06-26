@@ -1,6 +1,6 @@
 # Linux下配置数据源<a name="ZH-CN_TOPIC_0289900737"></a>
 
-将ograc提供的ODBC驱动（libogodbc.so）配置到数据源中便可使用。配置数据源需要配置“odbc.ini”和“odbcinst.ini”两个文件（在编译安装unixODBC过程中生成且默认放在“/usr/local/etc”目录下），并在服务器端进行配置。
+将 oGRAC 提供的 ODBC 驱动（`libogodbc.so`）配置到数据源中便可使用。配置数据源需要配置 `odbc.ini` 和 `odbcinst.ini` 两个文件（在编译安装 unixODBC 过程中生成且默认放在 `/usr/local/etc` 目录下），并在服务器端进行配置。
 
 ## 操作步骤<a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_s0b78a5ac02d949ada15c29b00b5c734d"></a>
 
@@ -10,7 +10,7 @@
 
 2.  安装unixODBC。如果机器上已经安装了低版本的unixODBC，应先卸载或直接覆盖安装。
 
-    以unixODBC-2.3.6版本为例，在客户端执行如下命令安装unixODBC。默认安装到“/usr/local”目录下，生成数据源文件到 “/usr/local/etc”目录下，库文件生成在“/usr/local/lib”目录。
+    以unixODBC-2.3.6版本为例，在客户端执行如下命令安装unixODBC。默认安装到`/usr/local`目录下，生成数据源文件到 `/usr/local/etc`目录下，库文件生成在`/usr/local/lib`目录。
 
     ```shell
     tar zxvf unixODBC-2.3.6.tar.gz
@@ -23,7 +23,7 @@
 
 3.  替换客户端odbc驱动程序。
     
-    将ograc提供的ODBC驱动libogodbc.so复制到“/usr/local/lib”目录下，查看是否完整。
+    将 oGRAC 提供的 ODBC 驱动 libogodbc.so 复制到`/usr/local/lib`目录下，查看是否完整。
     
     ```shell
     ldd /usr/local/lib/libogodbc.so
@@ -32,7 +32,7 @@
 4.  配置数据源。
     1.  配置ODBC驱动文件。
 
-        在“/usr/local/etc/odbcinst.ini”文件中追加以下内容。
+        在`/usr/local/etc/odbcinst.ini`文件中追加以下内容。
 
         ```shell
         [OgracMPP]
@@ -79,7 +79,7 @@
 
     2.  配置数据源文件。
 
-        在“/usr/local/etc/odbc.ini”文件中追加以下内容。
+        在`/usr/local/etc/odbc.ini`文件中追加以下内容。
 
         ```shell
         [OgracDB]
@@ -149,7 +149,7 @@
         </tr>
         <tr id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_rd27aa89b945d4ac6b33000b6df5c916e"><td class="cellrowborder" valign="top" width="30.570000000000004%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a5f7c150a5b5f471fa60adba4fd913dd4"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a5f7c150a5b5f471fa60adba4fd913dd4"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a5f7c150a5b5f471fa60adba4fd913dd4"></a>sslmode</p>
         </td>
-        <td class="cellrowborder" valign="top" width="33.37%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a>开启SSL模式</p>
+        <td class="cellrowborder" valign="top" width="33.37%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_zh-cn_topic_0058965230_p462272821213"></a>开启SSL模式。</p>
         </td>
         <td class="cellrowborder" valign="top" width="36.059999999999995%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a53d9561f3715460d9f7b8a022292214c"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a53d9561f3715460d9f7b8a022292214c"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_a53d9561f3715460d9f7b8a022292214c"></a>sslmode=VERIFY_CA</p>
         </td>
@@ -172,7 +172,7 @@
         </td>
         <td class="cellrowborder" valign="top" width="33.37%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p67427101397"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p67427101397"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p67427101397"></a>指定ODBC侧私钥文件，用以数字签名和对公钥加密的数据进行解密。</p>
         </td>
-        <td class="cellrowborder" valign="top" width="36.059999999999995%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a>sslkey==/usr/test/certificate/client.key</p>
+        <td class="cellrowborder" valign="top" width="36.059999999999995%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_p7742101083917"></a>sslkey=/usr/test/certificate/client.key</p>
         </td>
         </tr>
         
@@ -224,7 +224,7 @@
         </td>
         <td class="cellrowborder" valign="top" width="18.87%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p35600232143856"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p35600232143856"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p35600232143856"></a>是</p>
         </td>
-        <td class="cellrowborder" valign="top" width="66.25999999999999%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p65046568143856"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p65046568143856"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p65046568143856"></a>必须使用SSL安全连接，在verify-ca的验证范围之外，同时验证数据库所在主机的主机名是否与证书内容一致。<span id="text18227139123314"><a name="text18227139123314"></a><a name="text18227139123314"></a>openGauss</span>不支持此模式。</p>
+        <td class="cellrowborder" valign="top" width="66.25999999999999%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p65046568143856"><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p65046568143856"></a><a name="zh-cn_topic_0283136654_zh-cn_topic_0237120407_zh-cn_topic_0059778464_p65046568143856"></a>必须使用SSL安全连接，在verify-ca的验证范围之外，同时验证数据库所在主机的主机名是否与证书内容一致。<span id="text18227139123314"><a name="text18227139123314"></a><a name="text18227139123314"></a>oGRAC</span>不支持此模式。</p>
         </td>
         </tr>
         </tbody>

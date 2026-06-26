@@ -1,19 +1,19 @@
-# oGRAC两节点多写功能测试DEMO使用指南
+# oGRAC 两节点多写功能测试 DEMO 使用指南
 
-本文旨在介绍完成`oGRAC`的两节点集群的安装部署后，如何使用自带的测试DEMO脚本测试两节点的多写功能。
+本文旨在介绍完成 `oGRAC` 两节点集群的安装部署后，如何使用自带的测试 DEMO 脚本测试两节点的多写功能。
 
-- 执行该脚本需要输入安装时设置的oGRAC系统管理员密码、和测试执行过程中需要创建的用户名（请不要使用数据库系统中已经存在的用户）。
-- 执行`prepare`后，在准备阶段，会在oGRAC数据库中自动创建测试用户、创建目标测试表，并在后台启动向两个节点同时执行向目标测试表`insert`的循环操作，具体操作为：每隔0.25秒向两个节点同时插入25条数据，也就是说每秒会向目标测试表插入200条数据。
-- 在`prepare`后执行`runtest`，执行后，脚本会循环向两个节点同时执行查询目标测试表当前总条数的操作，每隔1秒查询一次，查询的范围为自当前查询时刻向前4秒的时间范围，也就是说查询到的数量会在600到800条之间。
-- 在测试完成后，需要执行`stop`停止测试，因为在`prepare`阶段启动了后台写的循环进程。
-- 无需自己输入节点IP，脚本会自动获取当前节点IP和对端节点IP。
-- 脚本使用的默认端口1611进行数据库连接操作。
+- 执行该脚本需要输入安装时设置的 oGRAC 系统管理员密码，以及测试执行过程中需要创建的用户名（请不要使用数据库系统中已经存在的用户）。
+- 执行 `prepare` 后，在准备阶段，会在 oGRAC 数据库中自动创建测试用户和目标测试表，并在后台启动向两个节点同时向目标测试表执行 `insert` 的循环操作，具体操作为：每隔 0.25 秒向两个节点同时插入 25 条数据，即每秒向目标测试表插入 200 条数据。
+- 在 `prepare` 后执行 `runtest`，脚本会循环向两个节点同时查询目标测试表当前总条数，每隔 1 秒查询一次，查询范围为自当前查询时刻向前 4 秒，因此查询到的数量通常在 600 到 800 条之间。
+- 在测试完成后，需要执行 `stop` 停止测试，因为在 `prepare` 阶段启动了后台写的循环进程。
+- 无需自行输入节点 IP，脚本会自动获取当前节点 IP 和对端节点 IP。
+- 脚本使用默认端口 1611 进行数据库连接操作。
 
 ---
 
 ## 使用前须知
 
-- 已参考[oGRAC两节点安装](./ograc_two_node_installation.md)完成了oGRAC两节点集群的安装
+- 已参考 [oGRAC 两节点安装](./ograc_two_node_installation.md)完成 oGRAC 两节点集群的安装。
 
 ## 测试执行
 
@@ -22,7 +22,7 @@
 ```shell
 su -s /bin/bash ograc
 cd /opt/ograc/ograc/server/admin/scripts/
-# SYS_PASSWORD是oGRAC安装时输入的系统管理员的密码，TEST_USER_NAME是运行这个多写测试DEMO时新建的用户名，请不要使用数据库系统中已经存在的用户
+# SYS_PASSWORD 是 oGRAC 安装时输入的系统管理员密码，TEST_USER_NAME 是运行该多写测试 DEMO 时新建的用户名，请不要使用数据库系统中已经存在的用户
 sh multi_master_test.sh <SYS_PASSWORD> <TEST_USER_NAME> --prepare
 sh multi_master_test.sh <SYS_PASSWORD> <TEST_USER_NAME> --runtest
 ```
@@ -53,12 +53,12 @@ sh multi_master_test.sh <SYS_PASSWORD> <TEST_USER_NAME> --runtest
 ......
 ```
 
-表示当前集群中两个节点同时执行写入的情况下，两个节点查询到的数据实时一致
+表示当前集群中两个节点同时执行写入的情况下，两个节点查询到的数据实时一致。
 
 ### 2. 停止测试
 
 ```shell
-# 如果不在ograc用户下，需要切换用户，如果当前已经在ograc用户下，不需要再切换
+# 如果不在 ograc 用户下，需要切换用户；如果当前已经在 ograc 用户下，不需要再切换
 su -s /bin/bash ograc
 cd /opt/ograc/ograc/server/admin/scripts/
 sh multi_master_test.sh --stop

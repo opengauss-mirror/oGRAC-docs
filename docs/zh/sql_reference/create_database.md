@@ -13,18 +13,18 @@
 ## 语法格式<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s819ed4de9ed04006954df8016e5e4858"></a>
 
 ```
-create database clustered database_name 
-             [ { [ character set ] |
-               [ controlfile('file1','file2','file3',....) ] |
-               [ system tablespace datafile ] |
-               [ nologging tablespace TEMPFILE ] |
-               [ nologging undo tablespace TEMPFILE ] |
-               [ default tablespace datafile ] |
-               [ sysaux tablespace DATAFILE ] |
-               [ undo tablespace datafile ] |
-               [ temporary tablespace TEMPFILE ] |
-               [ logfile ]}[...] ]
-               [ with dbcompatibility 'compatibility_type'];
+CREATE DATABASE CLUSTERED database_name 
+             [ { [ CHARACTER SET ] |
+               [ CONTROLFILE('file1','file2','file3',....) ] |
+               [ SYSTEM TABLESPACE DATAFILE ] |
+               [ NOLOGGING TABLESPACE TEMPFILE ] |
+               [ NOLOGGING UNDO TABLESPACE TEMPFILE ] |
+               [ DEFAULT TABLESPACE DATAFILE ] |
+               [ SYSAUX TABLESPACE DATAFILE ] |
+               [ UNDO TABLESPACE DATAFILE ] |
+               [ TEMPORARY TABLESPACE TEMPFILE ] |
+               [ LOGFILE ]}[...] ]
+               [ WITH DBCOMPATIBILITY 'compatibility_type'];
 ```
 
 ## 参数说明<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s1d6127a393bf4f6d8fdac63105932d16"></a>

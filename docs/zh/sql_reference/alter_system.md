@@ -65,33 +65,33 @@ ALTER SYSTEM
 - **SET** ***parameter_name*** **=** ***parameter_value*** **[ SCOPE = { MEMORY | PFILE | BOTH } ]**
 
 修改系统参数。SCOPE指定为PFILE和BOTH时，参数将被保存在Zenith.ini配置文件中。`SCOPE` 定义生效范围：  
-• **MEMORY**：仅内存生效，重启失效 。只适用于动态参数，不允许静态参数使用此模式设置。
-• **PFILE**：仅写入配置文件，重启生效  。动态参数与静态参数都一样可以。也是静态参数唯一可以使用的方式。
+• **MEMORY**：仅内存生效，重启失效。只适用于动态参数，不允许静态参数使用此模式设置。
+• **PFILE**：仅写入配置文件，重启生效。动态参数与静态参数都一样可以。也是静态参数唯一可以使用的方式。
 • **BOTH**：既写入到初始化参数文件，也在内存上修改，立即生效。同样也只适用于动态参数，静态参数则不允许。（默认）
 
-- LOAD DICTIONARY FOR [*****schema_name*****].*****object_name***
+- **LOAD DICTIONARY FOR [schema_name].object_name**
 
-加载对象到数字字典中。
+    加载对象到数据字典中。
 
 - **INIT DICTIONARY**
 
 加载除系统表以外的entry（系统视图，动态视图，sequence，role等）。
 
-前提：进入restricted模式，且确保已经通过“ALTER SYSTEM LOAD DICTIONARY FOR [schema_name].object_name;”加载所有系统表。
+前提：进入 restricted 模式，且确保已经通过 `ALTER SYSTEM LOAD DICTIONARY FOR [schema_name].object_name;` 加载所有系统表。
 
 - **RELOAD {HBA | PBL} CONFIG**
 
-在线加载oghba.conf文件，使白名单配置生效。
+在线加载 oghba.conf 文件，使白名单配置生效。
 
-在线加载pbl.conf文件，使弱口令配置生效。
+在线加载 pbl.conf 文件，使弱口令配置生效。
 
 - **REFRESH SYSDBA PRIVILEGE**
 
-在线刷新 sysdba 免密登录的密文和加密密钥。不影响已连接客户端，新连接将使用新密钥。
+在线刷新 SYSDBA 免密登录的密文和加密密钥。不影响已连接客户端，新连接将使用新密钥。
 
 - **KILL SESSION** ***'******session_id******,******serial******'***
 
-kill会话，session_id是会话ID，serial是序列号ID。
+终止会话，session_id是会话ID，serial是序列号ID。
 
 - **RESET STATISTIC**
 
@@ -105,7 +105,7 @@ kill会话，session_id是会话ID，serial是序列号ID。
 
 要增/删的监听 IP 地址（需引号包裹）。当前 最多支持 8 个监听 IP。
 
-增加一个不存在网卡IP地址作为浮动监听IP时，直接返回报错。
+增加一个不存在网卡的IP地址作为浮动监听IP时，直接返回报错。
 
 **注意**：删除正在使用的 IP 会导致相关连接中断并回滚事务。
 
@@ -169,7 +169,7 @@ FORCE表示会强制把SQL POOL里面所有软解析标志为FALSE。
 
 ## 示例
 
-- dump数据文件的指定页。
+- 导出数据文件的指定页。
 
 ```
 --删除表空间
@@ -251,7 +251,7 @@ ALTER SYSTEM ADD LSNR_ADDR '10.10.10.11';
   ALTER SYSTEM DELETE LSNR_ADDR '10.10.10.11';
   ```
 
-- 刷新sysdba免密登录的密文、加密密钥。
+- 刷新 SYSDBA 免密登录的密文、加密密钥。
   
   ```
   ALTER SYSTEM REFRESH SYSDBA PRIVILEGE;
@@ -263,7 +263,7 @@ ALTER SYSTEM ADD LSNR_ADDR '10.10.10.11';
   ALTER SYSTEM RESET STATISTIC;
   ```
 
-- 为当前事务设置检查点。
+- 为当前实例执行检查点。
   
   ```
   ALTER SYSTEM CHECKPOINT;

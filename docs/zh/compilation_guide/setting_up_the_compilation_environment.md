@@ -32,5 +32,5 @@ git net-tools cmake automake byacc libtool lz4-devel patch \
 ```
 
 要求：
-cmake版本在3.12及以上；
-lz4版本在1.8.3以上。
+cmake 版本在 3.12 及以上；
+lz4 版本在 1.8.3 以上。

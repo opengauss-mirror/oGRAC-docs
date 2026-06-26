@@ -7,7 +7,7 @@
 ## 注意事项
 
 - 删除其他用户的表需要DROP ANY TABLE权限，SYS用户表只能有SYS用户删除。
-- 开启回收站功能后删除表并不会立即删除，可以通过闪回命令恢复数据,system/nologging/sysaux/临时表空间下的表不支持闪回。
+- 开启回收站功能后删除表并不会立即删除，可以通过闪回命令恢复数据，system/nologging/sysaux/临时表空间下的表不支持闪回。
 - oGRAC重启回滚期间不支持删除表。
 
 ## 语法格式
@@ -28,7 +28,7 @@ DROP TABLE
 
 ## 示例
 
-```SQL
+```sql
 -- 删除单个表
 DROP TABLE employees;
 

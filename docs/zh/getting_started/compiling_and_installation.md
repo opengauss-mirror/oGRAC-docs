@@ -40,12 +40,12 @@ git net-tools cmake automake byacc libtool --skip-broken unixODBC unixODBC-devel
 
 ```bash
 cd [compile_path]
-git clone https://gitcode.com/openGauss/oGRAC.git
+git clone https://gitcode.com/opengauss/oGRAC.git
 ```
 
 ### 修改编译配置
 
-如需关闭保护虚拟内存选项(如果编译安装的是debug版本建议关闭保护虚拟内存选项)：
+如需关闭保护虚拟内存选项（如果编译安装的是 debug 版本建议关闭保护虚拟内存选项）：
 
 ```bash
 cd oGRAC/build
@@ -101,13 +101,13 @@ sh local_install.sh install -u [user_name]
 | -M \<mode>            | ogracd_in_cluster                    | 运行模式，ogracd：单机模式；ogracd_in_cluster：集群模式  |
 | -N 0                 | 0                                    | 节点 ID，只能是0或1        |
 | -W \<IP>              | 192.168.0.1                          | 配置数据库IP白名单         |
-| -g withoutroot       | withoutroot                          | 表示无root权限允许安装脚本，但必须对安装文件夹有权限，参数值只能为withoutroot，若要使用必须精确使用“-g withoutroot”         |
+| -g withoutroot       | withoutroot                          | 表示允许无 root 权限运行安装脚本，但必须对安装文件夹有权限，参数值只能为 withoutroot，若要使用必须精确使用 "-g withoutroot"         |
 | -d                   | 无参数值                              | 表示在后台运行                   |
-| -c                   | 无参数值                              | 标识不使用基于SSL的安全连接，自动进行配置                   |
+| -c                   | 无参数值                              | 表示不使用基于 SSL 的安全连接，自动进行相关配置                   |
 | -Z _SYS_PASSWORD=... | _SYS_PASSWORD=huawei@1234            | 管理员账号默认密码，建议自行修改配置   |
 | -Z SESSIONS=...     | SESSIONS=1000                        | 最大会话数                 |
 
-经过上述步骤已编译安装好 oGRAC，后续可以根据需要进行配置和使用。
+经过上述步骤，oGRAC 已编译安装完成，后续可以根据需要进行配置和使用。
 
 ### 卸载与清理
 

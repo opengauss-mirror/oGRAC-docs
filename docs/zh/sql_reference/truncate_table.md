@@ -7,7 +7,7 @@
 ## 注意事项
 
 - 清除其他用户的表需要TRUNCATE ANY TABLE权限
-- truancate语句不能回滚
+- TRUNCATE语句不能回滚
 - 数据库重启回滚期间不支持
 
 ## 语法格式
@@ -34,7 +34,7 @@ TRUNCATE TABLE [schema_name.]table_name [PURGE] [{DROP|REUSE} STORAGE]
 
 ## 示例
 
-```SQL
+```sql
 -- 清空表
 TRUNCATE TABLE test_data;
 

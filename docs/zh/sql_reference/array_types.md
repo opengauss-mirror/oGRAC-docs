@@ -48,7 +48,7 @@ data_type [(n)]
 示例：
 
 ```
-SQL> create table array_t1 (a int[2]);
+SQL> CREATE TABLE array_t1 (a int[2]);
 
 SQL> insert into array_t1 values (array[1,2]);
 

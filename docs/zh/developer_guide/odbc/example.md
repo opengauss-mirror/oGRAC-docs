@@ -26,7 +26,7 @@ void handle_err(SQLHANDLE h_env, SQLHANDLE h_conn, SQLHANDLE h_stmt) {
 int main()
 {
     SQLHANDLE h_env = NULL;
-    SQLHANDLE h_conn= NULL;
+    SQLHANDLE h_conn = NULL;
     SQLHANDLE h_stmt = NULL;
     SQLRETURN ret;
 
@@ -91,7 +91,7 @@ int main()
     }
 
     //设置语句属性
-    if (SQL_SUCCESS != SQLSetStmtAttr(h_stmt,SQL_ATTR_QUERY_TIMEOUT,(SQLPOINTER *)3,0))
+    if (SQL_SUCCESS != SQLSetStmtAttr(h_stmt, SQL_ATTR_QUERY_TIMEOUT, (SQLPOINTER *)3, 0))
     {
         printf("Failed to set stmt timeout.\n");
         SQLFreeHandle(SQL_HANDLE_STMT, h_stmt);
@@ -225,7 +225,7 @@ int main()
 int main()
 {
     SQLHANDLE h_env = NULL;
-    SQLHANDLE h_conn= NULL;
+    SQLHANDLE h_conn = NULL;
     SQLHANDLE h_stmt = NULL;
     SQLRETURN ret;
 
@@ -288,18 +288,23 @@ int main()
                 if (ret2 != SQL_SUCCESS)
                 {
                     printf("Put param2 Failed.\n");
-                } else {
+                }
+                else
+                {
                     printf("Put param2 success.\n");
                 }
-            } else if (pParamID == (SQLPOINTER)3)
+            }
+            else if (pParamID == (SQLPOINTER)3)
             {
                 const char *data = "This is a long text";
-                int ret3= SQLPutData(h_stmt, (SQLPOINTER)data, strlen(data));
+                int ret3 = SQLPutData(h_stmt, (SQLPOINTER)data, strlen(data));
                 if (ret3 != SQL_SUCCESS)
                 {
                     printf("Put param3 Failed.\n");
                     break;
-                } else {
+                }
+                else
+                {
                     printf("Put param3 success.\n");
                 }
             }
@@ -317,7 +322,7 @@ int main()
     SQLLEN cbName;
     do
     {
-        ret  = SQLFetch(h_stmt);
+        ret = SQLFetch(h_stmt);
         if (ret != SQL_SUCCESS && ret != SQL_NO_DATA)
         {
             break;
@@ -326,7 +331,7 @@ int main()
         if (ret == SQL_SUCCESS)
         {
             SQLGetData(h_stmt, 1, SQL_C_SLONG, (SQLPOINTER)&c1, 0, NULL);
-            printf("SQLGetData result c1 is %d .\n", c1);
+            printf("SQLGetData result c1 is %d.\n", c1);
             
             SQLGetData(h_stmt, 2, SQL_C_CHAR, c2, sizeof(c2), &cbName);
             printf("SQLGetData result c2 is %s.\n", c2);

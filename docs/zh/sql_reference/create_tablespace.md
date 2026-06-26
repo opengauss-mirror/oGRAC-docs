@@ -9,7 +9,7 @@
 - 执行需要CREATE TABLESPACE权限
 - 不能将数据文件指定到日志目录
 - 普通用户不建议使用system表空间
-- 表空间单个数据库文件大小上限和PAGE_SIZE有关，对于UNDO表空间，大小上限 = 4 *1024* 1024 *PAGE_SIZE，其他表空间大小上限 = 1024* 1024 *1024* PAGE_SIZE
+- 表空间单个数据库文件大小上限和PAGE_SIZE有关，对于UNDO表空间，大小上限 = 4 * 1024 * 1024 * PAGE_SIZE，其他表空间大小上限 = 1024 * 1024 * 1024 * PAGE_SIZE
 
 ## 语法格式
 
@@ -60,8 +60,8 @@ CREATE [UNDO] TABLESPACE name
 - UNDO: 创建UNDO表空间
 - file_name: 表空间数据文件路径，可以指定绝对路径，也可以指定为相对路径，相对路径保存在数据目录。数据文件所在目录/父目录的属主和属组与数据库安装用户一致，权限700
 - NOLOGGING: 表空间为NOLOGGING类型
-- EXTENT AUTOALLOCATE: 表空间extent size字段扩展
-- COMPRESS: 表压缩特性,集群模式不适用
+- EXTENT AUTOALLOCATE: 表空间extent size自动扩展
+- COMPRESS: 表压缩特性，集群模式不适用
 - AUTOEXTEND OFF：关闭表空间大小自动扩展。默认关闭
 - AUTOEXTEND ON: 开启自动扩展
     - NEXT: 自动扩展的大小
@@ -71,7 +71,7 @@ CREATE [UNDO] TABLESPACE name
 
 ## 示例
 
-```SQL
+```sql
 -- 1. 创建基础表空间
 CREATE TABLESPACE tbs1
     DATAFILE '/home/ogracdba/data/tbs1.dbf' SIZE 100M;

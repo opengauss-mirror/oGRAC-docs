@@ -20,14 +20,14 @@
 
 重命名表空间：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
     RENAME TO 'new_tablespace_name'
 ```
 
 收缩表空间大小和压缩表空间大小：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
     { SHRINK SPACE KEEP integer [ K | M | G | T ]
     | PUNCH { SIZE integer [ K | M | G ] } }
@@ -35,7 +35,7 @@
 
 修改表空间的AUTOOFFLINE和AUTOEXTEND属性：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
     { AUTOOFFLINE { ON | OFF }
      | AUTOEXTEND 
@@ -47,7 +47,7 @@
 
 向表空间中添加和删除数据文件：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
    { ADD DATAFILE 
       { 'file_name' SIZE integer [ K | M | G ] [COMPRESS] 
@@ -62,7 +62,7 @@
 
 重命名表空间中数据文件：
 
-```SQL
+```sql
  ALTER TABLESPACE 'tablespace_name'
    RENAME DATAFILE 'old_file_name' TO 'new_file_name'
 ```
@@ -116,7 +116,7 @@
 
     设置表空间开启自动离线的功能
     - 开启自动离线的表空间，在数据库启动过程中如果存在文件打开失败的问题时，会自动离线，启动之后异常不会自动离线
-    - 开启自动离线的表空间，在数据库启动过程中如果存在文件发送损坏或其他故障时，可以将数据库加载到Mount状态；如果没有开启自动离线，表空间中文件发送损坏或其他故障时，数据库将无法正常启动
+    - 开启自动离线的表空间，在数据库启动过程中如果存在文件发生损坏或其他故障时，可以将数据库加载到Mount状态；如果没有开启自动离线，表空间中文件发生损坏或其他故障时，数据库将无法正常启动
 
 - **AUTOEXTEND { OFF | ON [ NEXT integer [ K | M | G ] ] [ MAXSIZE { integer [ K | M | G ] | UNLIMITED }] }**
 

@@ -164,17 +164,17 @@ ALTER DATABASE用于修改数据库。
 
         备机实例以该模式启动，重演到lfn点后停止重演。
 
-    - *IGNORE SYSTIME**
+    - **IGNORE SYSTIME**
 
         忽略系统时间跳变对数据库产生的影响。
 
 - **ARCHIVELOG**
 
-    设置Redo日志归档
+    设置Redo日志归档。
 
 - **NOARCHIVELOG**
 
-    设置Redo日志在线。
+    设置Redo日志不归档。
 
 - **ADD LOGFILE ( { 'file_name' SIZE integer [ B | K | M | G | T | P | E ] [ BLOCKSIZE { 512 | 4096 } ] } [,...] )**
 
@@ -182,7 +182,7 @@ ALTER DATABASE用于修改数据库。
 
     - **file_name**
 
-        文件名
+        文件名。
 
     - **SIZE integer [ B | K | M | G | T | P | E ]**
 
@@ -338,7 +338,7 @@ ALTER DATABASE用于修改数据库。
 
     更新及同步密钥，适配表空间透明加密功能。
 
-示例：
+## 示例
 
 ```
 -- 修改数据库状态为MOUNT
@@ -387,7 +387,7 @@ SQL> ALTER DATABASE DATAFILE 'USER1' RESIZE 128M;
 SQL> ALTER DATABASE CLEAR LOGFILE 0;
 
 -- 删除tag为incr_bak的备份集文件及备份集记录。
-SQL> ALTER DATABASE DELETE BACKUPSET tag 'incr_bak';
+SQL> ALTER DATABASE DELETE BACKUPSET 'incr_bak';
 
 -- 打开全局级逻辑复制开关。
 SQL> ALTER DATABASE ENABLE_LOGIC_REPLICATION ON;

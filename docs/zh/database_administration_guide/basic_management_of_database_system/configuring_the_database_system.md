@@ -1,6 +1,6 @@
 # 配置数据库系统
 
-oGRAC数据库提供了多种系统参数可供用户进行查询或者修改，从而灵活的应对不同的环境和业务场景。
+oGRAC数据库提供了多种系统参数可供用户进行查询或者修改，从而灵活地应对不同的环境和业务场景。
 
 ## 查看数据库系统参数
 
@@ -26,22 +26,19 @@ oGRAC数据库提供了多种系统参数可供用户进行查询或者修改，
 
 配置参数指令语法格式如下：
 
-```SQL
+```sql
 ALTER SYSTEM SET parameter_name = parameter_value [SCOPE = {PFILE | MEMORY | BOTH}];
 
 --示例
 ALTER SYSTEM SET SHARED_POOL_SIZE = 2G SCOPE = MEMORY;
 
 SHOW PARAMETER SHARED_POOL_SIZE;
-
 ```
 
 其中的SCOPE各个参数含义如下：
 
 - SCOPE=SPFILE：修改只写入服务器参数文件，重启后生效。
-
 - SCOPE=MEMORY：修改只影响当前实例，立即生效，但重启后失效。
-
 - SCOPE=BOTH：同时修改内存和参数文件，立即生效且重启后仍然有效。
 
-必要的，用户需要有ALTER SYTSYEM的系统权限。
+必要时，用户需要有ALTER SYSTEM的系统权限。

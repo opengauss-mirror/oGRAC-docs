@@ -1,17 +1,17 @@
 # 插入数据INSERT
 
-INSERT主要用于再数据库表中插入新的数据行。
+INSERT用于在数据库表中插入新的数据行。
 
 ## 基本语法
 
 最基本的 INSERT 语句形式如下：
 
-```SQL
+```sql
 INSERT INTO [schema.]table_name [(column1, column2, ..., columnN)] 
 VALUES (value1, value2, ..., valueN)[, (value1, value2, ..., valueN)];
 ```
 
-- INSERT INTO ··· VALUES: 关键字，指示要执行插入操作。
+- INSERT INTO ... VALUES: 关键字，指示要执行插入操作。
 - table_name: 要插入数据的目标表的名称。
 - [schema.]: (可选) 指定表所属Schema。如果省略，默认为当前用户的Schema。
 - (column1, column2, ..., columnN): (可选) 指定要插入值的列的列表。SQL语句中明确指定列时可提高语句可读性和健壮性。即使表结构发生变化，只要不涉及这些指定的列，此 INSERT 语句仍然有效。列的顺序不必与表定义中的物理顺序一致，但提供的 VALUES 必须与这里的列顺序一一对应。
@@ -28,26 +28,26 @@ values 子句中提供的值需要注意以下格式：
 
 示例 1: 插入完整行 (指定所有列)
 
-```Sql
+```sql
 INSERT INTO employees (id, name, salary, hire_date) VALUES (101, 'John Doe', 50000, TO_DATE('2023-01-15', 'YYYY-MM-DD'));
 ```
 
 示例 2: 插入部分行 (指定部分列)
 
-```Sql
+```sql
 INSERT INTO employees (id, name) VALUES (102, 'Jane Smith');
 ```
 
 示例 3: 不指定列名 (按表定义顺序)
 
-```Sql
+```sql
 -- 必须为表中每一列提供值，顺序严格按照建表时的列顺序
 INSERT INTO employees VALUES (103, 'Bob Johnson', 55000, SYSDATE);
 ```
 
-示例 4: 同时插入多行 不指定列名 (按表定义顺序)
+示例 4: 同时插入多行，不指定列名（按表定义顺序）
 
-```Sql
+```sql
 -- 必须为表中每一列提供值，顺序严格按照建表时的列顺序
 INSERT INTO employees VALUES (103, 'Bob Johnson', 55000, SYSDATE),
                              (104, 'Alice Brown', 60000, SYSDATE),
@@ -67,7 +67,7 @@ INSERT INTO [schema.]target_table [(column1, column2, ..., columnN)] SELECT {sub
 - SELECT {subquery | (subquery)}: 提供源数据的 SELECT 查询。
 - 注意：subquery 返回的列数必须与目标列数（或目标表总列数，如果不指定列）匹配。数据类型需要兼容。
 
-示例: 从一个表复制数据(可经过计算)到另一个表
+示例：从一个表复制数据（可经过计算）到另一个表
 
 ```sql
 -- 假设表 temp_employees 与 employees 结构相同

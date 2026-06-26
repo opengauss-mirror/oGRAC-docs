@@ -11,7 +11,7 @@
 示例：
 
 ```
---创建具有BINARY_INTEGER,BINARY_UINT32,BINARY_BIGINT类型数据的表。
+-- 创建具有BINARY_INTEGER、BINARY_UINT32、BINARY_BIGINT类型数据的表。
 SQL> CREATE TABLE int_type_t2 
 (
     a BINARY_INTEGER, 
@@ -19,10 +19,10 @@ SQL> CREATE TABLE int_type_t2
     c BINARY_BIGINT
 );
 
---插入数据。
+-- 插入数据。
 SQL> INSERT INTO int_type_t2 VALUES(100, 10, 1000);
 
---查看数据。
+-- 查看数据。
 SQL> SELECT * FROM int_type_t2;
 
 A            B                                        C
@@ -31,7 +31,7 @@ A            B                                        C
 
 1 rows fetched.
 
---删除表。
+-- 删除表。
 SQL> DROP TABLE int_type_t2;
 ```
 
@@ -43,19 +43,19 @@ SQL> DROP TABLE int_type_t2;
 
 >[!NOTE]说明
 >
->- 该数据类型是不精确的，意味着一些数值不能精确地转换成内部格式并且是以近似值存储的，因此存储后再把数据打印出来可能有一些差异。如果想用不精确的类型做任何重要的复杂计算，尤其是那些对范围情况（无穷/下溢）严重依赖的事情，应该仔细评诂SQL和应用实现，直接拿两个浮点数值进行比较，不一定总是能得到预期的结果。
->- 普通SQL语句接收以f或d结尾的浮点数由GUC参数use_bison_parser控制，该参数默认值为on。
+>- 该数据类型是不精确的，意味着一些数值不能精确地转换成内部格式并且是以近似值存储的，因此存储后再把数据打印出来可能有一些差异。如果想用不精确的类型做任何重要的复杂计算，尤其是那些对范围情况（无穷/下溢）严重依赖的事情，应该仔细评估SQL和应用实现，直接拿两个浮点数值进行比较，不一定总是能得到预期的结果。
+>- 支持f/d结尾的数字写法，不区分大小写，均表示八字节浮点数，取值范围同BINARY_DOUBLE；普通SQL语句接收以f或d结尾的浮点数由GUC参数use_bison_parser控制，该参数默认值为on，若未开启需设置为true。
 
 示例：
 
 ```
---创建浮点类型数据的表。
+-- 创建浮点类型数据的表。
 SQL> CREATE TABLE float_type_t2 
 (
     a BINARY_DOUBLE
 );
 
---插入数据。
+-- 插入数据。
 SQL> INSERT INTO float_type_t2 VALUES(1234567.89);
 
 SQL> alter system set use_bison_parser = false;
@@ -71,7 +71,7 @@ SQL> INSERT INTO float_type_t2 VALUES(1234567.89f);
 SQL> INSERT INTO float_type_t2 VALUES(1234567.89D);
 SQL> INSERT INTO float_type_t2 VALUES(1234567.89d);
 
---查看数据。
+-- 查看数据。
 SQL> SELECT * FROM float_type_t2;
 
 A
@@ -84,7 +84,7 @@ A
 
 5 rows fetched.
 
---删除表。
+-- 删除表。
 SQL> DROP TABLE float_type_t2;
 ```
 
@@ -97,7 +97,7 @@ SQL> DROP TABLE float_type_t2;
 示例：
 
 ```
---创建不同精度、小数位类型数据的表。
+-- 创建不同精度、小数位类型数据的表。
 SQL> CREATE TABLE number_type_t2 
 (
     a NUMBER, 
@@ -106,10 +106,10 @@ SQL> CREATE TABLE number_type_t2
     d NUMBER(12, -2)
 );
 
---插入数据。
+-- 插入数据。
 SQL> INSERT INTO number_type_t2 VALUES(1234567.89, 1234567.89, 1234567.89, 1234567.89);
 
---查看数据。
+-- 查看数据。
 SQL> SELECT * FROM number_type_t2;
 
 A                                        B                                        C                                        D                                  
@@ -121,10 +121,10 @@ A                                        B                                      
 -- 设置参数。
 SQL> alter system set use_bison_parser = true;
 
---插入数据。
+-- 插入数据。
 SQL> INSERT INTO number_type_t2 VALUES(1234567.89f, 1234567.89F, 1234567.89d, 1234567.89D);
 
---查看数据。
+-- 查看数据。
 SQL> SELECT * FROM number_type_t2;
 
 A                                        B                                        C                                        D                                       
@@ -134,7 +134,7 @@ A                                        B                                      
 
 2 rows fetched.
 
---删除表。
+-- 删除表。
 SQL> DROP TABLE number_type_t2;
 ```
 

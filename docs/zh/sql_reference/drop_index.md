@@ -25,7 +25,7 @@ ON
 
 ## 示例
 
-```SQL
+```sql
 --  删除索引并指定表名
 DROP INDEX idx_test1_name ON test_table1;
 

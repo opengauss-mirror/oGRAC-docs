@@ -4,7 +4,7 @@
 
 关闭数据库连接可以直接调用其close方法。例如：
 
-```
-Connection conn = DriverManager.getConnection("url","user","password") ; 
-conn.close()；
+```java
+Connection conn = DriverManager.getConnection("url","user","password");
+conn.close();
 ```

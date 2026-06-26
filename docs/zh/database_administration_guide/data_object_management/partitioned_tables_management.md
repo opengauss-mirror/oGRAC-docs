@@ -4,7 +4,7 @@
 
 分区表是将一张大表在物理上按规则（如日期、地域）分割成多个小表的技术。逻辑上仍是一张表，但对用户透明。核心优点是大幅提升查询性能（数据库只扫描相关分区，称为分区修剪），并简化数据管理（可快速归档、备份单独分区）。常用于处理海量历史数据，实现高效查询和维护。
 
-oGRAC分区表提供四种分区策略，分别应对不同使用场景。
+oGRAC 分区表提供四种分区策略，分别应对不同使用场景。
 
 - 哈希分区：哈希分区是对分区键（例如一个ID列）应用一个哈希函数，根据计算出的哈希值将数据行随机且均匀地分布到各个分区中。常用于消除热点，实现IO负载均衡，适用于等值查询
 - 范围分区：范围分区是根据分区键的连续值范围（如日期、数字序列）来划分数据的。每个分区包含特定范围内的数据。尤其适用于数据具有自然、连续且与业务查询模式高度相关的维度。
@@ -169,7 +169,7 @@ referenced by:
 
 #### 示例
 
-```SQL
+```sql
 -- 范围分区
 
 CREATE TABLE sales_range (
@@ -245,7 +245,7 @@ PARTITION sales_jan_2024 VALUES LESS THAN (TO_DATE('2024-02-01', 'YYYY-MM-DD'))
 
 分区表的删除和普通表删除语法相同
 
-```BNF
+```bnf
 DropTableStmt ::=
     'DROP' 'TABLE' ( 'IF' 'EXISTS' )* TableName ( ',' TableName )* ( 'CASCADE' | 'RESTRICT' )* 'PURGE'*
 
@@ -255,7 +255,7 @@ TableName ::=
 
 #### 示例
 
-```SQL
+```sql
 DROP TABLE sales_range ;
 ```
 
@@ -364,7 +364,7 @@ referenced by:
 
 #### 示例
 
-```SQL
+```sql
 -- 删除分区（如果存在空分区或已备份）
 
 ALTER TABLE sales_range DROP PARTITION sales_q4;
@@ -385,7 +385,7 @@ ALTER TABLE sales_range TRUNCATE PARTITION sales_q2;
 
 分区表查询和普通表查询相似，需要添加PartitionClause子句：
 
-```BNF
+```bnf
 PartitionClause ::=
     'PARTITION'
     ( '(' PartitionName ')'
@@ -394,7 +394,7 @@ PartitionClause ::=
 
 #### 示例
 
-```SQL
+```sql
 --查询指定分区
 
 SELECT * FROM sales_range PARTITION (sales_q1);
@@ -410,14 +410,14 @@ SELECT * FROM sales_range PARTITION FOR (TO_DATE('2024-04-01', 'YYYY-MM-DD'));
 
 #### 语法描述
 
-```BNF
+```bnf
 PartitionIndexClause ::=
     ( 'LOCAL' '(' 'PARTITION' PartitionName (  ',' 'PARTITION' PartitionName )* ')' )*
 ```
 
 #### 示例
 
-```SQL
+```sql
 --创建GLOBAL索引
 
 CREATE INDEX sales_global_idx ON sales_range(sale_id) ;
@@ -433,7 +433,7 @@ CREATE INDEX sales_local_idx ON sales_range(region) LOCAL;
 
 #### 示例
 
-```SQL
+```sql
 --创建GLOBAL索引
 
 DROP INDEX sales_global_idx ON sales_range ;

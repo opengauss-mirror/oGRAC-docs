@@ -51,7 +51,7 @@ GRANT { READ } ON DIRECTORY dir_name TO grantee [ WITH GRANT OPTION ]
 
 #### system_privilege_name
 
-   系统权限名称。下表展示了系统目前支持的系统权限以及角色或用户对权限的拥有情况，其中“T”表示拥有此权限，“F”表示没有权限。
+   系统权限名称。下表展示了系统目前支持的系统权限以及角色或用户对权限的拥有情况，其中"T"表示拥有此权限，"F"表示没有权限。
 
 **系统权限表**
 
@@ -64,7 +64,7 @@ GRANT { READ } ON DIRECTORY dir_name TO grantee [ WITH GRANT OPTION ]
 |创建表空间| CREATE TABLESPACE|需要授权该权限以便创建表空间|T|F|F|T|F|
 |创建表| CREATE TABLE|需要授权该权限以便创建本schema中的表|T|T|F|T|F|
 |创建任意表| CREATE ANY TABLE|需要授权该权限以便创建其他schema中的表|T|F|F|T|F|
-|创建索引| CREATE ANY INDEX|创建本schema中的索引，满足下述条件之一：被索引的表在本schema中。有CREATE ANY INDEX权限，如果创还能其他schema中的索引，该条件为必须。|T|F|F|T|F|
+|创建索引| CREATE ANY INDEX|创建本schema中的索引，满足下述条件之一：被索引的表在本schema中。有CREATE ANY INDEX权限，如果创建其他schema中的索引，该条件为必须。|T|F|F|T|F|
 |创建序列|CREATE SEQUENCE|需要授权该权限以便创建本schema中的序列|T|T|F|T|F|
 |创建任意序列|CREATE ANY SEQUENCE|需要授权该权限以便创建其他schema中的序列|T|F|F|T|F|
 |创建视图|CREATE VIEW|需要授权该权限以便创建本schema中的视图|T|F|F|T|F|
@@ -88,7 +88,7 @@ GRANT { READ } ON DIRECTORY dir_name TO grantee [ WITH GRANT OPTION ]
 |清空表|DROP ANY TABLE|用户默认可以通过TRUNCATE TABLE删除自身schema下的表中的所有行，删除其他用户下的表需要该权限|T|F|F|T|F|
 |闪回表|FLASHBACK ANY TABLE|闪回自身schema下的表，所需权限与DROP TABLE相同；闪回其他用户下的表需要该权限。说明：后续根据FLASHBACK TABLE操作的同步类型（SCN/TIMESTAMP/BEFORE）区分所需不同权限。|T|F|F|T|F|
 |清除操作|DROP ANY TABLE, DROP ANY INDEX, DROP TABLESPACE, PURGE DBA_RECYCLEBIN|PURGE支持：表、索引、表空间、回收站。用户默认可以清除自身schema下的对象，删除其他用户下的对象需要对应的权限。|T|F|F|T|F|
-|删除函数/存储过程/自定义高级包|DROP ANY PROCEDURE|用户默认可以删除自身schema下的函数/存储过程/自定义高级包，删除其他用户下的视图需要该权限|T|F|F|T|F|
+|删除函数/存储过程/自定义高级包|DROP ANY PROCEDURE|用户默认可以删除自身schema下的函数/存储过程/自定义高级包，删除其他用户下的函数/存储过程/自定义高级包需要该权限|T|F|F|T|F|
 |修改会话参数|ALTER SESSION|当前会话默认拥有所有参数的修改权限。该权限预留|T|F|F|T|F|
 |修改表空间|ALTER TABLESPACE|需要授权该权限以便修改表空间|T|F|F|T|F|
 |修改系统属性|ALTER SYSTEM|需要授权该权限以便修改系统属性|T|F|F|T|F|

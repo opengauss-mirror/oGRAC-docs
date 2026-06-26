@@ -1,6 +1,6 @@
 # 版本编译
 
-在搭建好编译环境后，便可以安装下面的步骤进行版本编译，可以编译 debug 和 release 版本。
+搭建好编译环境后，可按照以下步骤进行版本编译，支持编译 debug 和 release 版本。
 
 ## 获取源码
 
@@ -12,7 +12,7 @@ git clone https://gitcode.com/opengauss/oGRAC.git
 
 ## 配置修改
 
-如需关闭保护虚拟内存选项(如果编译安装的是debug版本建议关闭保护虚拟内存选项)：
+如需关闭保护虚拟内存选项（编译安装 debug 版本时建议关闭）：
 
 ```shell
 cd oGRAC/build
@@ -23,7 +23,7 @@ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 
 ### 单节点编译
 
-当前oGRAC单节点仅支持单机开发调试，不支持打包功能。
+当前 oGRAC 单节点仅支持单机开发调试，不支持打包功能。
 
 ```shell
 cd build
@@ -39,9 +39,9 @@ sh local_install.sh compile -b debug
 
 ### 两节点编译出包
 
-#### 下载3方依赖并解压
+#### 下载第三方依赖并解压
 
-- arm环境：
+- ARM 环境：
 
 ```bash
 cd oGRAC/
@@ -49,7 +49,7 @@ wget --no-check-certificate https://opengauss.obs.cn-south-1.myhuaweicloud.com/6
 tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 ```
 
-- Centos环境：
+- CentOS 环境：
 
 ```bash
 cd oGRAC/

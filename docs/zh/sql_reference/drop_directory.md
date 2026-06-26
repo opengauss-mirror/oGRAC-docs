@@ -12,7 +12,7 @@
 
 **stmt**
 
-```SQL
+```sql
 DROP DIRECTORY directory_name
 ```
 
@@ -22,7 +22,7 @@ DROP DIRECTORY directory_name
 
 ## 示例
 
-```SQL
+```sql
 DROP DIRECTORY data_dir_0;
 
 ```

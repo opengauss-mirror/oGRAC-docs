@@ -10,13 +10,13 @@
 示例
 
 ```
---创建表。
+-- 创建表。
 SQL> CREATE TABLE day_type_tab (a int,b INTERVAL DAY(3) TO SECOND (4), c INTERVAL YEAR(4) TO MONTH); 
 
---插入数据。
+-- 插入数据。
 SQL> INSERT INTO day_type_tab VALUES (1, INTERVAL '3' DAY, INTERVAL '4' MONTH);
 
---查看数据。
+-- 查看数据。
 SQL> SELECT * FROM day_type_tab;
 
 A                                        B                        C
@@ -41,6 +41,6 @@ A                                        B
 
 0 rows fetched.
 
---删除表。
+-- 删除表。
 SQL> DROP TABLE day_type_tab;
 ```

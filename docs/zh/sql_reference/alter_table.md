@@ -114,7 +114,7 @@ ALTER TABLE [ schema_name. ]table_name
         ```
         RENAME COLUMN old_name TO new_name
         ```
-    
+
 - _partition_clauses_ 语法组件：
 
     ```
@@ -123,12 +123,12 @@ ALTER TABLE [ schema_name. ]table_name
     | truncate_partition_clause
     | coalesce_partition_clause
     | split_partition_clause
-    | modify_partition_claus
+    | modify_partition_clause
     }
     ```
 
     - _add_partition_clause_ 语法组件：
-        
+
         ```
         ADD PARTITION partition_name
         { VALUES LESS THAN ( { partition_value | MAXVALUE } [ , ... ] )
@@ -154,7 +154,7 @@ ALTER TABLE [ schema_name. ]table_name
 
         - _storage_clause_ 语法组件：
 
-            ``` 
+            ```
             STORAGE ( { INITIAL integer [K | M | G | T]
             |MAXSIZE { UNLIMITED | integer [K | M | G | T] }
             } [ ...] )
@@ -180,21 +180,21 @@ ALTER TABLE [ schema_name. ]table_name
         MODIFY PARTITION partition_name COALESCE SUBPARTITION
         ```
 
-- split_partition_clause 语法组件：
+- _split_partition_clause_ 语法组件：
 
     ```
-    SPLIT PARTITION partition_name 
-    AT (range_value) 
-    INTO 
+    SPLIT PARTITION partition_name
+    AT (range_value)
+    INTO
     (
         PARTITION part_name1 [ TABLESPACE space_name ],
         PARTITION part_name2 [ TABLESPACE space_name ]
     )
     [ UPDATE GLOBAL INDEXES ]
 
-    SPLIT SUBPARTITION subpartition_name 
-    AT (range_value) 
-    INTO 
+    SPLIT SUBPARTITION subpartition_name
+    AT (range_value)
+    INTO
     (
         SUBPARTITION subpart_name1 [ TABLESPACE space_name ],
         SUBPARTITION subpart_name2 [ TABLESPACE space_name ]
@@ -208,11 +208,12 @@ ALTER TABLE [ schema_name. ]table_name
     MODIFY PARTITION partition_name { INITRANS integer | storage_alter_clause }
     ```
 
-  - _storage_alter_clause_ 语法组件：
+    - _storage_alter_clause_ 语法组件：
 
       ```
       STORAGE (MAXSIZE { UNLIMITED | integer [K | M | G | T] } )
-      
+      ```
+
 - _set_interval_clause_ 语法组件：
 
     ```
@@ -241,9 +242,9 @@ ALTER TABLE [ schema_name. ]table_name
     用于调整数据表的物理存储特性。例如，LOB_storage_clause 可指定大型对象（LOB）字段存储在独立的段中，并可配置为行内或行外存储。目前存储引擎仅支持行外存储模式。
 
     - **_physical_attributes_clause_**
-    
+
         - **INITRANS _integer_**
-        
+
             调整数据表中每个初始数据页面上预分配的事务槽数量。该参数的取值区间为 [1, 255]。
 
             注意：
@@ -257,7 +258,7 @@ ALTER TABLE [ schema_name. ]table_name
             - **UNLIMITED**
 
                 表示不对此表的存储空间设置上限。
-            
+
             - **_integer_ [K | M | G | T]**
 
                 明确设定表存储空间的最大值，允许的范围是 [1MB, 1TB]。
@@ -269,13 +270,13 @@ ALTER TABLE [ schema_name. ]table_name
         - **ON**
 
             启用独立空间扩展模式。
-        
+
             重要提示：
-            - 对于分区表，启用 APPENDONLY ON 后，在并行插入场景下需特别注意。用户需预先规划数据，确保每个并行线程插入的数据不会跨越多个分区，即实现“一个线程对应一个分区”。
+            - 对于分区表，启用 APPENDONLY ON 后，在并行插入场景下需特别注意。用户需预先规划数据，确保每个并行线程插入的数据不会跨越多个分区，即实现"一个线程对应一个分区"。
             - 不建议对 HASH 分区表启用 APPENDONLY ON 选项。
 
         - **OFF**
-            
+
             关闭独立空间扩展，采用常规并发插入模式。
 
     - **PCTFREE _integer_**
@@ -285,30 +286,30 @@ ALTER TABLE [ schema_name. ]table_name
     - **RENAME TO _new_table_name_**
 
         修改数据表的名称。
-    
+
     - **AUTO_INCREMENT [ = ] value**
 
         修改表上自增列的起始序列值。若未指定，则默认从 1 开始。
-    
+
 - **_column_clauses_**
 
     用于变更表结构，包括增加、删除及修改数据列。
 
     - **_add_column_clause_**
-        
+
         向表中添加新的数据列。
-    
+
     - **DEFAULT —— [ON UPDATE _expr_]**
 
         列的默认值支持使用表达式。在创建 DDL 时，若 DEFAULT 是常量表达式，系统会进行列数据类型的兼容性检查。
-    
+
         - `[ON UPDATE expr]`：此为语法兼容项。当更新行数据且未显式指定该列值时，将使用此更新默认表达式填充该列。
-        - `INSERT` 和 `UPDATE` 操作中，`DEFAULT` 后面的表达式文本最大长度限制为 1024 个英文字符。若超过此限制，将报错：“GS-00611, default value string is too long, exceed 1024.”。
-    
+        - `INSERT` 和 `UPDATE` 操作中，`DEFAULT` 后面的表达式文本最大长度限制为 1024 个英文字符。若超过此限制，将报错："GS-00611, default value string is too long, exceed 1024."。
+
     - **COMMENT _'string'_**
 
         为列添加注释信息。可通过查询 `MY_COL_COMMENTS` 系统视图来查看列注释。
-    
+
     - **COLLATE _collation_name_**
 
         定义该列数据的排序（比较）规则。当比较此列中的数据时，将依据此处定义的排序规则判定大小或相等关系。
@@ -321,7 +322,7 @@ ALTER TABLE [ schema_name. ]table_name
         - `GBK_CHINESE_CI`：适用于 GBK 字符集，不区分大小写。
 
     - **_inline_constraint_**
-        
+
         内联列约束，作为列定义的一部分直接声明。目前支持 `[NOT] NULL`、`UNIQUE`、`PRIMARY KEY`、唯一索引、外键及 `CHECK` 约束。
 
     - **_modify_column_clause_**
@@ -334,17 +335,17 @@ ALTER TABLE [ schema_name. ]table_name
         - 高精度数值类型（如 `NUMBER`）扩大其数值范围（要求修改后的小数位数 `scale` 和整数位数 `precision - scale` 均不小于修改前的值）。
 
             - **_new_datatype_name_**
-            
+
                 修改后列的目标数据类型。
-        
+
     - **_drop_column_clause_**
-    
+
         从表中删除指定的列。
-    
+
         - **DROP [ COLUMN ] column_name**
 
             删除列字段。`column_name` 为要删除的列的名称。
-    
+
     - **_rename_column_clause_**
 
         重命名表中现有的列。
@@ -352,31 +353,31 @@ ALTER TABLE [ schema_name. ]table_name
         - **RENAME COLUMN _old_name_ TO _new_name_**
 
             重命名列。
-            
+
             - **_old_name_**
 
                 待重命名的原列名称。
-            
+
             - **_new_name_**
 
                 重命名后的新列名称。
 
 - **_partition_clauses_**
-    
+
     分区相关操作子句。
 
     - **_add_partition_clause_**
-        
+
         为分区表添加新的分区。
 
         - **VALUES LESS THAN**
-        
+
             用于范围分区，定义新分区的上限值（不包含）。
-        
+
         - **_partition_value_**
 
             分区的边界值。
-        
+
         - **MAXVALUE**
 
             表示一个分区允许的最大可能值，通常用于最后一个分区。
@@ -386,9 +387,9 @@ ALTER TABLE [ schema_name. ]table_name
             用于列表分区，定义新分区包含的特定值集合。
 
         - **DEFAULT**
-        
+
             用于列表分区，创建一个容纳所有未在其他分区中指定值的数据的默认分区。
-        
+
         - **INITIAL _integer_ [K | M | G | T]**
 
             指定新分区的初始存储空间大小。默认情况下，一个新分区会分配一个区段（EXTENT）。可通过此参数自定义初始大小。取值范围是 [64KB, 1TB]。
@@ -396,31 +397,31 @@ ALTER TABLE [ schema_name. ]table_name
         - **MAXSIZE { UNLIMITED | _integer_ [K | M | G | T] }**
 
             指定该分区可使用的最大存储空间限额。
-            
+
             - **UNLIMITED**
-                
+
                 表示不限制该分区的存储空间上限。
-            
+
             - **integer [K | M | G | T]**
 
                 明确设定该分区存储空间的最大值，取值范围是 [1MB, 1TB]。
-        
+
         - **FORMAT CSF**
 
             对于带CSF属性的HASH分区，由于HASH分区添加时会导致数据重分布，所以带CSF属性的HASH分区添加时可能会报错，报错与否取决于是否满足CSF属性约束。
-        
+
         - **COMPRESS**
             添加一个压缩分区。需确保此压缩分区所处的表空间内具有压缩属性文件，否则插入数据时会报错。
 
-    - drop_parition_clause
+    - drop_partition_clause
 
         - DROP PARTITION partition_name
 
             删除一个分区，partition_name 是分区名称。
 
-        - DROP SUBPARTITION subparition_name
+        - DROP SUBPARTITION subpartition_name
 
-            删除二级分区子分区，subpartiion_name为子分区的名字。
+            删除二级分区子分区，subpartition_name为子分区的名字。
 
     - split_partition_clause
 
@@ -435,23 +436,23 @@ ALTER TABLE [ schema_name. ]table_name
         - range_value
 
             分裂的边界值。
-        - UPADATE GLOBAL INDEXES
+        - UPDATE GLOBAL INDEXES
             - 如果指定update global indexes，且分区表有全局索引的时候，则数据重分布之后会自动重建全局索引。
             - 如果不指定，则全局索引处于invalid状态。
 
     - exchange_partition_clause
         交换分区
 
-        - WITH TABLE 
-        
+        - WITH TABLE
+
             设置需要交换的普通表的表名。
 
-        - INCLUDING | EXCLUDING INDEXES 
+        - INCLUDING | EXCLUDING INDEXES
             - INCLUDING INDEXES
-            
-                要交换索引 。
-            - EXLUDINGINDEXES
-    
+
+                要交换索引。
+            - EXCLUDING INDEXES
+
                 不需要交换索引。
         - WITH | WITHOUT VALIDATION
             - WITH VALIDATION
@@ -486,7 +487,7 @@ ALTER TABLE [ schema_name. ]table_name
 
         6.交换的分区的表定义、索引定义、列定义完全相同时，才允许交换。
         ```
-    
+
     - modify_partition_clause
 
         修改分区的属性
@@ -494,8 +495,8 @@ ALTER TABLE [ schema_name. ]table_name
         - partition_name
 
             需要修改的分区名称。
-        
-        - INITRANS interger 
+
+        - INITRANS integer
 
             对分区的初始数据页面上事务槽的个数进行修改，取值范围是[1,255]。
 
@@ -508,16 +509,16 @@ ALTER TABLE [ schema_name. ]table_name
             1.高并发oltp系统，当出现频繁的update/insert操作导致事务槽争用时，可以将INITRANS设为4-8(INITRANS=10时)，减少动态扩展开销。
             2.索引块的默认INITRANS=2可能无法满足高并发写入需求，可以将其设置为3。
             ```
-    
+
         - storage_alter_clause
 
             表的存储空间的最大值。
-            
-            - UNLINITED
+
+            - UNLIMITED
 
                 说明不限制表存储空间的最大值。
 
-            - interger[K|M|G|T]
+            - integer[K|M|G|T]
 
                 设置表的存储空间最大值，取值范围[1M,1T]。
 
@@ -531,16 +532,16 @@ ALTER TABLE [ schema_name. ]table_name
 
             - 如果只剩一个分区，不能执行COALESCE_PARTITION语句，否则会报错。
 
-    - [PARITION | SUBPARTITION] NOLOGGING
-        - NOLOGGING 
+    - [PARTITION | SUBPARTITION] NOLOGGING
+        - NOLOGGING
         启用或禁用分区上的NOLOGGING INSERT属性。
         - PARTITION NOLOGGING
         启用或禁用分区上的NOLOGGING INSERT属性。
         - SUBPARTITION NOLOGGING
         启用或禁用子分区上的NOLOGGING INSERT属性。
-        
+
         表级与分区级的 NOLOGGING INSERT 属性相互独立、互不影响：某个分区是否启用 NOLOGGING INSERT 属性，与表上的该属性配置无关，仅由分区自身的 NOLOGGING INSERT 属性设置决定。而父子分区间的 NOLOGGING INSERT 属性存在关联规则：若父分区开启了 NOLOGGING INSERT 属性，其下所有子分区会同步启用该属性；反之，即使启用子分区的 NOLOGGING INSERT 属性，也不会对父分区的该属性状态产生任何影响。
-  
+
         该特性使用时，需要注意以下约束：
         - NOLOGGING INSERT 该操作的目的是提升大量数据的入库性能，在表或分区上执行Nologging insert操作时，需避免与其他正常业务并发执行。这是因为Nologging insert不会记录 undo日志，若出现并发读取undo的情况，可能会导致正常业务报错。
 
@@ -558,7 +559,7 @@ ALTER TABLE [ schema_name. ]table_name
 
         - 若在执行备份恢复操作前，未关闭对象的NOLOGGING INSERT属性，会导致该NOLOGGING属性扩散至恢复后的新环境中。用户需提前确认是否需要保留该属性的扩散效果：若无需将NOLOGGING属性同步到新环境，则应在备份操作执行前，先关闭对应对象的NOLOGGING属性。
 
-- logic_replication_caluses
+- logic_replication_clauses
 打开表逻辑复制开关或者关闭逻辑复制的开关，支持表级和表分区级逻辑复制开关的打开或关闭。
     - (sub)partition_name
       - 在表名后括号内填写表（子）分区名称，即可完成表分区级逻辑复制开关的设置。该操作支持针对未开启的表分区开关进行多次补充配置，但不支持直接在表级与表分区级开关之间切换。
@@ -570,10 +571,10 @@ ALTER TABLE [ schema_name. ]table_name
     - DROP LOGICAL LOG
       关闭表级和分区级逻辑复制开关。
 
-- rename_cloumn_clause
-  修改表名。只能修改自己schama下的表名，不能修改系统表空间下的表名。
+- rename_column_clause
+  修改表名。只能修改自己schema下的表名，不能修改系统表空间下的表名。
 
-- set_interval_caluse
+- set_interval_clause
 设置间隔分区，仅对分区表有效。
     - SET INTERVAL():将间隔分区表修改为范围分区表。
     - SET INTERVAL(interval_value):修改间隔分区表的间隔值，interval_value表示指定具体的间隔值数值。
@@ -587,21 +588,20 @@ ALTER TABLE [ schema_name. ]table_name
 DROP TABLE IF EXISTS test;
 --创建表test
 CREATE TABLE test(student_id INT NOT NULL, course_name VARCHAR(30), course_start_date DATETIME, score INT);
-- 修改列的数据类型
-```
-
-ALTER TABLE test MODIFY course_name VARCHAR(20);
-
-```
-- 添加主键约束
-```
-
-alter table t_or2union_1 add constraint pk_a primary key (a);
-
-```
-
 --添加列full_score
 ALTER TABLE test ADD full_score INT;
+```
+
+- 修改列的数据类型
+
+```
+ALTER TABLE test MODIFY course_name VARCHAR(20);
+```
+
+- 添加主键约束
+
+```
+ALTER TABLE t_or2union_1 ADD CONSTRAINT pk_a PRIMARY KEY (a);
 ```
 
 - 删除列
@@ -626,7 +626,7 @@ CREATE TABLE test_partition(
   student_id INT NOT NULL,
   course_name CHAR(20),
   exam_date DATETIME,
-  socre INT)
+  score INT)
 PARTITION BY RANGE(student_id)
 (
 PARTITION test_partition1 VALUES LESS THAN(100),
@@ -656,7 +656,7 @@ ALTER TABLE test_partition TRUNCATE PARTITION test_partition4;
 - 分裂分区
 
 ```
-ALTER TABLE test_partition SPLIT PARTITION test_partition5 AT(430) INTO (PARITIION p1, PARTITION p2);
+ALTER TABLE test_partition SPLIT PARTITION test_partition5 AT(430) INTO (PARTITION p1, PARTITION p2);
 ```
 
 - 修改表的分区的MAXSIZE值

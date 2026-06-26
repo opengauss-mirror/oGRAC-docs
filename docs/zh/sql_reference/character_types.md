@@ -39,7 +39,7 @@
 示例：
 
 ```
---创建具有定长和边长字符类型数据的表。
+--创建具有定长和变长字符类型数据的表。
 SQL> CREATE TABLE char_type_t1 
 (
     a CHAR(5),
@@ -54,7 +54,7 @@ SQL> INSERT INTO char_type_t1 VALUES ('ok', 'ok', 'abcdef', 'abcdef', 'abcdef');
 
 SQL> INSERT INTO char_type_t1 VALUES ('good', 'good', 'good', 'good', 'good');
 
-SQL> select char_length(a), char_length(b), char_length(c), char_length(d), char_length(e) from char_type_t1;
+SQL> SELECT char_length(a), char_length(b), char_length(c), char_length(d), char_length(e) from char_type_t1;
 
 CHAR_LENGTH(A)       CHAR_LENGTH(B)       CHAR_LENGTH(C)       CHAR_LENGTH(D)       CHAR_LENGTH(F)
 -------------------- -------------------- -------------------- -------------------- --------------------
@@ -70,11 +70,11 @@ CT-00698, The size(8) of value can't larger than defined size(5) of char
 --删除表。
 SQL> DROP TABLE char_type_t1;
 
-SQL> create table test_clob(c1 clob, c2 nclob, c3 text, c4 longtext, c5 long);
+SQL> CREATE TABLE test_clob(c1 clob, c2 nclob, c3 text, c4 longtext, c5 long);
 
-SQL> insert into test_clob values('abcdefg', 'abcdefg', 'abcdefg', 'abcdefg', 'abcdefg');
+SQL> INSERT INTO test_clob values('abcdefg', 'abcdefg', 'abcdefg', 'abcdefg', 'abcdefg');
 
-SQL> select * from test_clob;
+SQL> SELECT * FROM test_clob;
 
 C1                                                               C2                                                               C3                                                               C4                                                               C5                                                              
 ---------------------------------------------------------------- ---------------------------------------------------------------- ---------------------------------------------------------------- ---------------------------------------------------------------- ----------------------------------------------------------------
@@ -82,7 +82,7 @@ abcdefg                                                          abcdefg        
 
 1 rows fetched.
 
-SQL> show create table test_clob;
+SQL> SHOW CREATE TABLE test_clob;
 
 CREATE TABLE "TEST_CLOB"
 (
@@ -98,16 +98,16 @@ MAXTRANS 255
 PCTFREE 8
 FORMAT ASF;
 
-SQL> alter system set use_bison_parser = true;
+SQL> ALTER SYSTEM SET use_bison_parser = true;
 
-SQL> create table test_char1
+SQL> CREATE TABLE test_char1
 (
     c1 national character varying(10),
     c2 national char varying(10),
     c3 nchar varying(10)
 );
 
-SQL> show create table test_char1;
+SQL> SHOW CREATE TABLE test_char1;
 
 CREATE TABLE "TEST_CHAR1"
 (
@@ -121,14 +121,14 @@ MAXTRANS 255
 PCTFREE 0
 FORMAT ASF;
 
-SQL> create table test_char2
+SQL> CREATE TABLE test_char2
 (
     c1 national character,
     c2 national char,
     c3 nchar
 );
 
-SQL> show create table test_char2;
+SQL> SHOW CREATE TABLE test_char2;
 
 CREATE TABLE "TEST_CHAR2"
 (
@@ -142,13 +142,13 @@ MAXTRANS 255
 PCTFREE 0
 FORMAT ASF;
 
-SQL> create table test_char3(
+SQL> CREATE TABLE test_char3(
     c1 national character(10),
     c2 national char(10),
     c3 nchar(10)
 );
 
-SQL> show create table test_char3;
+SQL> SHOW CREATE TABLE test_char3;
 
 CREATE TABLE "TEST_CHAR3"
 (
@@ -162,7 +162,7 @@ MAXTRANS 255
 PCTFREE 0
 FORMAT ASF;
 
-SQL> select n'abcd';
+SQL> SELECT n'abcd';
 
 N'ABCD'
 -------
@@ -170,7 +170,7 @@ abcd
 
 1 rows fetched.
 
-SQL> select N'abcd';
+SQL> SELECT N'abcd';
 
 N'ABCD'
 -------
@@ -178,7 +178,7 @@ abcd
 
 1 rows fetched.
 
-SQL> select n'1234';
+SQL> SELECT n'1234';
 
 N'1234'
 -------
@@ -186,7 +186,7 @@ N'1234'
 
 1 rows fetched.
 
-SQL> select N'1234';
+SQL> SELECT N'1234';
 
 N'1234'
 -------
@@ -194,5 +194,5 @@ N'1234'
 
 1 rows fetched.
 
-SQL> alter system set use_bison_parser = false;
+SQL> ALTER SYSTEM SET use_bison_parser = false;
 ```

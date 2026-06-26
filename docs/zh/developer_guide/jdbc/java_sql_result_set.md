@@ -956,5 +956,5 @@ java.sql.ResultSet是执行结果集接口。
 
 > [!NOTE]说明
 >
->- 一个Statement不能有多个处于“open”状态的ResultSet。
->- 用于遍历结果集（ResultSet）的游标（Cursor）在被提交后不能保持“open”的状态。
+>- 一个Statement不能有多个处于"open"状态的ResultSet。
+>- 用于遍历结果集（ResultSet）的游标（Cursor）在被提交后不能保持"open"的状态。

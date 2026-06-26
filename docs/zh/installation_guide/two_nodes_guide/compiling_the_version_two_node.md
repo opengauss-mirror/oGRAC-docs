@@ -75,61 +75,66 @@ git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex --skip-br
 
 > [!WARNING]注意
 >
-> <span style="color: red;">若为openEuler 24.03 LTS系统版本，则cmake不能使用yum install来安装使用，会因为版本较高而有冲突，这里建议使用10.3.0/10.3.1的gcc来编译cmake，编译cmake步骤如下所示：</span>
-> 1. 进入子用户，进入编译cmake的目录，这里以`/home/user_name`为例。
+> <span style="color: red;">若为 openEuler 24.03 LTS 系统版本，则 cmake 不能使用 yum install 来安装，会因版本较高而产生冲突，建议使用 10.3.0/10.3.1 的 gcc 来编译 cmake，编译 cmake 步骤如下所示：</span>
+>
+> 1. 进入子用户，进入编译 cmake 的目录，这里以 `/home/user_name` 为例。
 >
 >    ```shell
->    su user_name
->    cd /home/user_name
+>    $ su user_name
+>    $ cd /home/user_name
 >    ```
 >
-> 2. 下载gcc这里举例使用了openGauss-third_party仓库的（建议使用的gcc版本为10.3.0/10.3.1）：
-> 
->    wget https://opengauss.obs.cn-south-1.myhuaweicloud.com/latest/binarylibs/gcc10.3/openGauss-third_party_binarylibs_openEuler_2403_arm.tar.gz
-> 
-> 3. 解压该三方库包，得到gcc二进制路径，这里举例路径为：/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/gcc/lib
+> 2. 下载 gcc，这里举例使用了 openGauss-third_party 仓库的（建议使用的 gcc 版本为 10.3.0/10.3.1）：
 >
 >    ```shell
->    tar -zxvf openGauss-third_party_binarylibs_openEuler_2403_arm.tar.gz
+>    $ wget https://opengauss.obs.cn-south-1.myhuaweicloud.com/latest/binarylibs/gcc10.3/openGauss-third_party_binarylibs_openEuler_2403_arm.tar.gz
 >    ```
 >
-> 4. 下载cmake源码包，这里举例使用了cmake官方的3.22.1版本：
+> 3. 解压该三方库包，得到 gcc 二进制路径，这里举例路径为：/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/gcc/lib
 >
->    wget https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1.tar.gz
+>    ```shell
+>    $ tar -zxvf openGauss-third_party_binarylibs_openEuler_2403_arm.tar.gz
+>    ```
 >
-> 5. 解压cmake源码包，进入cmake源码目录，使用gcc10.3编译cmake：
+> 4. 下载 cmake 源码包，这里举例使用了 cmake 官方的 3.22.1 版本：
+>
+>    ```shell
+>    $ wget https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1.tar.gz
+>    ```
+>
+> 5. 解压 cmake 源码包，进入 cmake 源码目录，使用 gcc10.3 编译 cmake：
 >
 >    ```shell
 >    # 解压
->    tar - zxvf cmake-3.22.1.tar.gz
->    cd  cmake-3.22.1
+>    $ tar -zxvf cmake-3.22.1.tar.gz
+>    $ cd cmake-3.22.1
 >
 >    # 配置编译器
->    export CC=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/gcc/bin/gcc
+>    $ export CC=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/gcc/bin/gcc
 >
->    export CXX=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/gcc/bin/g++
+>    $ export CXX=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/gcc/bin/g++
 >
->    export LD_LIBRARY_PATH=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/isl/lib:$LD_LIBRARY_PATH
+>    $ export LD_LIBRARY_PATH=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/isl/lib:$LD_LIBRARY_PATH
 >
->    export LD_LIBRARY_PATH=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/mpfr/lib:$LD_LIBRARY_PATH
+>    $ export LD_LIBRARY_PATH=/home/user_name/openGauss-third_party_binarylibs_openEuler_2403_arm/buildtools/gcc10.3/mpfr/lib:$LD_LIBRARY_PATH
 >
 >    # 配置
->    ./bootstrap --prefix=/home/user_name/cmake-3.22.1 --parallel=$(nproc) --no-system-libs
+>    $ ./bootstrap --prefix=/home/user_name/cmake-3.22.1 --parallel=$(nproc) --no-system-libs
 >
 >    # 编译安装
->    make -j $(nproc)
->    make install
+>    $ make -j $(nproc)
+>    $ make install
 >
 >    # 验证
->    /home/user_name/cmake-3.22.1/bin/cmake --version
+>    $ /home/user_name/cmake-3.22.1/bin/cmake --version
 >    ```
 >
-> 7. 验证后有版本号回显说明编译安装成功完成。在`/home/user_name/cmake-3.22.1`目录下会生成cmake的二进制文件，还需要进行如下配置即可继续后续操作流程。
+> 6. 验证后有版本号回显说明编译安装成功完成。在 `/home/user_name/cmake-3.22.1` 目录下会生成 cmake 的二进制文件，还需要进行如下配置即可继续后续操作流程。
 >
 >    ```shell
->    export PATH=/home/user_name/cmake-3.22.1/bin:$PATH
->    export LD_LIBRARY_PATH=/home/user_name/cmake-3.22.1/lib:$LD_LIBRARY_PATH
->    export CMAKEROOT=/home/user_name/cmake-3.22.1
+>    $ export PATH=/home/user_name/cmake-3.22.1/bin:$PATH
+>    $ export LD_LIBRARY_PATH=/home/user_name/cmake-3.22.1/lib:$LD_LIBRARY_PATH
+>    $ export CMAKEROOT=/home/user_name/cmake-3.22.1
 >    ```
 ---
 
@@ -141,7 +146,7 @@ git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex --skip-br
 
 oGRAC 依赖 openGauss 提供的第三方二进制库，请先下载并解压至 oGRAC 源码目录。
 
-请注意，当前主干分支包含`master`和`1.0.0`两个分支，当前官网文档以`1.0.0`为基线进行安装部署指引。
+请注意，当前主干分支包含 `master` 和 `1.0.0` 两个分支，当前官网文档以 `1.0.0` 为基线进行安装部署指引。
 
 ```bash
 su - [user_name]
@@ -170,9 +175,13 @@ tar -zxf openGauss-third_party_binarylibs_openEuler_2203_arm.tar.gz
 进入 `build` 目录，通过统一编译脚本生成安装包。
 
 > [!NOTE]说明
-> * 如果是Debug版本，请关闭保护虚拟内存选项，避免在某些环境上因VM page配置问题起库失败，请执行:
-> * cd [compile_path]/oGRAC/build
-> * sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
+>
+> * 如果是 Debug 版本，请关闭保护虚拟内存选项，避免在某些环境上因 VM page 配置问题起库失败，请执行：
+>
+>   ```bash
+>   $ cd [compile_path]/oGRAC/build
+>   $ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
+>   ```
 
 ```bash
 cd [compile_path]/oGRAC/build
@@ -225,7 +234,7 @@ sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH
 [compile_path]/oGRAC/package/
 ```
 
-该目录中包含oGRAC 安装包（tar.gz 格式）,开发者可将该安装包分发至目标节点，按照对应的安装文档进行部署。
+该目录中包含 oGRAC 安装包（tar.gz 格式），开发者可将该安装包分发至目标节点，按照对应的安装文档进行部署。
 
 ---
 

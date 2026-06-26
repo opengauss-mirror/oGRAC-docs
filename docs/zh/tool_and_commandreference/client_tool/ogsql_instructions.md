@@ -2,13 +2,13 @@
 
 ## 概述
 
-ogsql是OpenGauss oGRAC引擎提供的SQL开发者命令行工具，用于连接数据库、执行SQL语句和脚本，以及管理数据库对象。本工具支持交互式和非交互式两种使用模式。
+ogsql 是 oGRAC 提供的 SQL 开发者命令行工具，用于连接数据库、执行 SQL 语句和脚本，以及管理数据库对象。本工具支持交互式和非交互式两种使用模式。
 
 ## 命令行语法
 
 ### 基本语法
 
-ogsql支持三种主要的使用方式：
+ogsql 支持三种主要的使用方式：
 
 ```bash
 # 方式1：显示帮助或版本信息
@@ -18,13 +18,13 @@ ogsql -v
 # 方式2：进入交互式模式
 ogsql
 
-# 方式3：指定登录信息和选项，可以以非交互模式执行sql语句
+# 方式3：指定登录信息和选项，可以以非交互模式执行 SQL 语句
 ogsql [ <logon> [<options>] [<start>] ]
 ```
 
 ### 登录信息格式
 
-ogsql支持以下登录格式：
+ogsql 支持以下登录格式：
 
 ```
 [ user [ /password ] @{host:port}[,...] ] [as sysdba]
@@ -33,7 +33,7 @@ ogsql支持以下登录格式：
 以及特殊的管理员登录格式：
 
 ```
-/ as { sysdba} [ host:port ]
+/ as { sysdba } [ host:port ]
 ```
 
 其中各参数含义如下：
@@ -46,7 +46,7 @@ ogsql支持以下登录格式：
 
 ### 选项参数
 
-ogsql支持以下可选选项参数：
+ogsql 支持以下可选选项参数：
 
 ```
 [-q] [-w <timeout>] [-a] [-D "data_home_path"]
@@ -54,18 +54,18 @@ ogsql支持以下可选选项参数：
 
 各选项含义：
 
-- **-q**: 取消SSL登录认证
+- **-q**: 取消 SSL 登录认证
 - **-w \<timeout>**: 客户端连接数据库的超时时间（单位：秒）
   - 默认值为60秒
   - 特殊值-1表示无限超时
   - 特殊值0表示不等待
-- **-a**: 打印已执行的SQL语句
+- **-a**: 打印已执行的 SQL 语句
   - 可与-f参数一起使用，表示打印并执行SQL脚本文件中的SQL语句
-- **-D**: 指定数据数据目录路径
+- **-D**: 指定数据目录路径
 
 ### 启动选项
 
-ogsql支持以下启动选项（同一时间只能使用其中一种）：
+ogsql 支持以下启动选项（同一时间只能使用其中一种）：
 
 ```
 [-c "execute-sql-command"] | [-f "execute-sql-file"] | [-s "destination-file"]
@@ -92,7 +92,8 @@ ogsql user/user_pwd@127.0.0.1:1611
 ### 执行SQL语句
 
 ```bash
-# 登录后执行单个SQL语句\ nogsql user/user_pwd@127.0.0.1:1611 -c "SELECT 1 FROM SYS_DUMMY"
+# 登录后执行单个 SQL 语句
+ogsql user/user_pwd@127.0.0.1:1611 -c "SELECT 1 FROM SYS_DUMMY"
 
 # 执行SQL脚本文件
 ogsql user/user_pwd@127.0.0.1:1611 -f "/home/user/example.sql"
@@ -113,7 +114,7 @@ ogsql user/user_pwd@127.0.0.1:1611 -w -1
 
 ## 交互式命令
 
-在ogsql交互式模式下，可以使用以下命令：
+在 ogsql 交互式模式下，可以使用以下命令：
 
 | 命令 | 描述 | 示例 |
 |------|------|------|
@@ -132,7 +133,7 @@ ogsql user/user_pwd@127.0.0.1:1611 -w -1
 
 ## 参数绑定
 
-ogsql支持在SQL语句中使用参数绑定，格式为`:参数名`。执行包含参数的SQL语句时，ogsql会提示用户输入参数值。
+ogsql 支持在 SQL 语句中使用参数绑定，格式为 `:参数名`。执行包含参数的 SQL 语句时，ogsql 会提示用户输入参数值。
 
 示例：
 
@@ -140,11 +141,11 @@ ogsql支持在SQL语句中使用参数绑定，格式为`:参数名`。执行包
 SELECT * FROM employees WHERE department_id = :dept_id;
 ```
 
-执行时，ogsql会提示用户输入dept_id的值。
+执行时，ogsql 会提示用户输入 dept_id 的值。
 
 ## 环境变量设置
 
-使用SET命令可以配置ogsql的运行环境：
+使用 SET 命令可以配置 ogsql 的运行环境：
 
 ```sql
 -- 启用执行时间统计
@@ -156,7 +157,7 @@ SET ECHO ON;
 
 ## 输出重定向
 
-使用SPOOL命令可以将ogsql的输出重定向到文件：
+使用 SPOOL 命令可以将 ogsql 的输出重定向到文件：
 
 ```sql
 -- 开始将输出保存到文件
@@ -171,7 +172,7 @@ SPOOL OFF;
 
 ## 错误处理
 
-使用WHENEVER命令可以设置ogsql在遇到错误时的行为：
+使用 WHENEVER 命令可以设置 ogsql 在遇到错误时的行为：
 
 ```sql
 -- 遇到SQL错误时退出

@@ -15,7 +15,7 @@
 
 **stmt**
 
-```SQL
+```sql
 CREATE [OR REPLACE] DIRECTORY directory_name AS directory_path
 ```
 
@@ -27,7 +27,7 @@ CREATE [OR REPLACE] DIRECTORY directory_name AS directory_path
 
 ## 示例
 
-```SQL
+```sql
 -- 创建目录对象
 CREATE DIRECTORY data_dir_0 AS '/home/ogracdba/test';
 
