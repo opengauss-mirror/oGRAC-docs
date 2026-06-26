@@ -3,4 +3,7 @@ isManual: true
 sections:
   - label: 编译阶段问题
   - label: 安装阶段问题
+    sections:
+      - label: 操作系统语言为中文导致安装时无法获取 NUMA 信息卡住
+        href: ./issues_during_the_installation_phase/os_environment_language_issue.md
   - label: 卸载阶段问题
