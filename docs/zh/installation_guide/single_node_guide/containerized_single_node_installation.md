@@ -67,7 +67,7 @@ docker exec -it mirror_name /bin/bash
 yum install -y libaio-devel openssl openssl-devel ndctl-devel \
 ncurses ncurses-devel libtirpc-devel expect ant bison iputils \
 iproute wget make gcc gcc-c++ gdb gdb-gdbserver python3 python3-devel \
-git net-tools cmake automake byacc libtool git unzip vim lz4 lz4-devel patch \
+git net-tools cmake automake byacc libtool unzip vim lz4 lz4-devel patch \
 xz flex unixODBC-devel unixODBC --skip-broken
 ```
 
@@ -78,7 +78,7 @@ lz4版本在1.8.3及以上。
 5.2 若为安装包安装则还需安装依赖：
 
 ```bash
-yum install -y wget python3 python3-devel iputils iproute --skip-broken
+yum install -y wget git python3 python3-devel iputils iproute --skip-broken
 ```
 
 ## 6. 编译 oGRAC
