@@ -1,0 +1,6 @@
+label: 常见故障恢复问题
+isManual: true
+sections:
+  - label: 编译阶段问题
+  - label: 安装阶段问题
+  - label: 卸载阶段问题
