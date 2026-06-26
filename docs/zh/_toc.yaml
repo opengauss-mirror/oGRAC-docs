@@ -11,3 +11,4 @@ sections:
   - href: ./database_administration_guide/_toc.yaml
   - href: ./tool_and_commandreference/_toc.yaml
   - href: ./database_reference/_toc.yaml
+  - href: ./fault_recovery_issues/_toc.yaml
