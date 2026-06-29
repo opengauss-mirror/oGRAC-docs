@@ -65,7 +65,7 @@ cd oGRAC/build
 sh build_ograc.sh [release|debug] --with-dss
 
 # 指定三方库所在目录（路径必须在 oGRAC 目录内，指向包含三方库文件夹的父目录即可）
-sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH}
+sh build_ograc.sh [release|debug] --with-dss --third-party-path <path>
 ```
 
 参数说明：
@@ -87,9 +87,9 @@ sh build_ograc.sh [release|debug] --with-dss --third-party-path ${OGDB_CODE_PATH
 > sh build_dss.sh [release|debug] --check-only
 > ```
 >
-> 如果三方库不在默认路径，可通过 `--third-party-path` 指定（该参数非必填）：
+> 如果三方库不在默认路径，可指定路径（非必填）：
 > ```bash
-> sh build_dss.sh [release|debug] --check-only --third-party-path <path>
+> sh build_dss.sh [release|debug] <path> --check-only
 > ```
 >
 > `--check-only` 仅执行编译前环境检查，不执行实际编译流程。
