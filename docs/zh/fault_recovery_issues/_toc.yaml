@@ -2,8 +2,17 @@ label: 常见故障恢复问题
 isManual: true
 sections:
   - label: 编译阶段问题
+  sections:
+      - label: 因gcc版本兼容及三方库路径配置错误导致patchelf编译失败问题
+        href: ./Patchelf Compilation Failure Due to GCC Version Incompatibility and Third-Party Dependency Path Misc.md
   - label: 安装阶段问题
+  sections:
+      - label: CMS 安装失败——残留用户家目录缺失 `.bashrc` 文件
+        href: ./CMS Installation Failed Missing .bashrcin Leftover User's Home Directory.md
     sections:
       - label: 操作系统语言为中文导致安装时无法获取 NUMA 信息卡住
         href: ./issues_during_the_installation_phase/os_environment_language_issue.md
   - label: 卸载阶段问题
+  sections:
+      - label: oGRAC 卸载失败（进程残留导致）
+        href: ./oGRAC Uninstallation Failure (Caused by Residual Processes).md
