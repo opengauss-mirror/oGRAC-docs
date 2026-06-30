@@ -22,15 +22,18 @@ RuntimeError: ograc process still running, stop before uninstall
 ```
 # 切换到 root 用户 
 # 检查并终止相关进程 
-ps -ef | grep -E 'ograc|dss|cms' | grep -v grep kill -9 <PID>  
+ps -ef | grep -E 'ograc|dss|cms' | grep -v grep 
+kill -9 <PID>  
 # 逐个终止查看到的进程
 ```
 2. **清理共享内存与信号量**： 
 ```
 # 查看并清理共享内存段（注意确认_SHM_KEY值）\
-ipcs -m | grep ograc ipcrm -m <shmid> 
+ipcs -m | grep ograc 
+ipcrm -m <shmid> 
 # 清理信号量
-ipcs -s | grep ograc ipcrm -s <semid>
+ipcs -s | grep ograc 
+ipcrm -s <semid>
 ```
 3. **强制清理环境（谨慎操作）**： 
 ```
