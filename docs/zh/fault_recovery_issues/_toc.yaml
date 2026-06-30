@@ -4,7 +4,7 @@ sections:
   - label: 编译阶段问题
     sections:
       - label: 因gcc版本兼容及三方库路径配置错误导致patchelf编译失败问题
-        href: ./Patchelf Compilation Failure Due to GCC Version Incompatibility and Third-Party Dependency Path Misc.md
+        href: ./issues_during_the_compilation_phase/compilation_failure_due_to_gcc_version_incompatibility.md
       - label: 因环境缺少 Perl 组件导致 OpenSSL 编译失败的问题
         href: ./issues_during_the_compilation_phase/compilation_failure_due_to_missing_perl.md
       - label: 因三方库版本与 OS 版本不匹配导致编译失败的问题
@@ -14,7 +14,7 @@ sections:
   - label: 安装阶段问题
     sections:
       - label: CMS 安装失败——残留用户家目录缺失 `.bashrc` 文件
-        href: ./CMS Installation Failed Missing .bashrcin Leftover User's Home Directory.md
+        href: ./issues_during_the_installation_phase/cms_installation_failed_missing_bashrcin.md
       - label: 操作系统语言为中文导致安装时无法获取 NUMA 信息卡住
         href: ./issues_during_the_installation_phase/os_environment_language_issue.md
       - label: 因两节点机器时间不同步导致安装双节点 oGRAC 失败的问题
@@ -26,4 +26,4 @@ sections:
   - label: 卸载阶段问题
     sections:
       - label: oGRAC 卸载失败（进程残留导致）
-        href: ./oGRAC Uninstallation Failure (Caused by Residual Processes).md
+        href: ./issues_during_the_uninstallation_phase/Caused_by_Residual_Processes.md
