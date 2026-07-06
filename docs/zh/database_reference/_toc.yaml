@@ -3,3 +3,5 @@ isManual: true
 sections:
   - label: 数据库参考
     href: ./database_reference.md
+  - label: RBP加速恢复参考
+    href: ./rbp_accelerated_recovery_reference.md
