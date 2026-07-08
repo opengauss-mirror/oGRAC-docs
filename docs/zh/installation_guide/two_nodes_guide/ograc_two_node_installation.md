@@ -300,7 +300,7 @@ vim ograc/install_config.json
 
 ## 7. 安装与启动集群
 
-安装部署中遇到的常见问题可参见 [oGRAC 安装部署常见问题定位与解决](./error_introduce.md) 章节。
+安装部署中遇到的常见问题可参见 [oGRAC 安装部署常见问题定位与解决](./installation_deployment_issues.md) 章节。
 ### 7.1 安装节点
 
 在两节点上依次执行，建议等待节点 0 安装完毕后，再进行节点 1 安装。首先执行预安装：
