@@ -101,7 +101,12 @@ useradd ogdba
 * 两节点在初始化或启动 CM 时异常退出
 * 日志中可能出现心跳写入失败、`load disk` 相关报错
 
-![CM盘符错误](image-CM盘符错误.png)
+```text
+Exception: failed to set cms node information.
+command: sh /opt/ograc/action/cms/start_cms.sh -P install cms > /opt/ograc/log/cms/cms_deploy.log 2>&1
+output:
+Execute cms/install.sh cmsctl.py install failed
+```
 
 ##### 常见原因
 
@@ -131,7 +136,12 @@ useradd ogdba
 /opt/ograc/log/dss/run/instance.log
 ```
 
-![DSS注册错误](image-DSS注册冲突.png)
+```text
+ERROR [pid: 2127231] [MainThread] [tid:281460975927024] [dssctl.py:596] Reghl node cmd[source ~/.bashrc && /opt/ograc/dss/bin/dsscmd reghl -D /opt/ograc/dss] failed, details: Begin to register,
+Failed to get vg non entry info when reghl, errcode is -1.
+ detail reason[2031]: The volume group has not been initialized.
+Failed to register.
+```
 
 ##### 常见原因
 
