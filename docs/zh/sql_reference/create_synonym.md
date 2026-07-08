@@ -1,8 +1,12 @@
-# CREATE SYNONYM 使用文档
+# CREATE SYNONYM
 
-## 功能概述
+## 功能描述
 
 `CREATE SYNONYM` 语句用于创建数据库对象的别名，简化SQL语句的编写和使用。同义词可以指向表等数据库对象，提供了一种抽象层来隐藏对象的真实名称和所有者。
+
+## 注意事项
+
+创建同义词需要对目标对象具有访问权限；公共同义词对所有用户可见，请谨慎使用以避免命名冲突。
 
 ## 语法格式
 
@@ -14,7 +18,7 @@ CREATE [OR REPLACE] SYNONYM synonym_name FOR object_name;
 
 ### 创建公共同义词
 
-```sql
+```
 CREATE [OR REPLACE] PUBLIC SYNONYM synonym_name FOR object_name;
 ```
 
@@ -27,35 +31,35 @@ CREATE [OR REPLACE] PUBLIC SYNONYM synonym_name FOR object_name;
 | synonym_name | 要创建的同义词名称。                                    |
 | object_name | 同义词指向的对象名称。                                   |
 
-## 使用示例
+## 示例
 
 ### 示例 1：创建私有同义词
 
-```sql
+```
 CREATE SYNONYM emp FOR employees;
 ```
 
 ### 示例 2：替换私有同义词
 
-```sql
+```
 CREATE OR REPLACE SYNONYM emp FOR employees;
 ```
 
 ### 示例 3：创建公共同义词
 
-```sql
+```
 CREATE PUBLIC SYNONYM dept FOR departments;
 ```
 
 ### 示例 4：替换公共同义词
 
-```sql
+```
 CREATE OR REPLACE PUBLIC SYNONYM dept FOR departments;
 ```
 
 ### 示例 5：创建同义词后查询
 
-```sql
+```
 -- 创建同义词
 CREATE SYNONYM emp FOR employees;
 

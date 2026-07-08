@@ -12,9 +12,9 @@
 
 ## 语法格式
 
-**stmt**
+**stmt:**
 
-```
+```sql
 DROP [TEMPORARY] TABLE
 [IF EXISTS] [schema_name.]table_name
 [CASCADE CONSTRAINTS]
@@ -23,13 +23,13 @@ DROP [TEMPORARY] TABLE
 
 ## 参数说明
 
-- TEMPORARY: 临时表
-- CASCADE CONSTRAINTS: 删除表时删除外键引用。
-- PURGE: 删除表时不放入回收站。
+- **TEMPORARY**: 临时表
+- **CASCADE CONSTRAINTS**: 删除表时删除外键引用。
+- **PURGE**: 删除表时不放入回收站。
 
 ## 示例
 
-```sql
+```
 -- 删除单个表
 DROP TABLE employees;
 

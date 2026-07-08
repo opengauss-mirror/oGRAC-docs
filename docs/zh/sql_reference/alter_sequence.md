@@ -1,15 +1,15 @@
-# ALTER SEQUENCE<a name="ZH-CN_TOPIC_0289900494"></a>
+# ALTER SEQUENCE
 
-## 功能描述<a name="zh-cn_topic_0283137303_zh-cn_topic_0237122071_zh-cn_topic_0062358310_s806d414edb004fa89cd50a1166d1136e"></a>
+## 功能描述
 
 修改一个现有的序列的参数。
 
-## 注意事项<a name="zh-cn_topic_0283137303_zh-cn_topic_0237122071_zh-cn_topic_0062358310_sfccb497f01564edb804ecee58fe2698c"></a>
+## 注意事项
 
 - 在修改序列的某些属性（如最小值和最大值）时，需要确保新设置的值在逻辑上是合理的，例如最小值应该小于最大值。
 - 如果序列已经达到了其最大值并且设置为循环（CYCLE），则在下次获取值时将从最小值重新开始。如果未设置循环且达到最大值，再获取值时会报错。
 
-## 语法格式<a name="zh-cn_topic_0283137303_zh-cn_topic_0237122071_zh-cn_topic_0062358310_s794bdb8d97844eb7aa7d1d6cdf896ac9"></a>
+## 语法格式
 
 - 修改序列属性
 
@@ -19,7 +19,7 @@
         [ CACHE cachevalue | NOCACHE ] [ CYCLE | NOCYCLE ];
     ```
 
-## 参数说明<a name="zh-cn_topic_0283137303_zh-cn_topic_0237122071_zh-cn_topic_0062358310_s8277cc73aecc4f20845d2ddf456a20e7"></a>
+## 参数说明
 
 - schema
     
@@ -55,7 +55,7 @@
 
     默认值为NOCYCLE。
 
-## 示例<a name="zh-cn_topic_0283137303_zh-cn_topic_0237122071_zh-cn_topic_0062358310_sd7a0dca78f6844d79a0ec70fb4213769"></a>
+## 示例
 
 ```
 -- 创建一个名为serial的递增序列，从101开始。

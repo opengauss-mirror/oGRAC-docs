@@ -4,9 +4,15 @@
 
 调整当前数据库会话的各项配置参数。
 
+## 注意事项
+
+- 修改会话参数通常需要足够的权限，部分参数仅对当前会话生效。
+- 开启 NOLOGGING 等高风险选项后，应主动触发检查点以保证数据持久化。
+- 时区、日期格式等设置仅在当前会话内有效，断开后恢复默认值。
+
 ## 语法格式
 
-```
+```sql
 
 ALTER SESSION
 {
@@ -41,11 +47,11 @@ ALTER SESSION
     定义执行提交（COMMIT）操作的服务器进程是否需要等待日志写入器（Log Writer）将重做（Redo）信息完全写入到重做日志文件中。<br>
     默认值: WAIT
 
-  - WAIT : 等待
+  - **WAIT**: 等待
 
     服务器进程将等待确认。在绝大多数场景下，这是推荐且最稳妥的选项。
 
-  - NOWAIT : 不等待。
+  - **NOWAIT**: 不等待。
     
     不关心重做信息是否已持久化到日志文件，事务立即完成提交。此选项能提升事务处理速度，但存在因系统故障导致数据丢失的风险。
 
@@ -54,11 +60,11 @@ ALTER SESSION
     指定日志写入器（Log Writer）处理重做信息的方式。<br>
     默认值: IMMEDIATE
 
-  - IMMEDIATE : 立即提交
+  - **IMMEDIATE**: 立即提交
 
     每次提交事务都立即触发一次日志写入磁盘操作。设置为IMMEDIATE可能会因为频繁的强制磁盘I/O而影响整体的事务吞吐性能。
 
-  - BATCH : 批量提交。
+  - **BATCH**: 批量提交。
     
     先将多个事务的重做信息缓存在内存中，当积累到一定量后再批量写入日志文件。设置为BATCH能提高性能，但在实例发生故障时，可能导致尚未写入日志的这批重做信息丢失。
 
@@ -66,11 +72,11 @@ ALTER SESSION
   
     控制执行计划输出中是否包含谓语（过滤条件）信息。
 
-  - TRUE : 开启
+  - **TRUE**: 开启
 
     开启后，生成的执行计划将显示相关的谓语条件。
 
-  - FALSE : 关闭
+  - **FALSE**: 关闭
     
     关闭后，执行计划中不显示谓语条件。
 
@@ -78,11 +84,11 @@ ALTER SESSION
   
     基于成本的优化器（CBO）外连接（Outer Join）重排序优化开关。
 
-  - ON : 开启
+  - **ON**: 开启
 
     开启后，CBO会尝试对外连接操作进行重新排序以寻找更优的执行计划。
 
-  - OFF : 关闭
+  - **OFF**: 关闭
     
     关闭后，CBO将不对外连接操作进行重排序优化。
 
@@ -106,11 +112,11 @@ ALTER SESSION
   
     切换当前会话的默认模式（Schema）。默认值为登录用户的模式。
 
-    - 若当前位于根租户中：
+    - **若当前位于根租户中**:
         - 如果 `schema_value` 带有租户前缀，会话将切换至指定非根租户下的模式。
         - 如果 `schema_value` 不带租户前缀，会话将切换至根租户下的一个模式。
     
-    - 若当前位于非根租户中：
+    - **若当前位于非根租户中**:
         - 如果 `schema_value` 带有租户前缀，该前缀必须与当前租户名一致，否则会报非法操作错误。
         - 如果 `schema_value` 不带租户前缀，会话将切换至当前租户下的一个模式。
 
@@ -118,88 +124,93 @@ ALTER SESSION
   
     设置与国家语言支持（NLS）相关的会话参数。
 
-    - nls_param 可选范围如下：
-        - NLS_DATE_FORMAT，默认值为 `"YYYY-MM-DD HH24:MI:SS"`。
-        - NLS_TIMESTAMP_FORMAT，默认值为 `"YYYY-MM-DD HH24:MI:SS.FF"`。
-        - NLS_TIMESTAMP_TZ_FORMAT，默认值为 `"YYYY-MM-DD HH24:MI:SS.FF TZH:TZM"`。
-        - NLS_TIME_FORMAT，默认值为 `"HH:MI:SS.FF AM"`。
-        - NLS_TIME_TZ_FORMAT，默认值为 `"HH:MI:SS.FF AM TZR"`。
+    - **nls_param 可选范围如下**:
+    - **NLS_DATE_FORMAT**: 默认值为 `"YYYY-MM-DD HH24:MI:SS"`。
+    - **NLS_TIMESTAMP_FORMAT**: 默认值为 `"YYYY-MM-DD HH24:MI:SS.FF"`。
+    - **NLS_TIMESTAMP_TZ_FORMAT**: 默认值为 `"YYYY-MM-DD HH24:MI:SS.FF TZH:TZM"`。
+    - **NLS_TIME_FORMAT**: 默认值为 `"HH:MI:SS.FF AM"`。
+    - **NLS_TIME_TZ_FORMAT**: 默认值为 `"HH:MI:SS.FF AM TZR"`。
 
 - **cbo_param** = cbo_param_value
   
     设置基于成本的优化器（CBO）相关的调优参数。
 
     cbo_param 可选范围如下：
-    - CBO_INDEX_CACHING，整型，取值范围[0, 100]，默认值为0，单位为百分比。
-    - CBO_INDEX_COST_ADJ，整型，取值范围[1, 10000]，默认值为100，单位为百分比。
+    - **CBO_INDEX_CACHING**: 整型，取值范围[0, 100]，默认值为0，单位为百分比。
+    - **CBO_INDEX_COST_ADJ**: 整型，取值范围[1, 10000]，默认值为100，单位为百分比。
 
-- **{ ENABLE | DISABLE } { TRIGGERS | INTERACTIVE TIMEOUT | NOLOGGING | OPTINFO_LOG }**
-
-||ENABLE (启用)|DISABLE (禁用)|
-|---|---|---|
-| TRIGGERS | 当前会话下执行的SQL语句将激活相关的触发器。 | 当前会话下执行的SQL语句不会激活触发器。 |
-| INTERACTIVE TIMEOUT | 开启会话空闲超时检测。默认情况下，若会话连续30分钟无SQL请求，服务端将自动关闭该会话。 | 关闭会话空闲超时检测。 |
-| NOLOGGING | 当前会话下，执行插入操作时不记录重做（Redo）日志和回滚（Undo）日志。**警告**：此方式属于高风险操作，不建议常规使用。若必须使用，务必在NOLOGGING插入操作完成后，显式执行一次全量检查点（CHECKPOINT）保证数据持久化到磁盘，然后才能进行其他正常业务。否则，若数据库因断电等异常宕机，可能导致无法正常恢复。 | 当前会话下，执行插入操作时会正常记录重做日志和回滚日志。 |
-| OPTINFO_LOG | 在当前会话下开启优化器详细日志。执行计划生成的详细过程将被记录到 `log/opt/zengine.opt` 日志文件中。系统默认会在2分钟后自动关闭此日志。如需继续使用，需重新执行此命令开启。 | 在当前会话下关闭优化器详细日志。 |
+- **{ ENABLE | DISABLE } { TRIGGERS | INTERACTIVE TIMEOUT | NOLOGGING | OPTINFO_LOG }**:
+  - TRIGGERS
+    - **ENABLE（启用）**: 当前会话下执行的 SQL 语句将激活相关的触发器。
+    - **DISABLE（禁用）**: 当前会话下执行的 SQL 语句不会激活触发器。
+  - INTERACTIVE TIMEOUT
+    - **ENABLE（启用）**: 开启会话空闲超时检测。默认情况下，若会话连续 30 分钟无 SQL 请求，服务端将自动关闭该会话。
+    - **DISABLE（禁用）**: 关闭会话空闲超时检测。
+  - NOLOGGING
+    - **ENABLE（启用）**: 当前会话下，执行插入操作时不记录重做（Redo）日志和回滚（Undo）日志。**警告**：此方式属于高风险操作，不建议常规使用。若必须使用，务必在 NOLOGGING 插入操作完成后，显式执行一次全量检查点（CHECKPOINT）保证数据持久化到磁盘，然后才能进行其他正常业务。否则，若数据库因断电等异常宕机，可能导致无法正常恢复。
+    - **DISABLE（禁用）**: 当前会话下，执行插入操作时会正常记录重做日志和回滚日志。
+  - OPTINFO_LOG
+    - **ENABLE（启用）**: 在当前会话下开启优化器详细日志。执行计划生成的详细过程将被记录到 `log/opt/zengine.opt` 日志文件中。系统默认会在 2 分钟后自动关闭此日志。如需继续使用，需重新执行此命令开启。
+    - **DISABLE（禁用）**: 在当前会话下关闭优化器详细日志。
 
 ## 示例
 
 - 设置会话在重做信息写入日志文件后再提交事务。
 
-    ```
+    ```sql
         ALTER SESSION SET COMMIT_WAIT_LOGGING = WAIT;
     ```
 
 - 设置日志写入器立即写入每个事务的重做信息。
 
-    ```
+    ```sql
         ALTER SESSION SET COMMIT_MODE = IMMEDIATE;
     ```
 
 - 将当前会话时区设置为东八区（北京时间）。
 
-    ```
+    ```sql
         ALTER SESSION SET TIME_ZONE = '+08:00';
     ```
 
 - 设置会话的日期显示格式。
 
-    ```
+    ```sql
         ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS';
     ```
 
 - 如果存在用户user1，将当前会话的默认模式切换到user1。
 
-    ```
+    ```sql
         ALTER SESSION SET current_schema = user1;
     ```
 
 - 开启执行计划中的谓语信息显示。
 
-    ```
+    ```sql
         ALTER SESSION SET _SHOW_EXPLAIN_PREDICATE = TRUE;
     ```
 
 - 设置会话锁等待超时时间为0毫秒（即不等待，立即报错）。
 
-    ```
+    ```sql
         ALTER SESSION SET LOCK_WAIT_TIMEOUT = 0;
     ```
 
 - 启用当前会话的触发器。
 
-    ```
+    ```sql
         ALTER SESSION ENABLE TRIGGERS;
     ```
 
 - 禁用会话空闲超时检测。
 
-    ```
+    ```sql
         ALTER SESSION DISABLE INTERACTIVE TIMEOUT;
     ```
 
 - 启用当前会话的NOLOGGING插入模式。
 
-    ```
+    ```sql
         ALTER SESSION ENABLE NOLOGGING;
     ```

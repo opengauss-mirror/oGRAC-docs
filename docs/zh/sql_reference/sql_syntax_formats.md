@@ -1,4 +1,4 @@
-# SQL语法格式说明
+# SQL Syntax Formats
 
 **表 1**  SQL语法格式说明
 

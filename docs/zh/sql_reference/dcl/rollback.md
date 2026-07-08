@@ -1,10 +1,10 @@
 # ROLLBACK
 
-## 功能说明
+## 功能描述
 
 该语句用于撤销当前事务中的所有操作，并终止该事务。
 
-## 使用须知
+## 注意事项
 
 建议用户在退出程序时，优先使用COMMIT（提交）或ROLLBACK（回滚）命令显示确认事务状态。若未主动执行提交操作且程序非正常关闭，
 数据库将自动撤销所有未保存的修改，保证数据一致性。
@@ -17,17 +17,17 @@
 
 不支持CREATE TABLESPACE和ALTER TABLESPACE两种DDL语句的回滚。
 
-## 语法结构
+## 语法格式
 
 ROLLBACK [ TRANSACTION | TO SAVEPOINT savepoint_name ]
 
-### 参数解释
+## 参数说明
 
-TRANSACTION：显示回滚事务
-TO SAVEPOINT：回滚至保存点
-savepoint_name：保存点名称
+- TRANSACTION：显示回滚事务。
+- TO SAVEPOINT：回滚至保存点。
+- savepoint_name：保存点名称。
 
-## 样例
+## 示例
 
 创建表topics，写入数据后，撤销所有操作并终止该事务。
 

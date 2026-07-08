@@ -14,9 +14,9 @@
 
 ## 语法格式
 
-**stmt**
+**stmt:**
 
-```
+```sql
 CREATE [UNIQUE] INDEX [IF NOT EXISTS] [schema_name.]index_name ON index_table_clause
     [CRMODE PAGE]
     [PARALLEL n]
@@ -24,7 +24,7 @@ CREATE [UNIQUE] INDEX [IF NOT EXISTS] [schema_name.]index_name ON index_table_cl
     [NOLOGGING]
 ```
 
-**index_table_clause**
+**index_table_clause:**
 
 ```
     [schema_name.]table_name
@@ -32,13 +32,13 @@ CREATE [UNIQUE] INDEX [IF NOT EXISTS] [schema_name.]index_name ON index_table_cl
     index_attr_clause
 ```
 
-**index_attr_clause**
+**index_attr_clause:**
 
 ```
     [[TABLESPACE tablespace_name] [index_partition_clause]]
 ```
 
-**index_partition_clause**
+**index_partition_clause:**
 
 ```
     LOCAL [({PARTITION partition_name [TABLESPACE tablespace_name] [PCTFREE int]}[,...])]
@@ -46,17 +46,17 @@ CREATE [UNIQUE] INDEX [IF NOT EXISTS] [schema_name.]index_name ON index_table_cl
 
 ## 参数说明
 
-- column_expr: 索引表达式，函数索引列表达式仅支持部分函数表达式[注意事项](#注意事项)。
-- CRMODE：MVCC模式。PAGE是页级MVCC, 默认和表的CRMODE一致
-- PARALLEL：并行创建索引的并行度。不支持函数索引/临时表索引/在线创建索引
-- REVERSE：反向索引
-- NOLOGGING：创建索引时不记录REDO
-- LOCAL：分区索引，即每个分区上单独创建索引
-- PCTFREE: 指定索引块中为未来索引条目更新预留的空间百分比，单位%
+- **column_expr**: 索引表达式，函数索引列表达式仅支持部分函数表达式[注意事项](#注意事项)。
+- **CRMODE**: MVCC模式。PAGE是页级MVCC, 默认和表的CRMODE一致
+- **PARALLEL**: 并行创建索引的并行度。不支持函数索引/临时表索引/在线创建索引
+- **REVERSE**: 反向索引
+- **NOLOGGING**: 创建索引时不记录REDO
+- **LOCAL**: 分区索引，即每个分区上单独创建索引
+- **PCTFREE**: 指定索引块中为未来索引条目更新预留的空间百分比，单位%
 
 ## 示例
 
-```sql
+```
 -- 在employees表的last_name列上创建普通索引
 CREATE INDEX idx_emp_lastname ON employees(last_name);
 

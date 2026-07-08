@@ -13,7 +13,7 @@
 
 ## 语法格式
 
-**stmt**
+**stmt:**
 
 ```sql
 CREATE [OR REPLACE] DIRECTORY directory_name AS directory_path
@@ -21,13 +21,13 @@ CREATE [OR REPLACE] DIRECTORY directory_name AS directory_path
 
 ## 参数说明
 
-- OR REPLACE：已存在同名目录对象就替换
-- directory_name: 目录对象名字，长度限制最长63
-- directory_path：目录对象所在的路径，需要用单引号括起来，长度限制最长187
+- **OR REPLACE**: 已存在同名目录对象就替换
+- **directory_name**: 目录对象名字，长度限制最长63
+- **directory_path**: 目录对象所在的路径，需要用单引号括起来，长度限制最长187
 
 ## 示例
 
-```sql
+```
 -- 创建目录对象
 CREATE DIRECTORY data_dir_0 AS '/home/ogracdba/test';
 

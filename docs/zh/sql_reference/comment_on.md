@@ -26,7 +26,7 @@
 
 ## 语法格式
 
-```
+```sql
 COMMENT ON 
 {
     TABLE [ schema_name. ] { table_name | view_name }
@@ -37,13 +37,11 @@ IS 'string';
 
 ## 参数说明
 
-| 参数                                                           | 说明                   |
-| ------------------------------------------------------------ | -------------------- |
-| `[ schema_name. ]`                                           | 用户名（模式名）。缺省时为当前登录用户。 |
-| `{ table_name \| view_name }`                                | 要添加注释的表名或视图名。        |
-| `[ schema_name. ] { table_name. \| view_name. } column_name` | 要添加注释的列名。            |
-| `IS`                                                         | 指定注释内容的关键字。          |
-| `string`                                                     | 注释文本，最大长度为 4000 字节。  |
+- **[ schema_name. ]**: 用户名（模式名）。缺省时为当前登录用户。
+- **{ table_name | view_name }**: 要添加注释的表名或视图名。
+- **[ schema_name. ] { table_name. | view_name. } column_name**: 要添加注释的列名。
+- **IS**: 指定注释内容的关键字。
+- **string**: 注释文本，最大长度为 4000 字节。
 
 ## 示例
 

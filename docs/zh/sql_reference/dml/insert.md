@@ -1,8 +1,14 @@
-# 插入数据INSERT
+# INSERT
+
+## 功能描述
 
 INSERT用于在数据库表中插入新的数据行。
 
-## 基本语法
+## 注意事项
+
+插入数据时，值的数量和顺序必须与目标列一一对应；字符串和日期值需用单引号括起，数字值不需要引号。批量插入前请确认源查询的列数与目标列数匹配。
+
+## 语法格式
 
 最基本的 INSERT 语句形式如下：
 
@@ -11,12 +17,16 @@ INSERT INTO [schema.]table_name [(column1, column2, ..., columnN)]
 VALUES (value1, value2, ..., valueN)[, (value1, value2, ..., valueN)];
 ```
 
-- INSERT INTO ... VALUES: 关键字，指示要执行插入操作。
-- table_name: 要插入数据的目标表的名称。
-- [schema.]: (可选) 指定表所属Schema。如果省略，默认为当前用户的Schema。
-- (column1, column2, ..., columnN): (可选) 指定要插入值的列的列表。SQL语句中明确指定列时可提高语句可读性和健壮性。即使表结构发生变化，只要不涉及这些指定的列，此 INSERT 语句仍然有效。列的顺序不必与表定义中的物理顺序一致，但提供的 VALUES 必须与这里的列顺序一一对应。
-- (value1, value2, ..., valueN): 提供要插入到指定列中的具体值，值的数量和顺序必须与 column_list 中指定的列相匹配。
-- [, (value1, value2, ..., valueN)]: (可选) 可以同时插入多行数据，每个值列表对应一行数据，中间用逗号分隔。
+## 参数说明
+
+| 参数 | 说明 |
+|------|------|
+| INSERT INTO ... VALUES | 关键字，指示要执行插入操作。 |
+| table_name | 要插入数据的目标表的名称。 |
+| [schema.] | （可选）指定表所属Schema。如果省略，默认为当前用户的Schema。 |
+| (column1, column2, ..., columnN) | （可选）指定要插入值的列的列表。SQL语句中明确指定列时可提高语句可读性和健壮性。即使表结构发生变化，只要不涉及这些指定的列，此 INSERT 语句仍然有效。列的顺序不必与表定义中的物理顺序一致，但提供的 VALUES 必须与这里的列顺序一一对应。 |
+| (value1, value2, ..., valueN) | 提供要插入到指定列中的具体值，值的数量和顺序必须与 column_list 中指定的列相匹配。 |
+| [, (value1, value2, ..., valueN)] | （可选）可以同时插入多行数据，每个值列表对应一行数据，中间用逗号分隔。 |
 
 values 子句中提供的值需要注意以下格式：
 
@@ -62,10 +72,15 @@ INSERT INTO employees VALUES (103, 'Bob Johnson', 55000, SYSDATE),
 INSERT INTO [schema.]target_table [(column1, column2, ..., columnN)] SELECT {subquery | (subquery)};
 ```
 
-- [schema.]target_table: 目标表。
-- (column1, column2, ..., columnN): (可选) 目标表中接收数据的列。
-- SELECT {subquery | (subquery)}: 提供源数据的 SELECT 查询。
-- 注意：subquery 返回的列数必须与目标列数（或目标表总列数，如果不指定列）匹配。数据类型需要兼容。
+### 批量插入参数
+
+| 参数 | 说明 |
+|------|------|
+| [schema.]target_table | 目标表。 |
+| (column1, column2, ..., columnN) | （可选）目标表中接收数据的列。 |
+| SELECT {subquery \| (subquery)} | 提供源数据的 SELECT 查询。 |
+
+> **说明：** subquery 返回的列数必须与目标列数（或目标表总列数，如果不指定列）匹配。数据类型需要兼容。
 
 示例：从一个表复制数据（可经过计算）到另一个表
 
@@ -79,4 +94,21 @@ INSERT INTO bonus_log (emp_id, bonus_amount, bonus_date)
 SELECT id, salary * 0.1, SYSDATE
 FROM employees
 WHERE department_id = 10;
+```
+
+## 示例
+
+```sql
+-- 插入单条完整记录
+INSERT INTO employees (id, name, salary, hire_date)
+VALUES (1, 'Alice', 80000, TO_DATE('2024-01-10', 'YYYY-MM-DD'));
+
+-- 插入多条记录
+INSERT INTO employees (id, name, salary)
+VALUES (2, 'Bob', 70000),
+       (3, 'Carol', 75000);
+
+-- 从查询结果批量插入
+INSERT INTO employees_archive (id, name, salary)
+SELECT id, name, salary FROM employees WHERE hire_date < TO_DATE('2024-01-01', 'YYYY-MM-DD');
 ```

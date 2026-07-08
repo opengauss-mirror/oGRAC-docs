@@ -1,4 +1,4 @@
-# ALTER USER 使用说明
+# ALTER USER
 
 ## 功能描述
 
@@ -9,7 +9,7 @@
 - Profile 绑定变更
 - 默认表空间设置
 
-## 使用条件与限制
+## 注意事项
 
 ### 权限要求
 
@@ -49,85 +49,72 @@ ALTER USER user_name
 
 ### 用户名
 
-- **userName**
+- **userName**:
   - 必须是数据库中已存在的用户
 
 ### 密码相关参数
 
-- **IDENTIFIED BY**
+- **IDENTIFIED BY**:
   - 用于为用户设置新密码。
 
-- **newPassword** 
-需满足以下规则：
-  - **长度要求**
-    不小于所属 Profile 的 `PASSWORD_MIN_LEN`
-    最大不超过 64 个字符
+- **newPassword**:
+  > **说明：** 密码需满足以下规则：
+  >
+  > - **长度要求**: 不小于所属 Profile 的 `PASSWORD_MIN_LEN`
+  >     最大不超过 64 个字符
+  >
+  > - **Profile 同步校验**: 若同时修改 `PASSWORD_MIN_LEN`，以修改后的值为准
+  >
+  > - **字符规则**: 未使用单引号时，首字符必须为字母、`#` 或 `_`
+  >     不得与用户名或其倒序相同（忽略大小写）
+  >
+  > - **复杂度要求**: 至少满足以下 **3 类**字符：
+  >       - 数字
+  >       - 小写字母
+  >       - 大写字母
+  >       - 空格或特殊字符
+  >
+  > - **特殊字符处理**: 含空格或 `_`、`#`、`$` 以外的特殊字符时，需使用单引号
+  >
+  > - **新旧密码差异**: 新密码与旧密码至少有 **2 个字符位不同**
+  >
+  > - **ctsql 特殊说明**: 密码中包含 `$` 时，需使用 `\` 转义
 
-  - **Profile 同步校验**
-    若同时修改 `PASSWORD_MIN_LEN`，以修改后的值为准
+- **REPLACE oldPassword**:
 
-  - **字符规则**
-    未使用单引号时，首字符必须为字母、`#` 或 `_`
-    不得与用户名或其倒序相同（忽略大小写）
+  - **未指定 `REPLACE`**: 不校验旧密码
 
-  - **复杂度要求**
-    至少满足以下 **3 类**字符：
-      - 数字
-      - 小写字母
-      - 大写字母
-      - 空格或特殊字符
+  - **指定 `REPLACE`**: 必须提供正确的旧密码
 
-  - **特殊字符处理**
-    含空格或 `_`、`#`、`$` 以外的特殊字符时，需使用单引号
-
-  - **新旧密码差异**
-    新密码与旧密码至少有 **2 个字符位不同**
-
-  - **ctsql 特殊说明**
-    密码中包含 `$` 时，需使用 `\` 转义
-
-- **REPLACE oldPassword**
-
-  - **未指定 `REPLACE`**
-    不校验旧密码
-
-  - **指定 `REPLACE`**
-    必须提供正确的旧密码
-
-  - **参数限制**
-    当 `REPLACE_PASSWORD_VERIFY=TRUE` 时，普通用户修改密码必须使用 `REPLACE`
+  - **参数限制**: 当 `REPLACE_PASSWORD_VERIFY=TRUE` 时，普通用户修改密码必须使用 `REPLACE`
 
 ### 账户与属性控制
 
-- **PASSWORD EXPIRE**
+- **PASSWORD EXPIRE**:
   - 将用户密码设置为过期状态
   - 用户下次登录时需修改密码（ctsql 会提示）
 
-- **ACCOUNT LOCK**
+- **ACCOUNT LOCK**:
   - 锁定用户账户，禁止登录
 
-- **ACCOUNT UNLOCK**
+- **ACCOUNT UNLOCK**:
   - 解锁用户账户，恢复登录能力
 
-- **PROFILE profileName**
+- **PROFILE profileName**:
   - 为用户指定一个已存在的 Profile
 
-- **DEFAULT TABLESPACE tableSpaceName**
+- **DEFAULT TABLESPACE tableSpaceName**:
   - 设置用户默认表空间
 
-## 可用特殊字符列表
+### 可用特殊字符列表
 
-- **常用符号**  
-  `` ` ~ ! @ # $ % ^ ``
+- **常用符号**: `` ` ~ ! @ # $ % ^ ``
 
-- **运算与连接符**  
-  `` & * ( ) - _ = + ``
+- **运算与连接符**: `` & * ( ) - _ = + ``
 
-- **分隔与结构符**  
-  `` [ ] { } | : ' " ``
+- **分隔与结构符**: `` [ ] { } | : ' " ``
 
-- **比较与路径符**  
-  `` < > . , / ? ``
+- **比较与路径符**: `` < > . , / ? ``
 
 ---
 
@@ -135,30 +122,30 @@ ALTER USER user_name
 
 ### 创建用户并指定初始密码
 
-```sql
+```
 CREATE USER userName IDENTIFIED BY oldPassword;
 ```
 
 ### 修改密码并校验旧密码
 
-```sql
+```
 ALTER USER userName IDENTIFIED BY newPassword REPLACE oldPassword;
 ```
 
 ### 锁定用户
 
-```sql
+```
 ALTER USER userName ACCOUNT LOCK;
 ```
 
 ### 解锁用户
 
-```sql
+```
 ALTER USER userName ACCOUNT UNLOCK;
 ```
 
 ### 设置密码过期
 
-```sql
+```
 ALTER USER userName PASSWORD EXPIRE;
 ```

@@ -2,43 +2,40 @@
 
 ## 功能描述
 
-删除分区表。如需要删除特定分区使用ALTER TABLE DROP PARTITION PartitionName。
+删除分区表中的指定分区及其数据。
 
 ## 注意事项
 
-- 删除其他用户的表需要DROP ANY TABLE权限，SYS用户表只能有SYS用户删除。
-- 开启回收站功能后删除表并不会立即删除，可以通过闪回命令恢复数据，system/nologging/sysaux/临时表空间下的表不支持闪回。
-- oGRAC重启回滚期间不支持删除表。
+- 执行该语句需要拥有对应表的 ALTER TABLE 权限
+- 删除分区会同时删除该分区中存储的所有数据，且不可通过回收站恢复分区本身
+- 分区表中必须保留至少一个分区，不能删除唯一的分区
+- 如果其他对象（如索引、视图）依赖该分区，删除前需要先处理相关依赖
+- oGRAC 重启回滚期间不支持删除分区
 
 ## 语法格式
 
-**stmt**
+**stmt:**
 
-```
-DROP TABLE
-[IF EXISTS] [schema_name.]table_name
-[CASCADE CONSTRAINTS]
-[PURGE]
+```sql
+ALTER TABLE [schema_name.]table_name
+    DROP PARTITION partition_name
 ```
 
 ## 参数说明
 
-- CASCADE CONSTRAINTS: 删除表时删除外键引用。
-- PURGE: 删除表时不放入回收站。
+- **schema_name**: 分区表所属的模式名，省略时默认为当前用户
+- **table_name**: 要删除分区的分区表名
+- **partition_name**: 要删除的分区名
 
 ## 示例
 
-```sql
--- 删除单个表
-DROP TABLE employees;
+```
+-- 删除范围分区表中的指定分区
+ALTER TABLE sales_range DROP PARTITION sales_q1;
 
--- 删除指定模式下的表
-DROP TABLE sys.session_cache;
+-- 删除列表分区表中的指定分区
+ALTER TABLE employees_list DROP PARTITION dept_hr;
 
--- 删除表并级联删除外键约束
-DROP TABLE departments CASCADE CONSTRAINTS;
-
--- 彻底删除表，不进回收站
-DROP TABLE temporary_data PURGE;
-
+-- 删除指定模式下分区表的分区
+ALTER TABLE hr.sales_range DROP PARTITION sales_2023_q4;
 ```

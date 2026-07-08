@@ -11,7 +11,7 @@ FLASHBACK即闪回功能，允许用户在不需要备份的情况下，快速�
 
 ## 语法格式
 
-```
+```sql
 FLASHBACK TABLE [schema_name.]table_name
 TO { 
     SCN scn_expr 
@@ -31,7 +31,7 @@ TO {
 
 ## 示例
 
-```sql
+```
 
 -- 恢复drop的表
 flashback table tb1 to before drop;

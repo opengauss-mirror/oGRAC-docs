@@ -1,4 +1,4 @@
-# ANALYZE<a name="ZH-CN_CONCEPT_0289895656"></a>
+# ANALYZE
 
 ## 功能描述
 
@@ -20,31 +20,21 @@
 
 收集索引统计信息：
 
-```sql
+```
  ANALYZE { INDEX [ schema_name. ]index_name { COMPUTE STATISTICS | ESTIMATE STATISTICS sample_percent }}
 ```
 
 ## 参数说明
 
-- **[ schema_name. ]table_name**
-
-    要获取其统计信息的表名，不能和用户下的表重名。
+- **[ schema_name. ]table_name**: 要获取其统计信息的表名，不能和用户下的表重名。
     
-- **COMPUTE STATISTICS**
+- **COMPUTE STATISTICS**: 收集统计信息，固定语法
 
-    收集统计信息，固定语法
+- **ESTIMATE STATISTICS sample_percent**: 使用采样的方式收集，其中sample_percent为采样率，取值范围是`[0, 100]`的整数
 
-- **ESTIMATE STATISTICS sample_percent**
+- **FOR REPORT**: 生成统计信息正确性检测报告，用于比较在某个采样率下的统计信息与系统中已收集的统计信息的偏差率。生成的检测报告会保存在LOG_HOME的opt目录下，其中LOG_HOME是安装时的日志目录
 
-    使用采样的方式收集，其中sample_percent为采样率，取值范围是`[0, 100]`的整数
-
-- **FOR REPORT**
-
-    生成统计信息正确性检测报告，用于比较在某个采样率下的统计信息与系统中已收集的统计信息的偏差率。生成的检测报告会保存在LOG_HOME的opt目录下，其中LOG_HOME是安装时的日志目录
-
-- **SAMPLE sample_percent**
-
-    使用采样率采样统计生成检测报告，sample_percent为采样率，取值范围是`[0, 100]`的整数，默认为100
+- **SAMPLE sample_percent**: 使用采样率采样统计生成检测报告，sample_percent为采样率，取值范围是`[0, 100]`的整数，默认为100
 
 ## 示例
 

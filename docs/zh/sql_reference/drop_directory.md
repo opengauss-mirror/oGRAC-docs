@@ -10,7 +10,7 @@
 
 ## 语法格式
 
-**stmt**
+**stmt:**
 
 ```sql
 DROP DIRECTORY directory_name
@@ -18,11 +18,11 @@ DROP DIRECTORY directory_name
 
 ## 参数说明
 
-- directory_name: 待删除的目录对象名字
+- **directory_name**: 待删除的目录对象名字
 
 ## 示例
 
-```sql
+```
 DROP DIRECTORY data_dir_0;
 
 ```
