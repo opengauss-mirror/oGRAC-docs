@@ -1,10 +1,10 @@
 # REVOKE
 
-## 功能说明
+## 功能描述
 
 从被授权主体处回收系统权限或角色。
 
-## 使用须知
+## 注意事项
 
 -- 系统权限回收的执行者权限要求：
    执行 REVOKE 操作回收系统权限时，操作者需满足以下任一条件：
@@ -23,7 +23,7 @@
 -- DBA 角色权限限制：
    DBA 角色的权限不允许回收。该角色的初始权限在数据库创建阶段即已确定；后续可新增授予权限，但已赋予的权限无法执行回收操作。
 
-## 语法结构
+## 语法格式
 
 -- 回收系统权限：
    REVOKE { ALL [ PRIVILEGES ] | { system_privilege_name | role_name } [ , ... ] } FROM revokee
@@ -41,27 +41,19 @@
    REVOKE INHERIT PRIVILEGES ON USER user_name FROM revokee
    revokee 子句：{ user_name } [ , ... ]
 
-### 参数解释
+## 参数说明
 
--- system_privilege_name：系统权限名称。当前系统支持的所有系统权限。
+- system_privilege_name：系统权限名称。当前系统支持的所有系统权限。
+- role_name：角色名称。参考 ROLE 语句的相关说明，当从用户或其他角色处回收该角色时，意味着删除被回收者（revokee）名下归属于该角色的所有权限。
+- ALL [ PRIVILEGES ]：代表全部系统权限，其中 PRIVILEGES 关键字可省略。
+- object_privilege_name：对象权限名称。
+- object_type：对象类型名称。若未指定该参数，系统将按以下优先级顺序查找对象：表、视图、序列、高级包、存储过程、函数。
+- ALL [ PRIVILEGES ]：代表全部对象权限，其中 PRIVILEGES 关键字可省略。
+- [ schema_name. ]：用户名。未指定该参数时，默认使用当前登录的用户。
+- revokee：被授权者（权限的回收对象），可以是用户或角色；单次操作可指定多个被授权者。
+- user_name：被回收权限的目标用户名。
 
--- role_name：角色名称。参考 ROLE 语句的相关说明，当从用户或其他角色处回收该角色时，意味着删除被回收者（revokee）名下归属于该角色的所有权限。
-
--- ALL [ PRIVILEGES ]：代表全部系统权限，其中 PRIVILEGES 关键字可省略。
-
--- object_privilege_name：对象权限名称。
-
--- object_type：对象类型名称。若未指定该参数，系统将按以下优先级顺序查找对象：表、视图、序列、高级包、存储过程、函数。
-
--- ALL [ PRIVILEGES ]：代表全部对象权限，其中 PRIVILEGES 关键字可省略。
-
--- [ schema_name. ]：用户名。未指定该参数时，默认使用当前登录的用户。
-
--- revokee：被授权者（权限的回收对象），可以是用户或角色；单次操作可指定多个被授权者。
-
--- user_name：被回收权限的目标用户名。
-
-## 样例
+## 示例
 
 ### 将系统权限从用户wangwu收回
 

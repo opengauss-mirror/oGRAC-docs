@@ -15,7 +15,7 @@
 
 **stmt:**
 
-```
+```sql
 DROP TABLESPACE name
     [INCLUDING CONTENTS
         [{AND|KEEP} DATAFILES [CASCADE CONSTRAINTS]]
@@ -24,14 +24,14 @@ DROP TABLESPACE name
 
 ## 参数说明
 
-- 不指定INCLUDING：删除表空间时保留数据文件，如果待删除的表空间存在表索引等对象或者是用户默认表空间，删除会报错
-- INCLUDING CONTENTS AND DATAFILES: 删除表空间时同时删除数据文件
-- INCLUDING CONTENTS KEEP DATAFILES: 删除表空间时保留数据文件
-- CASCADE CONSTRAINTS: 删除表空间时删除相关的级联
+- **不指定INCLUDING**: 删除表空间时保留数据文件，如果待删除的表空间存在表索引等对象或者是用户默认表空间，删除会报错
+- **INCLUDING CONTENTS AND DATAFILES**: 删除表空间时同时删除数据文件
+- **INCLUDING CONTENTS KEEP DATAFILES**: 删除表空间时保留数据文件
+- **CASCADE CONSTRAINTS**: 删除表空间时删除相关的级联
 
 ## 示例
 
-```sql
+```
 -- 1. 基本删除表空间（仅删除元数据，保留物理文件）
 DROP TABLESPACE tbs1;
 

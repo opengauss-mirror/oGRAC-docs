@@ -1,6 +1,6 @@
 # ALTER TABLE
 
-## 主要用途
+## 功能描述
 
 ALTER TABLE 操作用于对数据库表的定义进行结构变更，包含对字段和约束条件的调整，具体功能如下：
 
@@ -11,7 +11,7 @@ ALTER TABLE 操作用于对数据库表的定义进行结构变更，包含对�
 - 将已有分区拆分为更小的分区单元
 - 在两个表或分区之间进行数据交换
 
-## 使用限制与说明
+## 注意事项
 
 - 执行此操作的用户必须具有 ALTER TABLE 或 ALTER ANY TABLE 系统权限。非特权用户不能修改 SYS 账户所属的对象。
 - 如果命令中指定的表名称、字段名称或约束名称存在冲突或无效，或者表内数据与要启用的非验证约束状态不符，系统会给出明确的错误信息。
@@ -22,7 +22,7 @@ ALTER TABLE 操作用于对数据库表的定义进行结构变更，包含对�
 
 ## 语法格式
 
-```
+```sql
 ALTER TABLE [ schema_name. ]table_name
 { alter_table_properties
 | column_clauses
@@ -229,189 +229,112 @@ ALTER TABLE [ schema_name. ]table_name
 
 ## 参数说明
 
-- **[_schema_name_.]**
+- **[_schema_name_.]**: 模式名称。当未显式指定时，系统默认采用当前登录用户的名称作为模式名。
 
-    模式名称。当未显式指定时，系统默认采用当前登录用户的名称作为模式名。
+- **_table_name_**: 需要修改的目标数据表名称，该表必须已经存在于数据库中。
 
-- **_table_name_**
+- **_alter_table_properties_**: 用于调整数据表的物理存储特性。例如，LOB_storage_clause 可指定大型对象（LOB）字段存储在独立的段中，并可配置为行内或行外存储。目前存储引擎仅支持行外存储模式。
 
-    需要修改的目标数据表名称，该表必须已经存在于数据库中。
+    - **_physical_attributes_clause_**:
 
-- **_alter_table_properties_**
+        - **INITRANS _integer_**: 调整数据表中每个初始数据页面上预分配的事务槽数量。该参数的取值区间为 [1, 255]。
 
-    用于调整数据表的物理存储特性。例如，LOB_storage_clause 可指定大型对象（LOB）字段存储在独立的段中，并可配置为行内或行外存储。目前存储引擎仅支持行外存储模式。
+            > **说明：**
+            >
+            > - 此修改仅对后续新分配的数据页面生效，已分配的现有页面不受影响。
+            > - 对于分区表，该操作会同时更新表分区及所有二级分区的 INITRANS 属性。
 
-    - **_physical_attributes_clause_**
+        - **_storage_alter_clause_**: 设置数据表可使用的最大存储空间限额。
 
-        - **INITRANS _integer_**
+            - **UNLIMITED**: 表示不对此表的存储空间设置上限。
 
-            调整数据表中每个初始数据页面上预分配的事务槽数量。该参数的取值区间为 [1, 255]。
+            - **_integer_ [K | M | G | T]**: 明确设定表存储空间的最大值，允许的范围是 [1MB, 1TB]。
 
-            注意：
-            - 此修改仅对后续新分配的数据页面生效，已分配的现有页面不受影响。
-            - 对于分区表，该操作会同时更新表分区及所有二级分区的 INITRANS 属性。
+    - **APPENDONLY { ON | OFF }**: 此选项控制并发插入行为。当设置为 ON 时，各插入线程将独立扩展存储空间，可提升高并发下的插入性能。默认值为 OFF。启用此功能需谨慎，若使用不当可能导致存储空间利用率下降。
 
-        - **_storage_alter_clause_**
+        - **ON**: 启用独立空间扩展模式。
 
-            设置数据表可使用的最大存储空间限额。
+            > **重要提示：**
+            >
+            > - 对于分区表，启用 APPENDONLY ON 后，在并行插入场景下需特别注意。用户需预先规划数据，确保每个并行线程插入的数据不会跨越多个分区，即实现"一个线程对应一个分区"。
+            > - 不建议对 HASH 分区表启用 APPENDONLY ON 选项。
 
-            - **UNLIMITED**
+        - **OFF**: 关闭独立空间扩展，采用常规并发插入模式。
 
-                表示不对此表的存储空间设置上限。
+    - **PCTFREE _integer_**: 定义数据块中保留的自由空间百分比。当数据块中的可用空间低于此百分比时，该块仅允许执行更新操作，禁止插入新数据。取值范围是 [0, 80]，默认值为 8。
 
-            - **_integer_ [K | M | G | T]**
+    - **RENAME TO _new_table_name_**: 修改数据表的名称。
 
-                明确设定表存储空间的最大值，允许的范围是 [1MB, 1TB]。
+    - **AUTO_INCREMENT [ = ] value**: 修改表上自增列的起始序列值。若未指定，则默认从 1 开始。
 
-    - **APPENDONLY { ON | OFF }**
+- **_column_clauses_**: 用于变更表结构，包括增加、删除及修改数据列。
 
-        此选项控制并发插入行为。当设置为 ON 时，各插入线程将独立扩展存储空间，可提升高并发下的插入性能。默认值为 OFF。启用此功能需谨慎，若使用不当可能导致存储空间利用率下降。
+    - **_add_column_clause_**: 向表中添加新的数据列。
 
-        - **ON**
+    - **DEFAULT —— [ON UPDATE _expr_]**: 列的默认值支持使用表达式。在创建 DDL 时，若 DEFAULT 是常量表达式，系统会进行列数据类型的兼容性检查。
 
-            启用独立空间扩展模式。
+        - **`[ON UPDATE expr]`**: 此为语法兼容项。当更新行数据且未显式指定该列值时，将使用此更新默认表达式填充该列。
+        - **`INSERT` 和 `UPDATE` 操作中，`DEFAULT` 后面的表达式文本最大长度限制为 1024 个英文字符。若超过此限制，将报错**: "GS-00611, default value string is too long, exceed 1024."。
 
-            重要提示：
-            - 对于分区表，启用 APPENDONLY ON 后，在并行插入场景下需特别注意。用户需预先规划数据，确保每个并行线程插入的数据不会跨越多个分区，即实现"一个线程对应一个分区"。
-            - 不建议对 HASH 分区表启用 APPENDONLY ON 选项。
+    - **COMMENT _'string'_**: 为列添加注释信息。可通过查询 `MY_COL_COMMENTS` 系统视图来查看列注释。
 
-        - **OFF**
-
-            关闭独立空间扩展，采用常规并发插入模式。
-
-    - **PCTFREE _integer_**
-
-        定义数据块中保留的自由空间百分比。当数据块中的可用空间低于此百分比时，该块仅允许执行更新操作，禁止插入新数据。取值范围是 [0, 80]，默认值为 8。
-
-    - **RENAME TO _new_table_name_**
-
-        修改数据表的名称。
-
-    - **AUTO_INCREMENT [ = ] value**
-
-        修改表上自增列的起始序列值。若未指定，则默认从 1 开始。
-
-- **_column_clauses_**
-
-    用于变更表结构，包括增加、删除及修改数据列。
-
-    - **_add_column_clause_**
-
-        向表中添加新的数据列。
-
-    - **DEFAULT —— [ON UPDATE _expr_]**
-
-        列的默认值支持使用表达式。在创建 DDL 时，若 DEFAULT 是常量表达式，系统会进行列数据类型的兼容性检查。
-
-        - `[ON UPDATE expr]`：此为语法兼容项。当更新行数据且未显式指定该列值时，将使用此更新默认表达式填充该列。
-        - `INSERT` 和 `UPDATE` 操作中，`DEFAULT` 后面的表达式文本最大长度限制为 1024 个英文字符。若超过此限制，将报错："GS-00611, default value string is too long, exceed 1024."。
-
-    - **COMMENT _'string'_**
-
-        为列添加注释信息。可通过查询 `MY_COL_COMMENTS` 系统视图来查看列注释。
-
-    - **COLLATE _collation_name_**
-
-        定义该列数据的排序（比较）规则。当比较此列中的数据时，将依据此处定义的排序规则判定大小或相等关系。
+    - **COLLATE _collation_name_**: 定义该列数据的排序（比较）规则。当比较此列中的数据时，将依据此处定义的排序规则判定大小或相等关系。
 
         _collation_name_ 为排序规则名称，可选值如下：
-        - `UTF8_BIN`：适用于 UTF8 字符集。将字符视为二进制串，从高位到低位逐位比较。区分大小写。
-        - `UTF8_GENERAL_CI`：适用于 UTF8 字符集，不区分大小写。
-        - `UTF8_UNICODE_CI`：适用于 UTF8 字符集，不区分大小写。
-        - `GBK_BIN`：适用于 GBK 字符集，区分大小写。
-        - `GBK_CHINESE_CI`：适用于 GBK 字符集，不区分大小写。
+        - **`UTF8_BIN`**: 适用于 UTF8 字符集。将字符视为二进制串，从高位到低位逐位比较。区分大小写。
+        - **`UTF8_GENERAL_CI`**: 适用于 UTF8 字符集，不区分大小写。
+        - **`UTF8_UNICODE_CI`**: 适用于 UTF8 字符集，不区分大小写。
+        - **`GBK_BIN`**: 适用于 GBK 字符集，区分大小写。
+        - **`GBK_CHINESE_CI`**: 适用于 GBK 字符集，不区分大小写。
 
-    - **_inline_constraint_**
+    - **_inline_constraint_**: 内联列约束，作为列定义的一部分直接声明。目前支持 `[NOT] NULL`、`UNIQUE`、`PRIMARY KEY`、唯一索引、外键及 `CHECK` 约束。
 
-        内联列约束，作为列定义的一部分直接声明。目前支持 `[NOT] NULL`、`UNIQUE`、`PRIMARY KEY`、唯一索引、外键及 `CHECK` 约束。
-
-    - **_modify_column_clause_**
-
-        修改一个或多个指定列的属性，包括：更改数据类型、在符合现有约束的前提下添加列约束、以及收缩 LOB 字段占用的空间。函数索引依赖的列不支持修改属性。
+    - **_modify_column_clause_**: 修改一个或多个指定列的属性，包括：更改数据类型、在符合现有约束的前提下添加列约束、以及收缩 LOB 字段占用的空间。函数索引依赖的列不支持修改属性。
         <br>
         修改列的数据类型时，仅在表为空或该列所有值均为 `NULL` 时，才允许进行不兼容的数据类型变更。若要进行兼容的数据类型变更，则表中必须已有数据，且待修改列的值不全为 `NULL`。当前支持的兼容数据类型变更包括：
         - `VARCHAR` 与 `CHAR` 类型相互转换（要求转换后的长度不小于转换前的长度）。
         - `VARCHAR`、`CHAR`、`BINARY`、`INT` 类型增大其长度限制。
         - 高精度数值类型（如 `NUMBER`）扩大其数值范围（要求修改后的小数位数 `scale` 和整数位数 `precision - scale` 均不小于修改前的值）。
 
-            - **_new_datatype_name_**
+            - **_new_datatype_name_**: 修改后列的目标数据类型。
 
-                修改后列的目标数据类型。
+    - **_drop_column_clause_**: 从表中删除指定的列。
 
-    - **_drop_column_clause_**
+        - **DROP [ COLUMN ] column_name**: 删除列字段。`column_name` 为要删除的列的名称。
 
-        从表中删除指定的列。
+    - **_rename_column_clause_**: 重命名表中现有的列。
 
-        - **DROP [ COLUMN ] column_name**
+        - **RENAME COLUMN _old_name_ TO _new_name_**: 重命名列。
 
-            删除列字段。`column_name` 为要删除的列的名称。
+            - **_old_name_**: 待重命名的原列名称。
 
-    - **_rename_column_clause_**
+            - **_new_name_**: 重命名后的新列名称。
 
-        重命名表中现有的列。
+- **_partition_clauses_**: 分区相关操作子句。
 
-        - **RENAME COLUMN _old_name_ TO _new_name_**
+    - **_add_partition_clause_**: 为分区表添加新的分区。
 
-            重命名列。
+        - **VALUES LESS THAN**: 用于范围分区，定义新分区的上限值（不包含）。
 
-            - **_old_name_**
+        - **_partition_value_**: 分区的边界值。
 
-                待重命名的原列名称。
+        - **MAXVALUE**: 表示一个分区允许的最大可能值，通常用于最后一个分区。
 
-            - **_new_name_**
+        - **VALUES**: 用于列表分区，定义新分区包含的特定值集合。
 
-                重命名后的新列名称。
+        - **DEFAULT**: 用于列表分区，创建一个容纳所有未在其他分区中指定值的数据的默认分区。
 
-- **_partition_clauses_**
+        - **INITIAL _integer_ [K | M | G | T]**: 指定新分区的初始存储空间大小。默认情况下，一个新分区会分配一个区段（EXTENT）。可通过此参数自定义初始大小。取值范围是 [64KB, 1TB]。
 
-    分区相关操作子句。
+        - **MAXSIZE { UNLIMITED | _integer_ [K | M | G | T] }**: 指定该分区可使用的最大存储空间限额。
 
-    - **_add_partition_clause_**
+            - **UNLIMITED**: 表示不限制该分区的存储空间上限。
 
-        为分区表添加新的分区。
+            - **integer [K | M | G | T]**: 明确设定该分区存储空间的最大值，取值范围是 [1MB, 1TB]。
 
-        - **VALUES LESS THAN**
+        - **FORMAT CSF**: 对于带CSF属性的HASH分区，由于HASH分区添加时会导致数据重分布，所以带CSF属性的HASH分区添加时可能会报错，报错与否取决于是否满足CSF属性约束。
 
-            用于范围分区，定义新分区的上限值（不包含）。
-
-        - **_partition_value_**
-
-            分区的边界值。
-
-        - **MAXVALUE**
-
-            表示一个分区允许的最大可能值，通常用于最后一个分区。
-
-        - **VALUES**
-
-            用于列表分区，定义新分区包含的特定值集合。
-
-        - **DEFAULT**
-
-            用于列表分区，创建一个容纳所有未在其他分区中指定值的数据的默认分区。
-
-        - **INITIAL _integer_ [K | M | G | T]**
-
-            指定新分区的初始存储空间大小。默认情况下，一个新分区会分配一个区段（EXTENT）。可通过此参数自定义初始大小。取值范围是 [64KB, 1TB]。
-
-        - **MAXSIZE { UNLIMITED | _integer_ [K | M | G | T] }**
-
-            指定该分区可使用的最大存储空间限额。
-
-            - **UNLIMITED**
-
-                表示不限制该分区的存储空间上限。
-
-            - **integer [K | M | G | T]**
-
-                明确设定该分区存储空间的最大值，取值范围是 [1MB, 1TB]。
-
-        - **FORMAT CSF**
-
-            对于带CSF属性的HASH分区，由于HASH分区添加时会导致数据重分布，所以带CSF属性的HASH分区添加时可能会报错，报错与否取决于是否满足CSF属性约束。
-
-        - **COMPRESS**
-            添加一个压缩分区。需确保此压缩分区所处的表空间内具有压缩属性文件，否则插入数据时会报错。
+        - **COMPRESS**: 添加一个压缩分区。需确保此压缩分区所处的表空间内具有压缩属性文件，否则插入数据时会报错。
 
     - drop_partition_clause
 
@@ -474,19 +397,13 @@ ALTER TABLE [ schema_name. ]table_name
 
                 当分区名不易获取的情况下，可以通过设置该分区键值用于指示需要交换的分区。
 
-        ```
-        @说明：分区交换的使用约束
-
-        1.不支持RCR的表和索引进行交换。
-
-        2.不支持涉及外键约束的子句，例如cascade。若交换的两张表的任意表上有外键关系，则交换分区会报错。
-
-        3.交换的分区需要判断是否具有压缩、nologging Insert等属性，如果属性不相同则不允许交换。
-
-        4.交换的分区存在自增列的时候不允许交换。
-
-        6.交换的分区的表定义、索引定义、列定义完全相同时，才允许交换。
-        ```
+        > **说明：** 分区交换的使用约束
+        >
+        > 1. 不支持RCR的表和索引进行交换。
+        > 2. 不支持涉及外键约束的子句，例如cascade。若交换的两张表的任意表上有外键关系，则交换分区会报错。
+        > 3. 交换的分区需要判断是否具有压缩、nologging Insert等属性，如果属性不相同则不允许交换。
+        > 4. 交换的分区存在自增列的时候不允许交换。
+        > 6. 交换的分区的表定义、索引定义、列定义完全相同时，才允许交换。
 
     - modify_partition_clause
 
@@ -504,11 +421,10 @@ ALTER TABLE [ schema_name. ]table_name
 
             - 对于新分配的页面，修改后的新值是有效的，对已经分配的老页面是无效的。
 
-            ```
-            @说明：INITRANS使用
-            1.高并发oltp系统，当出现频繁的update/insert操作导致事务槽争用时，可以将INITRANS设为4-8(INITRANS=10时)，减少动态扩展开销。
-            2.索引块的默认INITRANS=2可能无法满足高并发写入需求，可以将其设置为3。
-            ```
+            > **说明：** INITRANS使用
+            >
+            > 1. 高并发oltp系统，当出现频繁的update/insert操作导致事务槽争用时，可以将INITRANS设为4-8(INITRANS=10时)，减少动态扩展开销。
+            > 2. 索引块的默认INITRANS=2可能无法满足高并发写入需求，可以将其设置为3。
 
         - storage_alter_clause
 
@@ -555,9 +471,9 @@ ALTER TABLE [ schema_name. ]table_name
 
         - 临时表不支持NOLOGGING INSERT属性的设置，临时表本身就带有不记录redo的属性，所以临时表不支持再设置nologging属性。
 
-        - 若表或分区中已存在原有数据，则不允许启用 NOLOGGING INSERT 操作。关于版本兼容性需注意：支持表分区级 NOLOGGING INSERT 特性的数据库版本，不允许降级至不支持该特性的版本，但可正常升级；若两个数据库版本均支持表分区级 NOLOGGING INSERT 特性，则可不受限制地执行升级或降级操作（暂不考虑其他特性的兼容性影响）。此外，在启动数据库升级或降级流程前，用户需手动核查系统中是否存在 NOLOGGING 对象；若这些对象已无需保留 NOLOGGING 属性，建议先关闭该属性，再开展升级或降级操作。
+        - **若表或分区中已存在原有数据，则不允许启用 NOLOGGING INSERT 操作。关于版本兼容性需注意**: 支持表分区级 NOLOGGING INSERT 特性的数据库版本，不允许降级至不支持该特性的版本，但可正常升级；若两个数据库版本均支持表分区级 NOLOGGING INSERT 特性，则可不受限制地执行升级或降级操作（暂不考虑其他特性的兼容性影响）。此外，在启动数据库升级或降级流程前，用户需手动核查系统中是否存在 NOLOGGING 对象；若这些对象已无需保留 NOLOGGING 属性，建议先关闭该属性，再开展升级或降级操作。
 
-        - 若在执行备份恢复操作前，未关闭对象的NOLOGGING INSERT属性，会导致该NOLOGGING属性扩散至恢复后的新环境中。用户需提前确认是否需要保留该属性的扩散效果：若无需将NOLOGGING属性同步到新环境，则应在备份操作执行前，先关闭对应对象的NOLOGGING属性。
+        - **若在执行备份恢复操作前，未关闭对象的NOLOGGING INSERT属性，会导致该NOLOGGING属性扩散至恢复后的新环境中。用户需提前确认是否需要保留该属性的扩散效果**: 若无需将NOLOGGING属性同步到新环境，则应在备份操作执行前，先关闭对应对象的NOLOGGING属性。
 
 - logic_replication_clauses
 打开表逻辑复制开关或者关闭逻辑复制的开关，支持表级和表分区级逻辑复制开关的打开或关闭。
@@ -576,10 +492,10 @@ ALTER TABLE [ schema_name. ]table_name
 
 - set_interval_clause
 设置间隔分区，仅对分区表有效。
-    - SET INTERVAL():将间隔分区表修改为范围分区表。
-    - SET INTERVAL(interval_value):修改间隔分区表的间隔值，interval_value表示指定具体的间隔值数值。
+    - **SET INTERVAL()**: 将间隔分区表修改为范围分区表。
+    - **SET INTERVAL(interval_value)**: 修改间隔分区表的间隔值，interval_value表示指定具体的间隔值数值。
 
-示例：
+## 示例
 
 - 添加某列
 

@@ -58,7 +58,7 @@ ALTER SYSTEM
 
 高水位线可通过查询动态性能视图DV_DATA_FILES的HIGH_WATER_MARK字段获取。
 
-- **SWITCH LOGFILE**
+- **SWITCH LOGFILE**:
 
 切换当前日志文件。
 
@@ -69,23 +69,21 @@ ALTER SYSTEM
 • **PFILE**：仅写入配置文件，重启生效。动态参数与静态参数都一样可以。也是静态参数唯一可以使用的方式。
 • **BOTH**：既写入到初始化参数文件，也在内存上修改，立即生效。同样也只适用于动态参数，静态参数则不允许。（默认）
 
-- **LOAD DICTIONARY FOR [schema_name].object_name**
+- **LOAD DICTIONARY FOR [schema_name].object_name**: 加载对象到数据字典中。
 
-    加载对象到数据字典中。
-
-- **INIT DICTIONARY**
+- **INIT DICTIONARY**:
 
 加载除系统表以外的entry（系统视图，动态视图，sequence，role等）。
 
 前提：进入 restricted 模式，且确保已经通过 `ALTER SYSTEM LOAD DICTIONARY FOR [schema_name].object_name;` 加载所有系统表。
 
-- **RELOAD {HBA | PBL} CONFIG**
+- **RELOAD {HBA | PBL} CONFIG**:
 
 在线加载 oghba.conf 文件，使白名单配置生效。
 
 在线加载 pbl.conf 文件，使弱口令配置生效。
 
-- **REFRESH SYSDBA PRIVILEGE**
+- **REFRESH SYSDBA PRIVILEGE**:
 
 在线刷新 SYSDBA 免密登录的密文和加密密钥。不影响已连接客户端，新连接将使用新密钥。
 
@@ -93,11 +91,11 @@ ALTER SYSTEM
 
 终止会话，session_id是会话ID，serial是序列号ID。
 
-- **RESET STATISTIC**
+- **RESET STATISTIC**:
 
 清空动态视图DV_SYS_STATS的计数。
 
-- **CHECKPOINT**
+- **CHECKPOINT**:
 
 为当前实例执行检查点，确保已提交事务的所有更改写入磁盘。
 
@@ -117,21 +115,20 @@ ALTER SYSTEM
 
 格式为'type user address'，参数说明请参考表1。
 
-| 参数                                                      | 描述                       | 备注                                                                                                         |
-| ------------------------------------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| type                                                    | 建立连接的类型。                 | 连接类型：                                                                                                      |
-| <br/>- host：普通 TCP 或 SSL 连接。                            |                          |                                                                                                            |
-| <br/>- hostssl：仅 SSL 连接（若服务端开启 SSL 而客户端未配置，则拒绝连接）。      |                          |                                                                                                            |
-| user                                                    | 允许访问数据库的指定用户。            | *表示所有用户。<br/>若用户名含特殊字符（如 #、*、TAB），需用双引号包裹，如 "#abc"。单行仅能指定一个用户。                                            |
-| address                                                 | 允许访问的 IP 地址范围（支持逗号分隔多个）。 | IP地址支持IPV4、IPV6地址、或指定子网掩码长度表示一个子网网段。支持格式：<br/><br/>- IPv4/IPv6 单地址：192.168.1.111、20AB::9217:acff:feab:fcd0 |
-| <br/>- 子网掩码：192.168.2.0/24、20CD::2654:addf:3ab2:fed0/64 |                          |                                                                                                            |
-| <br/>- 全网段：*.*.*.* 或 0.0.0.0/0                          |                          |                                                                                                            |
+  - **type**: 建立连接的类型。
+    - **host**: 普通 TCP 或 SSL 连接。
+    - **hostssl**: 仅 SSL 连接（若服务端开启 SSL 而客户端未配置，则拒绝连接）。
+  - **user**: 允许访问数据库的指定用户。`*` 表示所有用户。若用户名含特殊字符（如 #、*、TAB），需用双引号包裹，如 "#abc"。单行仅能指定一个用户。
+  - **address**: 允许访问的 IP 地址范围（支持逗号分隔多个）。IP 地址支持 IPv4、IPv6 地址、或指定子网掩码长度表示一个子网网段。支持格式：
+    - **IPv4/IPv6 单地址**: 192.168.1.111、20AB::9217:acff:feab:fcd0
+    - **子网掩码**: 192.168.2.0/24、20CD::2654:addf:3ab2:fed0/64
+    - **全网段**: *.*.*.* 或 0.0.0.0/0
 
-- **FLUSH BUFFER**
+- **FLUSH BUFFER**:
 
 清空数据库缓存数据。
 
-- **FLUSH SQLPOOL**
+- **FLUSH SQLPOOL**:
 
 清空SQL池缓存数据。
 
@@ -157,13 +154,13 @@ ALTER SYSTEM
 
     SYS用户可以DUMP所有用户的信息；普通用户只可以DUMP自己的信息；DBA用户可以DUMP普通用户和其他DBA用户下的信息。
 
-- **RECYCLE SHAREDPOOL [FORCE]**
+- **RECYCLE SHAREDPOOL [FORCE]**:
 
 回收DC POOL/SQL POOL到共享区。
 
 FORCE表示会强制把SQL POOL里面所有软解析标志为FALSE。
 
-- **REPAIR CATALOG**
+- **REPAIR CATALOG**:
 
 修复核心系统表列定义不一致的场景（如升级后二进制记录与 data 中表结构不符）。
 
@@ -171,7 +168,7 @@ FORCE表示会强制把SQL POOL里面所有软解析标志为FALSE。
 
 - 导出数据文件的指定页。
 
-```
+```sql
 --删除表空间
 DROP TABLESPACE IF EXISTS test_space;
 ```
@@ -247,25 +244,25 @@ ALTER SYSTEM ADD LSNR_ADDR '10.10.10.11';
 
 - 删除监听IP地址。
   
-  ```
+  ```sql
   ALTER SYSTEM DELETE LSNR_ADDR '10.10.10.11';
   ```
 
 - 刷新 SYSDBA 免密登录的密文、加密密钥。
   
-  ```
+  ```sql
   ALTER SYSTEM REFRESH SYSDBA PRIVILEGE;
   ```
 
 - 清理动态视图DV_SYS_STATS统计信息。
   
-  ```
+  ```sql
   ALTER SYSTEM RESET STATISTIC;
   ```
 
 - 为当前实例执行检查点。
   
-  ```
+  ```sql
   ALTER SYSTEM CHECKPOINT;
   ```
 
@@ -273,19 +270,19 @@ ALTER SYSTEM ADD LSNR_ADDR '10.10.10.11';
   
   清空数据库缓存数据。
 
-```
+```sql
 ALTER SYSTEM FLUSH BUFFER;
 ```
 
         清空SQL池缓存数据。
 
-```
+```sql
 ALTER SYSTEM FLUSH SQLPOOL;
 ```
 
 - 修改数据库调试参数。
   
-  ```
+  ```sql
   ALTER SYSTEM DEBUG MODE _MRP_RES_LOGSIZE = 1G;
   ```
 
@@ -296,4 +293,4 @@ ALTER SYSTEM DUMP CATALOG TABLE TEST;
 ALTER SYSTEM DUMP CATALOG USER TEST;
 ```
 
-- 
+-

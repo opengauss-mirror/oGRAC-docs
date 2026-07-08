@@ -1,18 +1,18 @@
-# CREATE DATABASE<a name="ZH-CN_TOPIC_0289900066"></a>
+# CREATE DATABASE
 
-## 功能描述<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s3ea6af3a84d74f1ab7dceb8bb54ed134"></a>
+## 功能描述
 
 创建一个新的数据库。
 
-## 注意事项<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s818d4df5d095482f86d8e7258a75df1b"></a>
+## 注意事项
 
 - 只有拥有CREATE DATABASE权限的用户才可以创建新数据库，系统管理员默认拥有此权限。
 - 只能在安装数据库过程中自动创建，无需手动创建。
 - 若创建失败，需重启数据库再次创建。
 
-## 语法格式<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s819ed4de9ed04006954df8016e5e4858"></a>
+## 语法格式
 
-```
+```sql
 CREATE DATABASE CLUSTERED database_name 
              [ { [ CHARACTER SET ] |
                [ CONTROLFILE('file1','file2','file3',....) ] |
@@ -27,29 +27,21 @@ CREATE DATABASE CLUSTERED database_name
                [ WITH DBCOMPATIBILITY 'compatibility_type'];
 ```
 
-## 参数说明<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s1d6127a393bf4f6d8fdac63105932d16"></a>
+## 参数说明
 
-- **database\_name**
-
-    数据库名称。
+- **database\_name**: 数据库名称。
 
     取值范围：字符串，要符合标识符的命名规范。
 
-- **character set**
-
-    指定数据库使用的字符编码。
+- **character set**: 指定数据库使用的字符编码。
 
     取值范围：仅支持UTF-8和GBK。不指定时，默认编码是UTF-8。
 
-- **controlfile**
-
-    控制文件列表。
+- **controlfile**: 控制文件列表。
 
     取值范围：字符串，文件名称之间用逗号隔开。
 
-- **tablespace**
-
-    tablespace相关参数包括：system tablespace datafile、nologging tablespace TEMPFILE、nologging undo tablespace TEMPFILE、default tablespace datafile、sysaux tablespace DATAFILE、undo tablespace datafile、temporary tablespace TEMPFILE。
+- **tablespace**: tablespace相关参数包括：system tablespace datafile、nologging tablespace TEMPFILE、nologging undo tablespace TEMPFILE、default tablespace datafile、sysaux tablespace DATAFILE、undo tablespace datafile、temporary tablespace TEMPFILE。
 
     > **说明：**
     >- system tablespace datafile：系统表空间的数据文件，用于存储核心数据，取值范围128M~8T。
@@ -60,21 +52,17 @@ CREATE DATABASE CLUSTERED database_name
     >- undo tablespace datafile：用于存储事务撤销信息，取值范围128M~32G。
     >- temporary tablespace TEMPFILE：用于创建和管理临时表空间，临时表空间主要用于存储数据库操作过程中产生的临时数据，比如排序操作、哈希连接等需要大量临时存储空间的操作，取值范围5M~8T。
 
-- **logfile**
-
-    创建数据库日志文件。参数包括：logfile、size、blocksize。
+- **logfile**: 创建数据库日志文件。参数包括：logfile、size、blocksize。
 
     > **说明：**
     >- logfile：日志文件。
     >- size：日志文件大小，单位包括：K、M、G、T、P、E，默认单位为字节，最少3个log文件，需满足size >= 56M + 16k + log_buffer_size。
     >- blocksize：设置块的大小，单位为字节，仅支持设置为512或4096两种值。
 
-- **compatibility_type**
-
-    创建数据库的兼容性，支持A/B/C兼容性，不使用with dbcompatibility指定兼容性时默认为A兼容性库。
+- **compatibility_type**: 创建数据库的兼容性，支持A/B/C兼容性，不使用with dbcompatibility指定兼容性时默认为A兼容性库。
 
    
-## 示例<a name="zh-cn_topic_0283137050_zh-cn_topic_0237122099_zh-cn_topic_0059778277_s6be7b8abbb4b4aceb9dae686434d672c"></a>
+## 示例
 
 ```
 create database clustered ograc

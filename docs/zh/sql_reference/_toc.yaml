@@ -1,27 +1,27 @@
-label: SQL 参考
+label: SQL Reference
 isManual: true
 sections:
-  - label: SQL语法格式说明
+  - label: SQL Syntax Formats
     href: ./sql_syntax_formats.md
-  - label: 数据类型
+  - label: Data Types
     href: ./data_types.md
-  - label: 数值类型
+  - label: Numeric Types
     href: ./numeric_types.md
-  - label: 数组类型
+  - label: Array Types
     href: ./array_types.md
-  - label: 布尔类型
-    href: ./boolean_types.md
-  - label: 字符类型
+  - label: Boolean Type
+    href: ./boolean_type.md
+  - label: Character Types
     href: ./character_types.md
-  - label: 二进制类型
+  - label: Binary Types
     href: ./binary_types.md
-  - label: 日期类型
+  - label: Date Types
     href: ./date_types.md
-  - label: 时间间隔类型
+  - label: Interval Types
     href: ./interval_types.md
-  - label: 触发器
+  - label: TRIGGER
     href: ./trigger.md
-  - label: Hints
+  - label: HINT
     href: ./hint.md
   - label: ALTER DATABASE
     href: ./alter_database.md
@@ -39,12 +39,12 @@ sections:
     href: ./alter_tablespace.md
   - label: ALTER TABLE
     href: ./alter_table.md
-  - label: ALTER USER 使用说明
+  - label: ALTER USER
     href: ./alter_user.md
-  - label: WHERE子句
+  - label: WHERE
     href: ./where.md
   - label: ANALYZE
-    href: ./analyse.md
+    href: ./analyze.md
   - label: COMMENT ON
     href: ./comment_on.md
   - label: COMMIT
@@ -68,13 +68,13 @@ sections:
   - label: CREATE DIRECTORY
     href: ./create_directory.md
   - label: CREATE PROFILE
-    href: ./create_profile.md    
-  - label: CREATE SYNONYM 
+    href: ./create_profile.md
+  - label: CREATE SYNONYM
     href: ./create_synonym.md
-  - label:  DROP SYNONYM
-    href: ./drop_synonym.md     
-  - label:  DROP DIRECTORY
-    href: ./drop_directory.md    
+  - label: DROP SYNONYM
+    href: ./drop_synonym.md
+  - label: DROP DIRECTORY
+    href: ./drop_directory.md
   - label: DROP INDEX
     href: ./drop_index.md
   - label: DROP TABLE
@@ -118,7 +118,7 @@ sections:
       - label: LOCK TABLE
         href: ./dcl/lock_table.md
       - label: SHUTDOWN
-        href: ./dcl/shutdown.md    
+        href: ./dcl/shutdown.md
   - label: DML
     sections:
       - label: INSERT

@@ -38,7 +38,7 @@ CREATE [OR REPLACE] TRIGGER [IF NOT EXISTS] [schema.]trigger_name
 /
 ```
 
-参数说明：
+> **说明：**
 - **CREATE [OR REPLACE] TRIGGER [IF NOT EXISTS] [schema.]trigger_name**
 
   创建或替换触发器。`OR REPLACE` 表示若同名触发器已存在则覆盖；`IF NOT EXISTS` 表示若已存在则不报错、不创建。
@@ -179,7 +179,7 @@ CREATE [OR REPLACE] TRIGGER [IF NOT EXISTS] [schema.]trigger_name
 DROP TRIGGER [IF EXISTS] [schema.]trigger_name;
 ```
 
-参数说明：  
+> **说明：**
 - **DROP TRIGGER [IF EXISTS] [schema.]trigger_name**
 
   删除指定触发器。
@@ -214,12 +214,12 @@ DROP TRIGGER [IF EXISTS] [schema.]trigger_name;
 
 ## 修改触发器
 
-```sql
+```
 ALTER TRIGGER [schema.]trigger_name ENABLE;
 ALTER TRIGGER [schema.]trigger_name DISABLE;
 ```
 
-参数说明：      
+> **说明：**
 - **ENABLE**
 
   启用已禁用的触发器，之后 DML 将按类型与时机再次执行该触发器。
@@ -238,27 +238,7 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
 
 示例：
 
-- 前置：建表并创建 **test_trigger_br**（与上文「创建触发器」示例一致）。
-
-    ```sql
-    DROP TABLE IF EXISTS test;
-    CREATE TABLE test (
-        emp_id   NUMBER PRIMARY KEY,
-        emp_name VARCHAR2(50),
-        job      VARCHAR2(50),
-        salary   NUMBER(10, 2)
-    );
-
-    DROP TRIGGER IF EXISTS test_trigger_br;
-    CREATE OR REPLACE TRIGGER test_trigger_br
-    BEFORE INSERT ON test
-    FOR EACH ROW
-    BEGIN
-        :NEW.emp_name := UPPER(:NEW.emp_name);
-        :NEW.job      := UPPER(:NEW.job);
-    END;
-    /
-    ```
+- 前置准备与上文「创建触发器」示例一致，包括建表并创建 **test_trigger_br**。
 
 - 禁用触发器（之后对该表的 DML 不再执行该触发器）。
 
@@ -282,11 +262,11 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
 
 访问操作表列：
 
-```sql
+```
 { :OLD | :NEW }.col
 ```
 
-参数说明：
+> **说明：**
 
 - **col**：
 
@@ -294,7 +274,7 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
 
 访问伪列：
 
-```sql
+```
 { :OLD | :NEW }.{ rowid | rowscn }
 ```
 
@@ -330,15 +310,20 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
 
 示例:
 
-- 触发器表列使用示例（`:OLD.col`、`:NEW.col`）：
+- 前置准备（创建测试表并插入数据）：
 
     ```sql
     DROP TRIGGER IF EXISTS TEST_TRIGGER_COL;
+    DROP TRIGGER IF EXISTS TEST_TRIGGER_PSEUDO;
     DROP TABLE IF EXISTS TEST_TRIGGER;
 
     CREATE TABLE TEST_TRIGGER(A INT, B INT);
     INSERT INTO TEST_TRIGGER VALUES(1, 2);
+    ```
 
+- 触发器表列使用示例（`:OLD.col`、`:NEW.col`）：
+
+    ```sql
     --创建触发器TEST_TRIGGER_COL（行级 AFTER UPDATE，打印表列:OLD.A与:NEW.A）。
     DROP TRIGGER IF EXISTS TEST_TRIGGER_COL;
     CREATE OR REPLACE TRIGGER TEST_TRIGGER_COL
@@ -350,35 +335,11 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
         DBE_OUTPUT.PRINT_LINE(':NEW.A = ' || :NEW.A);
     END;
     /
-
-    -- 开启服务端输出（否则 DBE_OUTPUT.PRINT_LINE 不会显示在客户端）。
-    SET SERVEROUTPUT ON;
-
-    -- 更新表TEST_TRIGGER，触发器打印更新前后A列取值（只执行下面一条 UPDATE，分号结束）。
-    UPDATE TEST_TRIGGER SET A = 10 WHERE A = 1;
     ```
-
-    UPDATE后显示结果：
-
-
-    ```sql
-    :OLD.A = 1
-    :NEW.A = 10
-
-    1 rows affected.
-    ```
-
-    若出现 `0 rows affected`，说明没有 `A = 1` 的行（请先确认 `INSERT` 已执行且数据仍在表中）。
 
 - 触发器伪列使用示例（`:OLD.rowid`、`:OLD.rowscn`、`:NEW.rowid`、`:NEW.rowscn`）：
 
     ```sql
-    DROP TRIGGER IF EXISTS TEST_TRIGGER_PSEUDO;
-    DROP TABLE IF EXISTS TEST_TRIGGER;
-
-    CREATE TABLE TEST_TRIGGER(A INT, B INT);
-    INSERT INTO TEST_TRIGGER VALUES(1, 2);
-
     --创建触发器TEST_TRIGGER_PSEUDO（行级 AFTER UPDATE，打印rowid/rowscn伪列）。
     DROP TRIGGER IF EXISTS TEST_TRIGGER_PSEUDO;
     CREATE OR REPLACE TRIGGER TEST_TRIGGER_PSEUDO
@@ -392,17 +353,30 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
         DBE_OUTPUT.PRINT_LINE(':NEW.rowscn' || :NEW.rowscn);
     END;
     /
+    ```
 
-    -- 开启服务端输出
+- 执行并查看结果：
+
+    ```sql
+    -- 开启服务端输出（否则 DBE_OUTPUT.PRINT_LINE 不会显示在客户端）。
     SET SERVEROUTPUT ON;
 
-    -- 更新表TEST_TRIGGER，触发器打印更新前后rowid/rowscn。
+    -- 更新表TEST_TRIGGER，触发器打印更新前后A列取值与rowid/rowscn。
     UPDATE TEST_TRIGGER SET A = 10 WHERE A = 1;
     ```
 
-    UPDATE后显示结果：
+    表列触发器输出：
 
-    ```sql
+    ```
+    :OLD.A = 1
+    :NEW.A = 10
+
+    1 rows affected.
+    ```
+
+    伪列触发器输出：
+
+    ```
     :OLD.rowid000000000271400000
     :OLD.rowscn8923265734799361
     :NEW.rowid000000000271400000
@@ -410,6 +384,8 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
 
     1 rows affected.
     ```
+
+    若出现 `0 rows affected`，说明没有 `A = 1` 的行（请先确认 `INSERT` 已执行且数据仍在表中）。
 
 ---
 
@@ -503,7 +479,7 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
   ```
 
 
-  ```sql
+  ```
   -- SELECT结果：
   SELECT * FROM t1 ORDER BY id;
 
@@ -535,7 +511,7 @@ ALTER TRIGGER [schema.]trigger_name DISABLE;
   ALTER TRIGGER tg_bi_r ENABLE;
   ```
 
-  ```sql
+  ```
   -- SELECT 结果：
   SELECT * FROM t1;
 

@@ -18,50 +18,14 @@
 
 **stmt:**
 
-```
+```sql
 CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
     ({column_def_clause}[,...] [external_constraint][,...])
-    [ON COMMIT {DELETE|PRESERVE} ROWS]
-    [physical_properties_clause]
-    [table_attr_clause]
-    [CRMODE PAGE]
 ```
 
-**column_def_clause:**
+共享语句尾部及各子句的完整定义参见 [CREATE TABLE 共享子句](shared/create_table_common_clauses.md)。
 
-```
-    column_name {datatype | SERIAL}
-    [DEFAULT expr [ON UPDATE expr]]
-    [AUTO_INCREMENT]
-    [COMMENT 'comment_str']
-    [COLLATE collation_name]
-    [col_level_constraint][...]
-```
-
-**col_level_constraint:**
-
-```
-    CONSTRAINT constraint_name {[NOT] NULL
-                                | UNIQUE
-                                | PRIMARY KEY
-                                | CHECK(expr)
-                                | refenence_clause }[...]
-```
-
-**refenence_clause:**
-
-```
-    REFRENCES [schema_name.]table_name[(column_name)] [ON DELETE {CASCADE | SET NULL}]
-```
-
-**external_constraint:**
-
-```
-    CONSTRAINT constraint_name {UNIQUE(column_name[,...]) [using_index_clause]
-                                | PRIMARY KEY(column_name[,...]) [using_index_clause]
-                                | CHECK(expr)
-                                | FOREIGN KEY(column_name[,...]) refenence_extend_clause}
-```
+分区表继承普通表的列定义、约束及存储子句。
 
 **using_index_clause:**
 
@@ -72,13 +36,7 @@ CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
               ] [ ...]
 ```
 
-**refenence_extend_clause:**
-
-```
-    REFRENCES [schema_name.]table_name[(column_name[,...])] [ON DELETE {CASCADE | SET NULL}]
-```
-
-**table_attr_clause**
+**table_attr_clause:**
 
 ```
     [column_attr_clause]
@@ -86,20 +44,14 @@ CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
     [table_partition_clause]
 ```
 
-**column_attr_clause**
+**column_attr_clause:**
 
 ```
     [LOB (LOB_item) STORE AS LOB_segname [(LOB_parameters)]]
     [APPENDONLY {ON|OFF}]
 ```
 
-**LOB_parameters**
-
-```
-    [TABLESPACE tablespace_name | {ENABLE | DISABLE} STORAGE IN ROW][ ...]
-```
-
-**table_partition_clause**
+**table_partition_clause:**
 
 ```
     range_partition_clause
@@ -108,7 +60,7 @@ CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
     | interval_partition_clause 
 ```
 
-**range_partition_clause**
+**range_partition_clause:**
 
 ```
     PARTITION BY RANGE (partition_key[,...]) 
@@ -117,19 +69,19 @@ CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
 
 ```
 
-**range_partition_item**
+**range_partition_item:**
 
 ```
     PARTITION partition_name VALUES LESS THAN ({value | MAXVALUE}[,...]) [physical_properties_clause] [(subpartition_item[,...])]
 ```
 
-**subpartition_item**
+**subpartition_item:**
 
 ```
     SUBPARTITION subpartition_name [{VALUES LESS THAN ({value | MAXVALUE}[,...]) | VALUES ({value | DEFAULT}[,...])}] [TABLESPACE tablespace_name]
 ```
 
-**list_partition_clause**
+**list_partition_clause:**
 
 ```
     PARTITION BY LIST (partition_key[,...])
@@ -137,33 +89,33 @@ CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
     (list_partition_item[,...])
 ```
 
-**list_partition_item**
+**list_partition_item:**
 
 ```
     PARTITION partition_name VALUES ([value][,...] [DEFAULT]) [physical_properties_clause] [(subpartition_item[,...])]
 ```
 
-**hash_partition_clause**
+**hash_partition_clause:**
 
 ```
     PARTITION BY HASH (partition_key[,...])
     [SUBPARTITION BY {RANGE|LIST|HASH} (subpartition_key [,...])]
-    ({HashPartitionItem1[,...] | hash_partition_item2})
+    ({hash_partition_item1[,...] | hash_partition_item2})
 ```
 
-**HashPartitionItem1**
+**hash_partition_item1:**
 
 ```
     PARTITION partition_name  [physical_properties_clause] [(subpartition_item[,...])]
 ```
 
-**hash_partition_item2**
+**hash_partition_item2:**
 
 ```
     PARTITIONS partition_count (STORE IN (tablespace_name[,...]))
 ```
 
-**interval_partition_clause**
+**interval_partition_clause:**
 
 ```
     PARTITION BY RANGE (partition_key) INTERVAL (value)
@@ -172,34 +124,11 @@ CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
     (range_partition_item[,...])
 ```
 
-**physical_properties_clause**
+**physical_properties_clause:**
 
 ```
     segment_attr_clause
     | FORMAT row_format_clause
-```
-
-**segment_attr_clause**
-
-```
-    { physical_attr_clause | TABLESPACE tablespace_name}[ ...]
-```
-
-**physical_attr_clause**
-
-```
-    {
-        PCTFREE int
-        | INITRANS int
-        | MAXTRANS int
-        | storage_clause
-    }[ ...]
-```
-
-**storage_clause**
-
-```
-    STORAGE ({INITIAL int [K|M|G|T] | MAXSIZE {UNLIMITED | int [K|M|G|T]}}[ ...])
 ```
 
 ## 参数说明
@@ -219,7 +148,7 @@ CREATE TABLE [IF NOT EXISTS] [schema_name.]table_name
 
 ## 示例
 
-```sql
+```
 -- 范围分区
 
 CREATE TABLE sales_range (

@@ -14,18 +14,16 @@
   
   - 无法终止系统保留的核心会话。
 
-## 使用格式
+## 语法格式
 
-```
+```sql
 ALTER SYSTEM KILL SESSION 'session_id,serial#';
 ```
 
 ## 参数说明
 
-| 参数           | 说明         |
-| ------------ | ---------- |
-| `session_id` | 会话标识符（SID） |
-| `serial#`    | 会话序列号      |
+- **session_id**: 会话标识符（SID）。
+- **serial#**: 会话序列号。
 
 ## 示例
 

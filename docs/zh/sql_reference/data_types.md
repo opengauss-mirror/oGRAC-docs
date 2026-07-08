@@ -1,4 +1,4 @@
-# 数据类型
+# Data Types
 
 - **[数值类型](numeric_types.md)**  
 
@@ -8,7 +8,7 @@
 
 - **[日期类型](date_types.md)**  
 
-- **[布尔类型](boolean_types.md)**  
+- **[布尔类型](boolean_type.md)**
 
 - **[时间间隔类型](interval_types.md)**  
 

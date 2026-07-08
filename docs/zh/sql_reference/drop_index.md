@@ -13,7 +13,7 @@
 
 **stmt:**
 
-```
+```sql
 DROP INDEX [IF EXISTS] [schema_name.]index_name
 ON
 [schema_name.]table_name
@@ -21,11 +21,11 @@ ON
 
 ## 参数说明
 
-- [schema_name.]table_name: 待删除索引的表名
+- **[schema_name.]table_name**: 待删除索引的表名
 
 ## 示例
 
-```sql
+```
 --  删除索引并指定表名
 DROP INDEX idx_test1_name ON test_table1;
 

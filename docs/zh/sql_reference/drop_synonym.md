@@ -1,20 +1,24 @@
-# DROP SYNONYM 使用文档
+# DROP SYNONYM
 
-## 功能概述
+## 功能描述
 
 `DROP SYNONYM` 语句用于从数据库中删除一个或多个同义词。同义词是数据库对象的别名，删除同义词不会影响其指向的原始对象。
 
+## 注意事项
+
+删除公共同义词或带有依赖对象的同义词时需谨慎，建议使用 `IF EXISTS` 避免对象不存在时报错。
+
 ## 语法格式
 
-### 删除私有同义词
+### 删除私有同义词语法
 
 ```sql
 DROP SYNONYM [IF EXISTS] synonym_name [FORCE];
 ```
 
-### 删除公共同义词
+### 删除公共同义词语法
 
-```sql
+```
 DROP PUBLIC SYNONYM [IF EXISTS] synonym_name [FORCE];
 ```
 
@@ -27,11 +31,11 @@ DROP PUBLIC SYNONYM [IF EXISTS] synonym_name [FORCE];
 | `FORCE` | 可选。强制删除同义词，即使有依赖对象存在。 |
 | `PUBLIC` | 可选。指定要删除的是公共同义词。 |
 
-## 使用示例
+## 示例
 
 ### 删除私有同义词
 
-```sql
+```
 -- 删除同义词 emp_syn
 DROP SYNONYM emp_syn;
 
@@ -39,21 +43,21 @@ DROP SYNONYM emp_syn;
 
 ### 删除公共同义词
 
-```sql
+```
 -- 删除公共同义词 public_emp
 DROP PUBLIC SYNONYM public_emp;
 ```
 
 ### 使用 IF EXISTS 选项
 
-```sql
+```
 -- 如果同义词存在则删除，不存在则不报错
 DROP SYNONYM IF EXISTS non_existent_syn;
 ```
 
 ### 使用 FORCE 选项
 
-```sql
+```
 -- 强制删除同义词，即使有依赖对象
 DROP SYNONYM emp_syn FORCE;
 

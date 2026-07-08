@@ -1,8 +1,12 @@
-# CREATE PROFILE 使用文档
+# CREATE PROFILE
 
-## 功能概述
+## 功能描述
 
 CREATE PROFILE 语句用于创建用户配置文件，用于管理数据库用户的资源限制和密码策略。配置文件可以被多个用户共享，便于统一管理用户的安全和资源使用策略。
+
+## 注意事项
+
+创建或替换配置文件需要具备相应的系统权限；配置文件中参数设置不当可能导致账户被锁定或密码策略过于严格，请根据实际业务需求合理配置。
 
 ## 语法格式
 
@@ -45,32 +49,32 @@ CREATE PROFILE profile_name [REPLACE] LIMIT
 | SESSIONS_PER_USER | 整数 | UNLIMITED | 个 | 指定每个用户允许的最大并发会话数 |
 | PASSWORD_MIN_LEN | 整数 | 8 | 字符 | 指定密码的最小长度 |
 
-## 使用示例
+## 示例
 
 ### 创建基本配置文件
 
-```sql
+```
 CREATE PROFILE app_user_profile LIMIT
     FAILED_LOGIN_ATTEMPTS 5;
 ```
 
 ### 替换现有配置文件
 
-```sql
+```
 CREATE OR REPLACE PROFILE app_user_profile LIMIT
     FAILED_LOGIN_ATTEMPTS 20;
 ```
 
 ### 使用默认值创建配置文件
 
-```sql
+```
 CREATE PROFILE default_profile LIMIT
     FAILED_LOGIN_ATTEMPTS DEFAULT;
 ```
 
 ### 创建无限制的配置文件
 
-```sql
+```
 CREATE PROFILE unlimited_profile LIMIT
     PASSWORD_LIFE_TIME UNLIMITED;
 ```
