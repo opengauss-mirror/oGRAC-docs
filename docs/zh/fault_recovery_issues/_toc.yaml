@@ -1,10 +1,12 @@
 label: 常见故障恢复问题
 isManual: true
-href: ./overview.md
 sections:
+  - label: 概述
+    href: ./overview.md
   - label: 编译阶段问题
-    href: ./issues_during_the_compilation_phase/index.md
     sections:
+      - label: 概述
+        href: ./issues_during_the_compilation_phase/index.md
       - label: 因 `gcc` 版本兼容及三方库路径配置错误导致 `patchelf` 编译失败问题
         href: ./issues_during_the_compilation_phase/compilation_failure_due_to_gcc_version_incompatibility.md
       - label: 因环境缺少 Perl 组件导致 OpenSSL 编译失败的问题
@@ -14,8 +16,9 @@ sections:
       - label: 因系统 lz4 版本低于 1.8.3 导致编译失败的问题
         href: ./issues_during_the_compilation_phase/compilation_failure_due_to_lz4_version_too_low.md
   - label: 安装阶段问题
-    href: ./issues_during_the_installation_phase/index.md
     sections:
+      - label: 概述
+        href: ./issues_during_the_installation_phase/index.md
       - label: `CMS` 安装失败——残留用户家目录缺失 `.bashrc` 文件
         href: ./issues_during_the_installation_phase/cms_installation_failed_missing_bashrcin.md
       - label: 操作系统语言为中文导致安装时无法获取 `NUMA` 信息卡住
@@ -27,12 +30,14 @@ sections:
       - label: `DSS` `LUN` 注册冲突导致安装失败
         href: ./issues_during_the_installation_phase/installation_failure_due_to_dss_lun_registration_conflict.md
   - label: 运行阶段问题
-    href: ./issues_during_the_running_phase/index.md
     sections:
+      - label: 概述
+        href: ./issues_during_the_running_phase/index.md
       - label: 因系统内存不足导致 oGRAC 运行失败的问题
         href: ./issues_during_the_running_phase/running_failure_due_to_insufficient_memory.md
   - label: 卸载阶段问题
-    href: ./issues_during_the_uninstallation_phase/index.md
     sections:
+      - label: 概述
+        href: ./issues_during_the_uninstallation_phase/index.md
       - label: oGRAC 卸载失败（进程残留导致）
         href: ./issues_during_the_uninstallation_phase/Caused_by_Residual_Processes.md
