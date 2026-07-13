@@ -7,7 +7,7 @@ sections:
     sections:
       - label: 概述
         href: ./issues_during_the_compilation_phase/index.md
-      - label: 因 `gcc` 版本兼容及三方库路径配置错误导致 `patchelf` 编译失败问题
+      - label: 因 gcc 版本兼容及三方库路径配置错误导致 patchelf 编译失败问题
         href: ./issues_during_the_compilation_phase/compilation_failure_due_to_gcc_version_incompatibility.md
       - label: 因环境缺少 Perl 组件导致 OpenSSL 编译失败的问题
         href: ./issues_during_the_compilation_phase/compilation_failure_due_to_missing_perl.md
@@ -19,15 +19,15 @@ sections:
     sections:
       - label: 概述
         href: ./issues_during_the_installation_phase/index.md
-      - label: `CMS` 安装失败——残留用户家目录缺失 `.bashrc` 文件
+      - label: CMS 安装失败——残留用户家目录缺失 .bashrc 文件
         href: ./issues_during_the_installation_phase/cms_installation_failed_missing_bashrcin.md
-      - label: 操作系统语言为中文导致安装时无法获取 `NUMA` 信息卡住
+      - label: 操作系统语言为中文导致安装时无法获取 NUMA 信息卡住
         href: ./issues_during_the_installation_phase/os_environment_language_issue.md
       - label: 因两节点机器时间不同步导致安装双节点 oGRAC 失败的问题
         href: ./issues_during_the_installation_phase/installation_failure_due_to_node_time_is_out_of_sync.md
-      - label: `CM` 投票盘（`gcc-disk`）异常导致安装失败
+      - label: CM 投票盘（gcc-disk）异常导致安装失败
         href: ./issues_during_the_installation_phase/installation_failure_due_to_cm_voting_disk_abnormal.md
-      - label: `DSS` `LUN` 注册冲突导致安装失败
+      - label: DSS LUN 注册冲突导致安装失败
         href: ./issues_during_the_installation_phase/installation_failure_due_to_dss_lun_registration_conflict.md
   - label: 运行阶段问题
     sections:
