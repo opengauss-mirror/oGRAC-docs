@@ -29,7 +29,10 @@ sections:
         href: ./basic_management_of_database_system/configuring_the_database_system.md    
       - label: 动态视图
         href: ./basic_management_of_database_system/dynamic_views.md
-
+  - label: 性能调优
+    sections:   
+      - label: 性能调优
+        href: ./performance_tuning_guide/ograc_performance_tuning_guide.md
   - label: 故障诊断
     sections:   
       - label: WSR报告
