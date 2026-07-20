@@ -106,17 +106,18 @@
     ```
 ## 准备测试工具
 
-准备TPCC测试客户端，在所有的压测客户端节点上操作。
-1. 下载适配oGRAC的TPCC测试工具。
+准备 TPCC 测试客户端，在所有的压测客户端节点上操作。
+
+1. 安装 Git、JDK 和 Ant 依赖包。
+    
+    ```bash
+    [root@localhost]# yum install -y git ant java-11-openjdk
+    ```
+
+2. 下载适配 oGRAC 的 TPCC 测试工具。
     
     ```bash
     [root@localhost]# git clone https://gitcode.com/opengauss/oGRAC-common-tools.git
-    ```
-
-2. 下载安装JDK和ant依赖包。
-    
-    ```bash
-    [root@localhost]# yum install ant java-11-openjdk
     ```
 
 3. 在BenchmarkSQL所在目录下输入ant命令进行编译，编译成功后会生成build和dist两目录。

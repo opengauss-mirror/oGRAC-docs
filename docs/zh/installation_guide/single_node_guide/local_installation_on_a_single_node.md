@@ -69,15 +69,16 @@ chmod -R 777 [compile_path]
 
 ### 安装系统依赖
 
-oGRAC 的编译和运行依赖 Python、网络工具及部分基础库，请提前安装以下软件包：
+oGRAC 的编译和运行依赖 Git、Python、网络工具及部分基础库，请提前安装以下软件包：
 
 ```bash
-yum install -y wget python3 python3-devel iputils iproute \
+yum install -y wget git python3 python3-devel iputils iproute \
 unixODBC-devel unixODBC lz4 lz4-devel patch xz flex --skip-broken
 ```
 
 > [!NOTE]说明
 >
+> * `git`：用于拉取 oGRAC 源码
 > * `python3 / python3-devel`：用于执行安装脚本和管理工具
 > * `iputils / iproute`：用于网络检测与 IP 配置
 > * `lz4`：用于数据压缩与解压，要求版本 >= 1.8.3
