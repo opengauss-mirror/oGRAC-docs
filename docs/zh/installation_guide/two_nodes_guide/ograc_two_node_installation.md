@@ -54,10 +54,10 @@ systemctl disable firewalld
 
 ### 3.2 安装系统依赖
 
-oGRAC 安装依赖 Python、时间同步和网络工具，请在两节点上执行：
+oGRAC 安装依赖 Git、Python、时间同步和网络工具，请在两节点上执行：
 
 ```shell
-yum install -y wget ntpdate chrony python3 python3-devel iputils iproute patchelf lz4 --skip-broken
+yum install -y wget git ntpdate chrony python3 python3-devel iputils iproute patchelf lz4 --skip-broken
 ```
 
 要求 lz4 版本在 1.8.3 以上。
