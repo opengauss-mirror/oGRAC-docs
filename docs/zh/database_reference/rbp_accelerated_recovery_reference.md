@@ -18,7 +18,7 @@ RBPS 服务端配置、CMS 管理方式和 `rbps_ctl` 命令请参见[rbps使用
 
 ### 恢复加速配置
 
-两节点 DTC 场景中，数据库侧通常配置为连接对端 RBPS。如下示例中，RBP 使用独立网络地址：
+两节点 DTC 场景中，数据库侧通常按部署规划配置 RBPS 路由目标地址。如下示例中，RBP 使用独立网络地址：
 
 ```ini
 USE_RBP=TRUE
@@ -28,10 +28,10 @@ RBP_RT_ANALYSIS=TRUE
 RBP_RT_PARSE_WORKERS=2            
 RBP_RT_PAGE_OWNER_WORKERS=4        
 RBP_ASSEMBLE_MAX_SCAN=300     
-RBP_IP=node1_rbp_ip,node0_rbp_ip    
+RBP_IP=node1_rbp_ip,node0_rbp_ip
 ```
 
-其中，`node*_rbp_ip` 可以是独立于业务访问地址的 RBP 通信网卡地址。推荐将 RBP/RBPS 流量与业务流量分离，避免页面写入、读取和恢复阶段的网络流量影响业务访问。
+其中，`node1_rbp_ip` 表示 `node1` 的 RBPS IPv4 地址，`node0_rbp_ip` 表示 `node0` 的 RBPS IPv4 地址；配置时需替换为实际 IPv4 地址，并按节点编号与 RBPS 路由关系填写地址顺序。`RBP_IP` 最多可配置 8 个 IPv4 地址，多个地址使用英文逗号分隔，地址列表不支持空项或分号分隔。推荐将 RBP/RBPS 流量与业务流量分离，避免页面写入、读取和恢复阶段的网络流量影响业务访问。
 
 
 ## 数据库参数配置
