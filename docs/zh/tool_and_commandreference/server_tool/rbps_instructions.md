@@ -112,7 +112,7 @@ cms res -stop rbps
 cms res -list
 
 # 2. CMS 视角下 rbps 是否在线，`STAT` 显示 `ONLINE`，说明 CMS 认为 RBPS 资源在线。
-cms stat -res rbps 
+cms stat -res rbps
 
 # 3. 本机进程和管理端口是否正常
 rbps_ctl status     # 显示 `rbps is running`，说明本机 RBPS 进程已启动。
@@ -123,9 +123,23 @@ rbps_ctl stats      # 返回 `OK`，说明本机 RBPS 管理端口可访问。
 
 `rbps_ctl` 不作为 CMS 部署下的首选启停入口。日常管理应优先使用 `cms res -start rbps`、`cms res -stop rbps` 和 `cms stat -res rbps`；当需要在本机确认进程、管理端口、缓存统计或恢复窗口时，再使用本节命令。
 
-###   start
+命令通用语法：
+
+```bash
+rbps_ctl {start|stop|stop_force|status|restart|stats|window|read_phase|force_read_end|exists|dump|query} [-c rbps.conf] [arg...]
+```
+
+其中，`-c` 用于指定 RBPS 配置文件；未指定时，`rbps_ctl` 默认优先读取 `$OGDB_DATA/cfg/rbps.conf`。
+
+### start
 
 本地启动 RBPS。CMS 部署下日常启动建议使用 `cms res -start rbps`。
+
+命令语法：
+
+```bash
+rbps_ctl start [-c rbps.conf]
+```
 
 成功启动时输出示例：
 
@@ -139,9 +153,15 @@ rbps started: pid=12345 listen=0.0.0.0:2611 admin=127.0.0.1:2711 conf=/data/ogra
 rbps is already running: pid=12345 conf=/data/ograc/cfg/rbps.conf
 ```
 
-###  status
+### status
 
 查询 RBPS 进程状态。
+
+命令语法：
+
+```bash
+rbps_ctl status [-c rbps.conf]
+```
 
 运行中输出示例：
 
@@ -158,7 +178,14 @@ rbps is not running
 
 ### stop、stop_force
 
-`stop` 本地正常停止 RBPS。`stop_force` 会先尝试正常停止，短时间内未退出则强制结束进程。CMS 部署下日常停止建议使用 `cms res -stop rbps`，`stop_force` 仅建议在 CMS 无法正常停止资源或本机排障时使用。
+`rbps_ctl stop` 本地正常停止 RBPS。`rbps_ctl stop_force` 会先尝试正常停止，短时间内未退出则强制结束进程。CMS 部署下日常停止建议使用 `cms res -stop rbps`，`rbps_ctl stop_force` 仅建议在 CMS 无法正常停止资源或本机排障时使用。
+
+命令语法：
+
+```bash
+rbps_ctl stop [-c rbps.conf]
+rbps_ctl stop_force [-c rbps.conf]
+```
 
 输出示例：
 
@@ -171,9 +198,21 @@ rbps force stopped: pid=12345
 
 本地重启 RBPS，等价于先执行 `stop`，再执行 `start`。
 
+命令语法：
+
+```bash
+rbps_ctl restart [-c rbps.conf]
+```
+
 ### stats
 
 查询 RBPS 简要统计。
+
+命令语法：
+
+```bash
+rbps_ctl stats [-c rbps.conf]
+```
 
 输出示例：
 
@@ -194,6 +233,12 @@ OK cache_total=100 pending_total=0 max_cache_pages=0 capacity_evict_on_write=0
 ### window
 
 查询当前 RBP 恢复窗口。
+
+命令语法：
+
+```bash
+rbps_ctl window [-c rbps.conf]
+```
 
 输出示例：
 
@@ -231,6 +276,12 @@ WINDOW_END
 
 查询恢复读阶段状态。
 
+命令语法：
+
+```bash
+rbps_ctl read_phase [-c rbps.conf]
+```
+
 输出示例：
 
 ```text
@@ -263,6 +314,12 @@ READ_PHASE_END
 
 强制释放残留 READ_PHASE。仅在确认恢复读阶段异常残留时使用。
 
+命令语法：
+
+```bash
+rbps_ctl force_read_end [-c rbps.conf]
+```
+
 输出示例：
 
 ```text
@@ -284,6 +341,12 @@ OK active_before=1 ending_before=0 cleared=1 elapsed_ms=5000 dropped_page_writes
 
 查询指定页面是否在 RBPS 缓存中。页面格式为 `<file>-<page>`，也可使用 `<file>_<page>` 或 `<file>/<page>`。
 
+命令语法：
+
+```bash
+rbps_ctl exists [-c rbps.conf] <file>-<page>
+```
+
 输出示例：
 
 ```text
@@ -299,6 +362,12 @@ NOT_FOUND file=1 page=100 cache_total=20
 ### dump
 
 输出指定页面的详细诊断信息，主要用于问题定位。页面不存在时，输出与 `exists` 的 `NOT_FOUND` 一致。
+
+命令语法：
+
+```bash
+rbps_ctl dump [-c rbps.conf] <file>-<page>
+```
 
 输出示例：
 
@@ -348,6 +417,12 @@ DUMP_END
 ### query
 
 直接向管理端口发送查询命令。常用命令包括：
+
+命令语法：
+
+```bash
+rbps_ctl query [-c rbps.conf] COMMAND
+```
 
 ```bash
 rbps_ctl query STATS
