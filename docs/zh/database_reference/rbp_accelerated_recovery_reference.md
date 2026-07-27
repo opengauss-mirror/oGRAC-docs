@@ -8,10 +8,6 @@ RBPS（RBP Server）是 RBP 的页面缓存服务端，用于接收、保存和�
 
 RBPS 服务端配置、CMS 管理方式和 `rbps_ctl` 命令请参见[rbps使用说明](../tool_and_commandreference/server_tool/rbps_instructions.md)。RBP 相关 GUC 参数的含义、取值范围、默认值和生效方式请参见[数据库参考](./database_reference.md)中的 RBP 参数说明。
 
-## 性能影响
-
-启用 RBP 后，数据库运行期间需要额外维护恢复加速所需状态，并将部分页面写入 RBPS；开启 `RBP_RT_ANALYSIS` 后，还会持续解析日志、维护页面归属等运行期分析信息。这些工作会消耗 CPU、内存、I/O 和网络资源，并可能与业务事务争用缓冲池、日志处理和网络带宽，因此会对业务性能带来一定下降。生产环境建议结合实际业务负载评估该能力，并将 RBP/RBPS 流量与业务网络分离。
-
 ## 配置前提
 
 - 已在需要承载页面缓存的节点部署 RBPS，并确认 RBPS 监听地址和端口。
