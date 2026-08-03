@@ -104,7 +104,7 @@ sh local_install.sh install -u [user_name]
 | -g withoutroot       | withoutroot                          | 表示允许无 root 权限运行安装脚本，但必须对安装文件夹有权限，参数值只能为 withoutroot，若要使用必须精确使用 "-g withoutroot"         |
 | -d                   | 无参数值                              | 表示在后台运行                   |
 | -c                   | 无参数值                              | 表示不使用基于 SSL 的安全连接，自动进行相关配置                   |
-| -Z _SYS_PASSWORD=... | _SYS_PASSWORD=huawei@1234            | 管理员账号默认密码，建议自行修改配置   |
+| -Z _SYS_PASSWORD=... | _SYS_PASSWORD=<SYS用户密码>            | SYS 管理员初始密码，请按环境安全要求自行配置并妥善保管   |
 | -Z SESSIONS=...     | SESSIONS=1000                        | 最大会话数                 |
 
 经过上述步骤，oGRAC 已编译安装完成，后续可以根据需要进行配置和使用。
