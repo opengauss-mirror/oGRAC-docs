@@ -29,9 +29,12 @@ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 cd build
 sh local_install.sh prepare
 sh local_install.sh compile -b debug
+# 首次全量 Debug 编译完成后，可执行增量编译
+sh local_install.sh compile -b debug --incremental
 ```
 
 - `-b, --build_type=<type>`：指定编译类型（release/debug，默认release）
+- `--incremental`：启用增量编译，仅支持 debug；首次使用前必须完成一次全量 Debug 编译
 
 #### 生成目录
 
@@ -66,6 +69,9 @@ sh build_ograc.sh [release|debug] --with-dss
 
 # 指定三方库所在目录（路径必须在 oGRAC 目录内，指向包含三方库文件夹的父目录即可）
 sh build_ograc.sh [release|debug] --with-dss --third-party-path <path>
+
+# 首次双节点全量 Debug 编译完成后，可执行增量编译
+sh build_ograc.sh debug --with-dss --incremental
 ```
 
 参数说明：
@@ -74,6 +80,7 @@ sh build_ograc.sh [release|debug] --with-dss --third-party-path <path>
 |------|------|
 | `release` / `debug` | 指定编译类型（release：发布版本；debug：调试版本） |
 | `--with-dss` | 启用 DSS 相关组件编译（两节点及以上部署必须） |
+| `--incremental` | 启用增量编译，仅支持 debug；双节点场景必须与 `--with-dss` 一起使用并先完成一次全量 Debug 编译 |
 | `--third-party-path <path>` | 指定三方库依赖的查找路径，指向包含 `openGauss-third_party_binarylibs_*` 文件夹的父目录即可，**路径必须在 oGRAC 目录内**；不指定时默认在 oGRAC 目录根目录查找 |
 | `-h`, `--help` | 显示帮助信息 |
 
@@ -93,6 +100,8 @@ sh build_ograc.sh [release|debug] --with-dss --third-party-path <path>
 > ```
 >
 > `--check-only` 仅执行编译前环境检查，不执行实际编译流程。
+>
+> 双节点增量编译会复用已有 Debug DSS/CBB 产物，并重新生成完整安装包。如果 DSS/CBB 源码或三方依赖发生变化，请执行全量编译。
 
 #### 生成目录
 

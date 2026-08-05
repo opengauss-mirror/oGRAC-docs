@@ -125,11 +125,16 @@ sed -i 's/DUSE_PROTECT_VM=ON/DUSE_PROTECT_VM=OFF/g' Makefile.sh
 
 ```bash
 sh local_install.sh compile -b [release | debug]
+
+# 首次完成全量 Debug 编译后，可在同一源码及 build 目录下执行增量编译
+sh local_install.sh compile -b debug --incremental
 ```
 
 > [!NOTE]说明
 > 
 > * `[release | debug]`：指定编译模式，`release` 为默认值，`debug` 为调试模式
+> * `--incremental`：启用增量编译，仅支持 `debug`；首次使用前必须先执行 `sh local_install.sh compile -b debug`
+> * 增量编译复用现有 CMake 缓存，只重新编译受源码修改影响的目标并重新生成安装目录；后续安装命令保持不变
 
 ---
 

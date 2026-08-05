@@ -190,6 +190,9 @@ sh build_ograc.sh [release|debug] --with-dss
 
 # 指定三方库所在目录（路径必须在 oGRAC 目录内，指向包含三方库文件夹的父目录即可）
 sh build_ograc.sh [release|debug] --with-dss --third-party-path <path>
+
+# 首次完成双节点全量 Debug 编译后，可在同一源码及 build 目录下执行增量编译
+sh build_ograc.sh debug --with-dss --incremental
 ```
 
 参数说明：
@@ -199,6 +202,7 @@ sh build_ograc.sh [release|debug] --with-dss --third-party-path <path>
 | `release` | 编译发布版本，适用于功能验证和交付 |
 | `debug` | 编译调试版本，包含调试符号，便于 gdb 调试 |
 | `--with-dss` | 启用 DSS 相关组件（两节点及以上部署必须） |
+| `--incremental` | 启用增量编译，仅支持 `debug`；双节点场景必须与 `--with-dss` 一起使用 |
 | `--third-party-path <path>` | 指定三方库依赖的查找路径，指向包含 `openGauss-third_party_binarylibs_*` 文件夹的父目录即可，**路径必须在 oGRAC 目录内**；不指定时默认在 oGRAC 目录根目录查找 |
 | `-h`, `--help` | 显示帮助信息 |
 
@@ -223,6 +227,10 @@ sh build_ograc.sh [release|debug] --with-dss --third-party-path <path>
 >
 > * 编译过程耗时较长，请耐心等待
 > * 若编译失败，请优先检查依赖是否完整
+> * 双节点增量编译前，必须先执行 `sh build_ograc.sh debug --with-dss` 完成一次全量 Debug 编译
+> * 增量编译复用已有 Debug DSS/CBB 产物，仅对 oGRAC 内核执行增量编译，并重新生成 OM、部署脚本和完整安装包
+> * 如果 DSS/CBB 源码或三方依赖发生变化，请重新执行全量编译，不应复用旧 DSS 产物
+> * 增量编译生成的仍是完整安装包，分发和双节点安装部署步骤不变；已有集群更新应使用升级流程，不应直接覆盖运行目录
 
 ---
 
