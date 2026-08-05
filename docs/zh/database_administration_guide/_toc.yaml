@@ -29,6 +29,8 @@ sections:
         href: ./basic_management_of_database_system/configuring_the_database_system.md    
       - label: 动态视图
         href: ./basic_management_of_database_system/dynamic_views.md
+      - label: CMS 磁盘使用率监控与自动只读保护
+        href: ./basic_management_of_database_system/disk_usage_readonly_protection.md
   - label: 性能调优
     sections:   
       - label: 性能调优
