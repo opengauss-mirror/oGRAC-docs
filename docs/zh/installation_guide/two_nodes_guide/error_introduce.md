@@ -171,15 +171,34 @@ PR generation=0xb6, 2 registered reservation keys follow:
 
 ##### 清理注册信息
 
-对每一个已注册的 key 执行清理操作：
+若节点角色发生过调整，或历史安装残留导致 `dsscmd reghl` 注册失败，建议使用当前节点实际使用的 reservation key 先注册当前主机，再执行 `clear` 操作。
 
-```shell
-sg_persist --out --clear --param-rk=<key> /dev/xxx
+`DSS` 节点号与 `SCSI-3 PR` key 的对应关系如下：
+
+```text
+node_id=0 -> reservation key=1
+node_id=1 -> reservation key=2
 ```
 
-其中 `<key>` 为上一步查询到的 reservation key。
+例如当前节点作为 `node_id=1` 安装时，使用 key `2` 清理每块共享盘：
 
----
+```shell
+sg_persist -n -o -I -S 2 -d /dev/dss-disk1
+sg_persist -n -o -I -S 2 -d /dev/dss-disk2
+sg_persist -n -o -I -S 2 -d /dev/dss-disk3
+sg_persist -n -o -I -S 2 -d /dev/gcc-disk
+
+sg_persist -n -o -C -K 2 -d /dev/dss-disk1
+sg_persist -n -o -C -K 2 -d /dev/dss-disk2
+sg_persist -n -o -C -K 2 -d /dev/dss-disk3
+sg_persist -n -o -C -K 2 -d /dev/gcc-disk
+```
+
+命令中的 `/dev/dss-disk1`、`/dev/dss-disk2`、`/dev/dss-disk3`、`/dev/gcc-disk` 为部署配置中的共享盘设备。
+
+其中 `-I -S <key>` 表示先将当前主机注册为指定 key，`-C -K <key>` 表示使用该 key 执行 `clear`。`clear` 成功后会清空该 `LUN` 上的 `Persistent Reservation` 注册和预留状态，而不是只删除指定 key。
+
+如果当前节点作为 `node_id=0` 安装，则将上述命令中的 key `2` 替换为 key `1`。
 
 ##### 确认清理结果
 
