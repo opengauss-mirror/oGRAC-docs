@@ -1,0 +1,7 @@
+label: 特性描述
+isManual: true
+sections:
+  - label: 资源池化
+    sections:
+      - label: CMS磁盘阈值管理检测
+        href: ./resource_pooling/CMS_disk_usage_readonly_protection.md
