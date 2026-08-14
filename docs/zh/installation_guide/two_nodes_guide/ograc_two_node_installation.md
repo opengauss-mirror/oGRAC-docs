@@ -298,6 +298,49 @@ vim ograc/install_config.json
 
 如果当前包第一次安装数据库，则需要提前创建 `install_config.json` 文件。若安装过则直接修改对应的 `DBCOMPATIBILITY` 字段即可。
 
+### 6.3 自动化安装脚本（可选）
+自动化安装脚本链接：https://gitcode.com/opengauss/oGRAC-common-tools/blob/master/common-scripts/install-two-node.sh
+
+如需减少手工修改配置文件和逐节点执行安装命令的操作，可在节点 0 上使用自动化安装脚本。该脚本会根据传入参数自动生成两个节点的 `config_params_lun.json`，并完成磁盘清理、节点 0 安装启动、安装包同步到节点 1、节点 1 安装启动等步骤。
+
+使用该脚本前，仍需完成前文的系统初始化、依赖安装、安装包准备、共享 LUN 规划和盘符确认等前置操作。脚本中的 `vg1`、`vg2`、`vg3`、`gcc_home` 参数需要分别对应前文规划的数据盘、Redo 盘、归档盘和 CMS 仲裁盘。
+
+> 说明：脚本仅执行安装流程，不执行卸载、不删除数据库用户、不删除安装目录。如需重新安装，请先按照“重新安装 oGRAC”章节完成停止和清理。
+
+#### 使用方法
+
+将以下脚本保存为 `install.sh`，并在节点 0 上使用 `root` 用户执行。推荐使用单行命令，避免多行命令中反斜杠后存在空格导致参数解析失败。
+
+```shell
+bash install.sh --cms-ips <node0_ip>,<node1_ip> --vg1 <vg1_disk> --vg2 <vg2_disk> --vg3 <vg3_disk> --gcc-home <gcc_home_disk> --package-path <package_file_or_dir> --password '<database_password>'
+```
+
+示例：
+如果磁盘不做软链接，也可以用盘符代替：
+```shell
+bash install.sh --cms-ips node0_ip,node1_ip --vg1 /dev/dss-disk1 --vg2 /dev/dss-disk2 --vg3 /dev/dss-disk3 --gcc-home /dev/gcc-disk --package-path /data/ograc --password '<database_password>'
+```
+
+如果节点 0 到节点 1 未配置 SSH 互信，需要额外传入节点 1 的 root 密码：
+
+```shell
+bash install.sh --cms-ips node0_ip,node1_ip --vg1 /dev/dss-disk1 --vg2 /dev/dss-disk2 --vg3 /dev/dss-disk3 --gcc-home /dev/gcc-disk --package-path /data/ograc --node1-root-password '<node1_root_password>' --password '<database_password>'
+```
+
+如果节点 1 上安装包存放目录与节点 0 不一致，可增加 `--node1-package-dir <node1_package_dir>` 参数。
+
+如果想用
+常用参数说明如下：
+
+* `--cms-ips`：两个节点的 CMS IP，按 `node0_ip,node1_ip` 或 `node0_ip;node1_ip` 传入。脚本会自动生成配置文件中的 `cms_ip`，并将节点 0 的 `node_id` 设置为 `0`、节点 1 的 `node_id` 设置为 `1`。
+* `--vg1`、`--vg2`、`--vg3`：分别对应 `config_params_lun.json` 中 `dss_vg_list.vg1`、`dss_vg_list.vg2`、`dss_vg_list.vg3`，同时用于执行 `sg_persist` 清理。
+* `--gcc-home`：对应 `config_params_lun.json` 中的 `gcc_home`，同时用于执行 `sg_persist` 清理。
+* `--package-path`：oGRAC 安装包路径，可以传入具体 `oGRAC*.tgz` 文件，也可以传入包含唯一 `oGRAC*.tgz` 文件的目录。
+* `--password`：数据库安装过程中自动输入的 oGRAC 数据库密码。
+* `--node1-root-password`：节点 0 通过 SSH/SCP 操作节点 1 时使用的 root 密码，仅在未配置 SSH 互信时需要。
+
+可选高级参数包括 `--deploy-mode`、`--db-type`、`--mes-ssl-switch`、`--max-arch-files-size`、`--redo-num`、`--redo-size`、`--auto-tune`、`--cms-port`、`--dss-port`、`--ograc-port`、`--interconnect-port`、`--shm-key`、`--ograc-home`、`--data-root`、`--ograc-user`。如需交互式指定这些参数，可使用 `--ask-extra`。
+
 ## 7. 安装与启动集群
 
 安装部署中遇到的常见问题可参见 [oGRAC 安装部署常见问题定位与解决](./installation_deployment_issues.md) 章节。
