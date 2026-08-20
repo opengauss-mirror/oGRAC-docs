@@ -116,7 +116,7 @@ ALTER DATABASE用于修改数据库。
     ALTER DATABASE [ database_name ] ENABLE_LOGIC_REPLICATION { ON | OFF }
     ```
 
-- 更新及同步密钥
+- 更新及同步主密钥
 
     ```
     ALTER DATABASE [ database_name ] UPDATE MASTERKEY
@@ -138,7 +138,7 @@ ALTER DATABASE用于修改数据库。
 
     - **RESETLOGS**
     
-        RESTID在原有基础上增加1。
+        RSTID在原有基础上增加1。
     
     - **READ ONLY**
 
@@ -336,7 +336,7 @@ ALTER DATABASE用于修改数据库。
 
 - **UPDATE MASTERKEY**
 
-    更新及同步密钥，适配表空间透明加密功能。
+    更新及同步主密钥，适配表空间透明加密功能。
 
 示例：
 

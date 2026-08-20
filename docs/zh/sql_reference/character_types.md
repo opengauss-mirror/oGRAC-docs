@@ -4,10 +4,10 @@
 
 | 名称  | 描述  | 存储空间  |
 | :------------ | :------------ | :------------ |
-| CHAR(size [BYTE \| CHAR])  | 存储定长字节或者字符串<br>1. BYTE表示字节（默认）<br>2. CHAR表示字符串  |  1 ~ 8000字节   |
+| CHAR(size [BYTE \| CHAR])  | 存储定长字符串，长度可用字节或字符数表示<br>1. BYTE表示长度用字节表示（默认）<br>2. CHAR表示长度用字符表示  |  1 ~ 8000字节   |
 | NCHAR(size)  | 等同于CHAR(size CHAR)，用于存储定长字符串  |  1 ~ 8000字节   |
 | CLOB/TEXT/LONGTEXT/LONG  | 存储大对象变长字符串  |  0 ~ (4G-1)   |
-| VARCHAR/VARCHAR2(size [BYTE \| CHAR])  | 存储变长字节或字符串<br>1. size表示最大能容纳的字节或字符数<br>2. BYTE表示字节（默认）<br>3. CHAR表示字符串  |  1 ~ 8000字节   |
+| VARCHAR/VARCHAR2(size [BYTE \| CHAR])  | 存储变长字符串，长度可用字节或字符数表示<br>1. BYTE表示长度用字节表示（默认）<br>2. CHAR表示长度用字符表示  |  1 ~ 8000字节   |
 | NVARCHAR/NVARCHAR2(size)  | 等同于VARCHAR(size CHAR)，用于存储变长字符串  |  1 ~ 8000字节   |
 
 >[!NOTE]说明
