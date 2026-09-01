@@ -46,8 +46,8 @@ See the table below for the resolved issues.
 
 ### Inherited Features
 
-  - Basic features: [Basic SQL Capabilities](../about_ograc/product_description/sql_ability.md#basic-sql-capabilities), [SQL Optimizer Capabilities](../about_ograc/product_description/sql_ability.md#sql-optimizer-capabilities), [Transaction Management](../about_ograc/product_architecture/transaction_mechanism.md#transaction-management), etc.
-  - [Multi-Write Capability Overview](../about_ograc/product_architecture/technical_feature_overview_of_database_multi_write_capability.md#1-multi-write-capability-overview)
+  - Basic features: [Basic SQL Capabilities](../about_ograc/product_description/sql_ability.md#basic-capabilities), [SQL Optimizer Capabilities](../about_ograc/product_description/sql_ability.md#sql-optimizer-capabilities), [Transaction Management](../about_ograc/product_architecture/transaction_mechanism.md#transaction-management), etc.
+  - [Multi-Write Capability Overview](../about_ograc/product_architecture/technical_feature_overview_of_database_multi_write_capability.md#1-multi-write-capability)
   - Storage engine features
     - [CKPT](../about_ograc/product_architecture/ckpt.md), which establishes a synchronization point between memory and disk to ensure data consistency and durability, and accelerates the database recovery process.
     - [Online DDL](../about_ograc/product_architecture/online_ddl.md), which completes table definition modifications without affecting or minimally affecting the normal service of the database.
