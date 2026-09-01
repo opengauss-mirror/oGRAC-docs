@@ -1,0 +1,8 @@
+label: Compilation Guide
+isManual: true
+sections:
+  - label: Setting Up the Compilation Environment
+    href: ./setting_up_the_compilation_environment.md
+  - label: Version Compilation
+    href: ./compiling_the_version.md
+    

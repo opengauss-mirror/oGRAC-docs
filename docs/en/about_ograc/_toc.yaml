@@ -1,0 +1,30 @@
+label: About oGRAC
+isManual: true
+sections:
+  - label: Product Description
+    href: ./product_description/ograc_overview.md
+  - label: SQL Capabilities
+    href: ./product_description/sql_ability.md
+  - label: MVCC
+    href: ./product_description/mvcc.md
+  - label: Product Architecture
+    sections: 
+      - label: Architecture Overview
+        href: ./product_architecture/architecture_description.md
+      - label: Transaction Mechanism
+        href: ./product_architecture/transaction_mechanism.md
+      - label: Multi-Write Feature Overview
+        href: ./product_architecture/technical_feature_overview_of_database_multi_write_capability.md
+      - label: CKPT
+        href: ./product_architecture/ckpt.md
+      - label: Online DDL
+        href: ./product_architecture/online_ddl.md
+      - label: Redo
+        href: ./product_architecture/redo.md
+  - label: Specifications
+    sections: 
+      - label: Specifications
+        href: ./specification/specification.md
+  - label: Maintainability
+    href: ./maintainability.md
+  

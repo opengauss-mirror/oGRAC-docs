@@ -1,0 +1,7 @@
+label: Getting Started
+isManual: true
+sections:
+  - label: Accessing and Using oGRAC
+    href: ./access_and_use_ograc.md
+  - label: Compilation and Installation
+    href: ./compiling_and_installation.md
