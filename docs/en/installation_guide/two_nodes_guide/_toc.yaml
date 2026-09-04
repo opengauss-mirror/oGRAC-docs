@@ -1,0 +1,11 @@
+label: oGRAC Two-Node Production Compilation and Deployment 
+isManual: true
+sections:
+  - label: oGRAC Compilation and Packaging
+    href: ./compiling_the_version_two_node.md
+  - label: oGRAC Two-Node Deployment
+    href: ./ograc_two_node_installation.md
+  - label: oGRAC Two-Node Multi-Write Test Demo
+    href: ./ograc_two_nodes_multiwrite_testdemo.md
+  - label: oGRAC Installation and Deployment Troubleshooting
+    href: ./installation_deployment_issues.md

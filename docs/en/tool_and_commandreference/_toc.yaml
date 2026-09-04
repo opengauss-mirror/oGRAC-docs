@@ -1,0 +1,7 @@
+label: Tool and Command Reference
+isManual: true
+sections:
+  - label: ogsql Usage Instructions
+    href: ./client_tool/ogsql_instructions.md
+  - label: RBPS Usage Instructions
+    href: ./server_tool/rbps_instructions.md

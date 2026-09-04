@@ -1,0 +1,7 @@
+label: oGRAC Single-Node Development, Build, and Deployment
+isManual: true
+sections:
+  - label: oGRAC Single-Node Local Installation
+    href: ./local_installation_on_a_single_node.md
+  - label: oGRAC Single-Node Containerized Installation
+    href: ./containerized_single_node_installation.md
