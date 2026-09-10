@@ -101,6 +101,40 @@ sections:
         href: ./ddl/drop_user.md
       - label: DROP PROFILE
         href: ./ddl/drop_profile.md
+      - label: ALTER PROFILE
+        href: ./ddl/alter_profile.md
+      - label: CREATE TENANT
+        href: ./ddl/create_tenant.md
+      - label: ALTER TENANT
+        href: ./ddl/alter_tenant.md
+      - label: DROP TENANT
+        href: ./ddl/drop_tenant.md
+      - label: CREATE PROCEDURE
+        href: ./ddl/create_procedure.md
+      - label: CREATE FUNCTION
+        href: ./ddl/create_function.md
+      - label: CREATE PACKAGE
+        href: ./ddl/create_package.md
+      - label: CREATE TYPE
+        href: ./ddl/create_type.md
+      - label: DROP PROCEDURE
+        href: ./ddl/drop_procedure.md
+      - label: DROP FUNCTION
+        href: ./ddl/drop_function.md
+      - label: DROP PACKAGE
+        href: ./ddl/drop_package.md
+      - label: DROP TYPE
+        href: ./ddl/drop_type.md
+      - label: CREATE INDEXCLUSTER
+        href: ./ddl/create_indexcluster.md
+      - label: CREATE LIBRARY
+        href: ./ddl/create_library.md
+      - label: DROP LIBRARY
+        href: ./ddl/drop_library.md
+      - label: CREATE CTRLFILE
+        href: ./ddl/create_ctrlfile.md
+      - label: PURGE
+        href: ./ddl/purge.md
       - label: FLASHBACK TABLE
         href: ./ddl/flashback_table.md
   - label: DCL
