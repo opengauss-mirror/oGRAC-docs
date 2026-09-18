@@ -4,7 +4,7 @@
 
 ## Overview
 
-`rbps` is the page cache server of RBP. When RBP is enabled, the database can use pages stored in RBPS during the recovery process, thereby reducing the recovery time in node failure recovery scenarios.
+`rbps` (Recovery Buffer Pool Server, RBP Server) is the page cache server of RBP; when RBP is enabled, the database can use pages stored in RBPS during the recovery process, thereby reducing the recovery time in node failure recovery scenarios.
 
 RBPS is positioned as follows:
 
