@@ -2,7 +2,7 @@
 
 ## 概述
 
-`rbps` 是 RBP 的页面缓存服务端。启用 RBP 后，数据库可在恢复过程中使用 RBPS 中保存的页面，从而缩短节点故障恢复场景下的恢复时间。
+`rbps`（Recovery Buffer Pool Server，RBP Server）是 RBP 的页面缓存服务端；启用 RBP 后，数据库可在恢复过程中使用 RBPS 中保存的页面，从而缩短节点故障恢复场景下的恢复时间。
 
 RBPS 的定位如下：
 
