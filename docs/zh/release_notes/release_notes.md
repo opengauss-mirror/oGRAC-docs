@@ -2,7 +2,7 @@
 
 ## 版本介绍
 
-oGRAC（openGauss Real Application Cluster）7.0.0-RC3 是 openGauss 社区 2026 年 3 月发布的多主数据库创新版本，该版本生命周期为 0.5 年。本版本为 oGRAC 的第一个版本。
+oGRAC（openGauss Real Application Cluster）7.0.0-LTS 是 openGauss 社区 2026 年 9 月发布的多主数据库LTS版本，该版本生命周期为 3 年。本版本为 oGRAC 的第一个长期稳定版本。
 
 主要功能如下：
 
@@ -22,25 +22,62 @@ oGRAC（openGauss Real Application Cluster）7.0.0-RC3 是 openGauss 社区 2026
 
     支持标准 JDBC、ODBC 驱动。
 
+## 新增特性
+
+此处说明的是oGRAC 7.0.0-LTS版本，在7.0.0-RC3版本功能的基础上，新增如下特性：
+
+- **高性能**：
+  - 结合线程绑核动态配置、表锁优化、undo page预分配等优化性能。[#300](https://atomgit.com/opengauss/oGRAC/pull/300) [@hwworkholic](https://atomgit.com/hwworkholic)
+
+- **高可靠**：支持[RBPS(Recovery buffer pool server)](../tool_and_commandreference/server_tool/rbps_instructions.md)
+  - 数据库可在恢复过程中使用 RBPS 中保存的页面，从而缩短节点故障恢复场景下的RTO时间。[#298](https://atomgit.com/opengauss/oGRAC/pull/298) [#337](https://atomgit.com/opengauss/oGRAC/pull/337) [@Miyano](https://atomgit.com/Miyano)
+
+- **高可靠**：[备份恢复](../database_administration_guide/online_backup_offline_restore.md)支持离线操作
+  - 全量备份及全量/增量恢复均支持离线操作。[#383](https://atomgit.com/opengauss/oGRAC/pull/383) [@gcw_Y2UmAK9J](https://atomgit.com/gcw_Y2UmAK9J)
+
+- **企业级能力增强**：
+  - [ogsql](../tool_and_commandreference/client_tool/ogsql_instructions.md#交互式输入编辑)支持readline，关键字自动补齐。[#316](https://atomgit.com/opengauss/oGRAC/pull/316) [@leweiyang](https://atomgit.com/leweiyang)
+  - 支持查看[DSS设备信息](../database_administration_guide/basic_management_of_database_system/dynamic_views.md#dv_dss_time_stats)、[SQL语句历史执行计划及各计划执行信息](../database_administration_guide/basic_management_of_database_system/dynamic_views.md#dv_sql_execution)、[慢SQL信息](../database_administration_guide/basic_management_of_database_system/dynamic_views.md#dv_slow_sql)、[本地节点的缓存区页面信息](../database_administration_guide/basic_management_of_database_system/dynamic_views.md#dv_drc_buf_info)、[本地锁信息](../database_administration_guide/basic_management_of_database_system/dynamic_views.md#dv_drc_local_lock_info)、[本地节点缓冲区控制块信息](../database_administration_guide/basic_management_of_database_system/dynamic_views.md#dv_buf_ctrl_info)视图。[#93](https://atomgit.com/opengauss/oGRAC/pull/93) [@jyn88](https://atomgit.com/jyn88)
+
+- **工具增强**:
+  - 支持[Oracle到oGRAC的全量数据迁移工具](https://docs.opengauss.org/zh/docs/latest/data_migration_guide/oracle2ograc_migration.html)。提供了从 Oracle 到 oGRAC 全量数据和对象的迁移能力，全量数据迁移采用多表并行迁移，全量对象支持表、约束、索引、外键、视图、函数、触发器、存储过程和序列的迁移。 [#409](https://atomgit.com/opengauss/debezium/pull/409) [#411](https://atomgit.com/opengauss/debezium/pull/411) [#413](https://atomgit.com/opengauss/debezium/pull/413) [#414](https://atomgit.com/opengauss/debezium/pull/414) [#415](https://atomgit.com/opengauss/debezium/pull/415) [@wang4721](https://atomgit.com/wang4721)
+
+## 版本兼容性说明
+
+- 不涉及
+
 ### 已修复问题
 
-完整问题清单请参见[完整问题清单](https://gitcode.com/opengauss/oGRAC/issues)。
-
-完整的内核提交记录请参见[提交记录](https://gitcode.com/opengauss/oGRAC/tree/7.0.0-RC3)。
+完整问题清单请参见[完整问题清单](https://atomgit.com/opengauss/oGRAC/issues)。
+完整的内核提交记录请参见[提交记录](https://atomgit.com/opengauss/oGRAC/tree/7.0.0)。
 
 已修复问题请参见下表。
 
 | ISSUE                                                        | 关联仓库                                | 问题描述                                                     |
 | ------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------ |
-| [121](https://gitcode.com/opengauss/oGRAC/issues/121) | oGRAC | [Bug]: create table创建数组core |
-| [119](https://gitcode.com/opengauss/oGRAC/issues/119) | oGRAC | [Bug]: exists on条件非关联查询产生core |
-| [107](https://gitcode.com/opengauss/oGRAC/issues/107) | oGRAC | [Bug]: with as查询产生core |
-| [103](https://gitcode.com/opengauss/oGRAC/issues/103) | oGRAC | [Bug]: 修复空指针core |
-| [94](https://gitcode.com/opengauss/oGRAC/issues/94)  | oGRAC  | [Bug]: select时sql引擎core |
-| [87](https://gitcode.com/opengauss/oGRAC/issues/87)  | oGRAC  | [Bug]: select时计划层产生core |
-| [71](https://gitcode.com/opengauss/oGRAC/issues/71)  | oGRAC  | [Bug]: group_concat + order by查询发生core |
-| [29](https://gitcode.com/opengauss/oGRAC/issues/29)  | oGRAC  | [Bug]: 执行group_concat用例coredump |
-| [26](https://gitcode.com/opengauss/oGRAC/issues/26)  | oGRAC  | [Bug]: tc_group_concat_bound_020执行core |
+| [147](https://atomgit.com/opengauss/oGRAC/issues/147) | oGRAC | [Bug]: 创建外键约束表数据库core |
+| [156](https://atomgit.com/opengauss/oGRAC/issues/156) | oGRAC | [Bug]: cms命令拉起指定节点ograc失败后会自动重拉失败 |
+| [159](https://atomgit.com/opengauss/oGRAC/issues/159) | oGRAC | [Bug]: 【测试类型：功能测试】【测试版本：7.0.0 LTS】部署两节点，0节点部署成功，1节点install安装报错 |
+| [160](https://atomgit.com/opengauss/oGRAC/issues/160) | oGRAC | [Bug]: 【测试类型：功能测试】【测试版本：7.0.0 LTS】部署两节点，执行业务或者空载，节点0/1异常挂掉 |
+| [194](https://atomgit.com/opengauss/oGRAC/issues/194) | oGRAC | [Bug]: oGRAC 状态类/恢复类语句触发 UDS 断连、core 或节点异常 |
+| [204](https://atomgit.com/opengauss/oGRAC/issues/204) | oGRAC | [Bug]: use_bison_parser=false 下同样的 SELECT 1 可以正常返回；use_bison_parser=true 后才触发 UDS 断连和节点异常。 |
+| [203](https://atomgit.com/opengauss/oGRAC/issues/203) | oGRAC | [Bug]: RESTORE DATABASE 异常失败后导致 UDS 断连/core 或 node0 db UNKNOWN |
+| [205](https://atomgit.com/opengauss/oGRAC/issues/205) | oGRAC | [Bug]: B007 开启 bison parser 后执行 SELECT CTE 聚合 JOIN 场景触发 UDS 断连并导致实例不可连接 |
+| [219](https://atomgit.com/opengauss/oGRAC/issues/219) | oGRAC | [Bug]: fast count 优化误判 JSON_VALUE 依赖左侧行导致 core |
+| [220](https://atomgit.com/opengauss/oGRAC/issues/220) | oGRAC | [Bug]: fast count 优化误判 JSON_TABLE data_expr 外部依赖导致 core |
+| [272](https://atomgit.com/opengauss/oGRAC/issues/272) | oGRAC | [Bug]: 【测试类型：SQL语法】use_bison_parser = true;DDL语法-匿名块中RETURN 带值，挂库 |
+| [279](https://atomgit.com/opengauss/oGRAC/issues/279) | oGRAC | [Bug]: 【测试类型：SQL语法】use_bison_parser = true;DDL创建对象，异常场景对象名称超长时执行挂库 |
+| [293](https://atomgit.com/opengauss/oGRAC/issues/293) | oGRAC | [资料]: ogsql 自动补全文档缺少能力边界/负向说明（请补充 ogsql_instructions） |
+| [288](https://atomgit.com/opengauss/oGRAC/issues/288) | oGRAC | [Bug]: ogsql输入select * fro按Tab错误补全为frozen_status |
+| [299](https://atomgit.com/opengauss/oGRAC/issues/299) | oGRAC | [Bug]: ogsql 非 SYS 用户 schema. 后无法补全表名 |
+| [297](https://atomgit.com/opengauss/oGRAC/issues/297) | oGRAC | [Bug]: ogsql 多行 continuation 下 FROM/WHERE Tab 补全失效 |
+| [314](https://atomgit.com/opengauss/oGRAC/issues/314) | oGRAC | [Bug]: master分支跑ci用例产生core |
+| [312](https://atomgit.com/opengauss/oGRAC/issues/312) | oGRAC | [Bug]: use_bison_parser=true，深嵌套用例core |
+| [311](https://atomgit.com/opengauss/oGRAC/issues/311) | oGRAC | [Bug]: use_bison_parser=true，PLSQL中的|| null会core |
+| [310](https://atomgit.com/opengauss/oGRAC/issues/310) | oGRAC | [Bug]: use_bison_parser=true，alter语句识别128M错误 |
+| [321](https://atomgit.com/opengauss/oGRAC/issues/321) | oGRAC | [Bug]: 【测试功能：工具功能】cm磁盘检测，节点0关闭自动保护，构造共享盘满故障，恢复后节点1发生core dump |
+| [329](https://atomgit.com/opengauss/oGRAC/issues/329) | oGRAC | [Bug]: 数据库重启后执行alter index rebuild发生core |
+| [331](https://atomgit.com/opengauss/oGRAC/issues/331) | oGRAC | [Bug]: 【测试功能：工具功能】【双节点】节点0关闭读写自动切换，节点0、1分别kill掉dss进程，发生core dump |
 
 ### 继承功能
 
@@ -59,7 +96,7 @@ oGRAC（openGauss Real Application Cluster）7.0.0-RC3 是 openGauss 社区 2026
 
 ### CVE漏洞
 
-本版本是2026年3月发布的创新版本，版本涉及的CVE漏洞可通过[CVE列表](https://opengauss.org/zh/cve)查询。
+本版本是2026年9月发布的LTS版本，版本涉及的CVE漏洞可通过[CVE列表](https://opengauss.org/zh/cve)查询。
 
 ## 版本使用注意事项
 
@@ -70,11 +107,11 @@ oGRAC（openGauss Real Application Cluster）7.0.0-RC3 是 openGauss 社区 2026
 
 oGRAC包含多个代码仓，包括引用开源软件的补丁代码仓、JDBC驱动代码仓、ODBC驱动代码仓、数据库服务器代码仓和文档仓库：
 
-- 开源软件代码仓：[https://gitcode.com/opengauss/openGauss-third\_party](https://gitcode.com/opengauss/openGauss-third_party)
-- JDBC驱动代码仓：[https://gitcode.com/opengauss/openGauss-connector-jdbc](https://gitcode.com/opengauss/openGauss-connector-jdbc)
-- ODBC驱动代码仓：[https://gitcode.com/opengauss/openGauss-connector-odbc](https://gitcode.com/opengauss/openGauss-connector-odbc)
-- 数据库服务器代码仓：[https://gitcode.com/opengauss/oGRAC](https://gitcode.com/opengauss/oGRAC)
-- 数据库文档仓库：[https://gitcode.com/opengauss/docs](https://gitcode.com/opengauss/docs)
+- 开源软件代码仓：[https://atomgit.com/opengauss/openGauss-third\_party](https://atomgit.com/opengauss/openGauss-third_party)
+- JDBC驱动代码仓：[https://atomgit.com/opengauss/openGauss-connector-jdbc](https://atomgit.com/opengauss/openGauss-connector-jdbc)
+- ODBC驱动代码仓：[https://atomgit.com/opengauss/openGauss-connector-odbc](https://atomgit.com/opengauss/openGauss-connector-odbc)
+- 数据库服务器代码仓：[https://atomgit.com/opengauss/oGRAC](https://atomgit.com/opengauss/oGRAC)
+- 数据库文档仓库：[https://atomgit.com/opengauss/oGRAC-doc](https://atomgit.com/opengauss/oGRAC-docs)
 
 ## 用户须知
 
@@ -88,4 +125,4 @@ oGRAC 的版本号遵循 X.Y.0-RCx 的格式，旨在区分不同类型的版本
 
 ## 致谢
 
-衷心感谢参与和协助 oGRAC 7.0.0-RC3 版本发布的所有开发者和伙伴。正是大家的辛勤付出使得版本顺利发布，也为 oGRAC 更好地发展提供了可能。
+衷心感谢参与和协助 oGRAC 7.0.0-LTS 版本发布的所有开发者和伙伴。正是大家的辛勤付出使得版本顺利发布，也为 oGRAC 更好地发展提供了可能。
