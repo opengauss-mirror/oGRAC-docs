@@ -72,6 +72,14 @@ git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex --skip-br
 > * `cmake`：要求版本 >= 3.12
 > * `lz4`：要求版本 >= 1.8.3
 > * 若存在依赖冲突，`--skip-broken` 可避免安装中断
+> * 如果是 openEuler 24.03 LTS 系统版本 则还需要额外的系统库及构建工具
+>   ```shell
+>   yum install -y protobuf-c protobuf-c-devel \
+>              zlib zlib-devel \
+>              pcre2 pcre2-devel \
+>              libzstd libzstd-devel zstd \
+>              openssl openssl-devel openssl-libs
+>   ```
 
 > [!WARNING]注意
 >
