@@ -207,11 +207,13 @@ This parameter takes effect immediately after being set. For details about how t
 
 **Value range**: Boolean
 
-- `on`/`true` indicates that the Bison parser is used.
+- `true` indicates that the Bison parser is used.
 
-- `off`/`false` indicates that the native parser is used.
+- `false` indicates that the native parser is used.
 
-**Default value**: `on`
+- `on` and `off` can be used to set this parameter only when the Bison parser is enabled.
+
+**Default value**: `false`
 
 >[!NOTE]
 >

@@ -46,7 +46,7 @@ SQL> DROP TABLE int_type_t2;
 > **NOTE**
 >
 > - This data type is imprecise by nature. Some values cannot be precisely converted to the internal format and are stored as approximations. Consequently, there may be some discrepancies when the stored data is printed out. If you intend to use an imprecise type for any critical or complex calculations, especially those that heavily depend on boundary conditions (infinity/underflow), you should carefully evaluate the SQL logic and app implementation. Directly comparing two floating-point values may not always yield the expected result.
-> - The data type supports numeric literals suffixed with f or d (case-insensitive). Both represent 8-byte floating-point numbers, with the same value range as BINARY_DOUBLE. For regular SQL statements, the ability to accept floating-point literals ending with f or d is governed by the GUC parameter use_bison_parser. This parameter is set to on by default. If it is not enabled, you must manually set it to true.
+> - The data type supports numeric literals suffixed with f or d (case-insensitive). Both represent 8-byte floating-point numbers, with the same value range as BINARY_DOUBLE. For regular SQL statements, the ability to accept floating-point literals ending with f or d is governed by the GUC parameter use_bison_parser. This parameter is set to false by default. To use this syntax, set use_bison_parser to true.
 
 Examples
 
