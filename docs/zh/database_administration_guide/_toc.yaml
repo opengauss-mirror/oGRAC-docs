@@ -33,6 +33,10 @@ sections:
     sections:   
       - label: 性能调优
         href: ./performance_tuning_guide/ograc_performance_tuning_guide.md
+  - label: CM管理工具
+    sections:
+      - label: CM磁盘阈值管理检测
+        href: ./CM管理工具/CM磁盘阈值管理检测/CMS_disk_usage_readonly_protection.md
   - label: 故障诊断
     sections:   
       - label: WSR报告
