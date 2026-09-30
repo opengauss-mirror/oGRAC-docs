@@ -232,7 +232,7 @@
     alter system set _OPTIM_SUBQUERY_REWRITE = true;
     alter system set CHECKPOINT_PERIOD = 60;
     alter system set CHECKPOINT_PAGES = 2000000;
-    alter system set BUF_POOL_NUM = 128;
+    alter system set LOG_BUFFER_COUNT = 128;
     alter system set _UNDO_ACTIVE_SEGMENTS = 1024;
     alter system set UNDO_RETENTION_TIME = 60;
     alter system set DATA_BUFFER_SIZE = '768G';
@@ -248,13 +248,12 @@
     alter system add hba entry 'host * 0.0.0.0/0';
     alter system reload hba config;
 
-    alter system set BUF_POOL_NUM = 3072;
+    alter system set BUF_POOL_NUM = 128;
     alter system set UNDO_RESERVE_SIZE = 512;
     alter system set _UNDO_AUTO_SHRINK = TRUE;
     alter system set _UNDO_PERF_PREALLOC = TRUE;
     alter system set _UNDO_PREALLOC_PAGES = 4000;
 
-    alter system set LOG_BUFFER_COUNT = 64;
     alter system set DTC_CKPT_NOTIFY_TASK_RATIO = 0.125;
     alter system set DTC_CLEAN_EDP_TASK_RATIO = 0.125;
     alter system set DTC_TXN_INFO_TASK_RATIO = 0.25;

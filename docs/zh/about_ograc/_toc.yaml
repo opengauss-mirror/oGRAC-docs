@@ -20,7 +20,9 @@ sections:
       - label: Online DDL
         href: ./product_architecture/online_ddl.md 
       - label: REDO
-        href: ./product_architecture/redo.md               
+        href: ./product_architecture/redo.md       
+      - label: 并行持久化REDO
+        href: ./product_architecture/para_log.md
   - label: 规格
     sections: 
       - label: 规格
