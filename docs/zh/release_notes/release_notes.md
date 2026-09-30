@@ -2,7 +2,7 @@
 
 ## 版本介绍
 
-oGRAC（openGauss Real Application Cluster）7.0.0-LTS 是 openGauss 社区 2026 年 9 月发布的多主数据库LTS版本，该版本生命周期为 3 年。本版本为 oGRAC 的第一个长期稳定版本。
+oGRAC（openGauss Real Application Cluster）7.0.0(LTS) 是 openGauss 社区 2026 年 9 月发布的多主数据库LTS版本，该版本生命周期为 3 年。本版本为 oGRAC 的第一个长期稳定版本。
 
 主要功能如下：
 
@@ -24,7 +24,7 @@ oGRAC（openGauss Real Application Cluster）7.0.0-LTS 是 openGauss 社区 2026
 
 ## 新增特性
 
-此处说明的是oGRAC 7.0.0-LTS版本，在7.0.0-RC3版本功能的基础上，新增如下特性：
+此处说明的是oGRAC 7.0.0(LTS)版本，在7.0.0-RC3版本功能的基础上，新增如下特性：
 
 - **高性能**：
   - 结合线程绑核动态配置、表锁优化、undo page预分配等优化性能。[#300](https://atomgit.com/opengauss/oGRAC/pull/300) [@hwworkholic](https://atomgit.com/hwworkholic)
@@ -125,4 +125,4 @@ oGRAC 的版本号遵循 X.Y.0-RCx 的格式，旨在区分不同类型的版本
 
 ## 致谢
 
-衷心感谢参与和协助 oGRAC 7.0.0-LTS 版本发布的所有开发者和伙伴。正是大家的辛勤付出使得版本顺利发布，也为 oGRAC 更好地发展提供了可能。
+衷心感谢参与和协助 oGRAC 7.0.0(LTS) 版本发布的所有开发者和伙伴。正是大家的辛勤付出使得版本顺利发布，也为 oGRAC 更好地发展提供了可能。
