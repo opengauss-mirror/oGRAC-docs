@@ -1,10 +1,12 @@
 label: Fault Recovery Issues
 isManual: true
-href: ./overview.md
 sections:
+  - label: Overview
+    href: ./overview.md
   - label: Compilation Issues
-    href: ./issues_during_the_compilation_phase/index.md
     sections:
+      - label: Overview
+        href: ./issues_during_the_compilation_phase/index.md
       - label: Compilation Failure of patchelf Due to GCC Version Incompatibility and Third-Party Library Path Configuration Errors
         href: ./issues_during_the_compilation_phase/compilation_failure_due_to_gcc_version_incompatibility.md
       - label: Compilation Failure of OpenSSL Due to Missing Perl Components
@@ -14,8 +16,9 @@ sections:
       - label: Compilation Failure Due to lz4 Version Below 1.8.3
         href: ./issues_during_the_compilation_phase/compilation_failure_due_to_lz4_version_too_low.md
   - label: Installation Issues
-    href: ./issues_during_the_installation_phase/index.md
     sections:
+      - label: Overview
+        href: ./issues_during_the_installation_phase/index.md
       - label: CMS Installation Failure Due to Missing `.bashrc` File in Residual User Home Directory
         href: ./issues_during_the_installation_phase/cms_installation_failed_missing_bashrcin.md
       - label: Installation Stuck When Retrieving NUMA Information Due to Chinese OS Locale
@@ -27,12 +30,14 @@ sections:
       - label: Installation Failure Due to DSS LUN Registration Conflicts
         href: ./issues_during_the_installation_phase/installation_failure_due_to_dss_lun_registration_conflict.md
   - label: Runtime Issues
-    href: ./issues_during_the_running_phase/index.md
     sections:
+      - label: Overview
+        href: ./issues_during_the_running_phase/index.md
       - label: oGRAC Runtime Failure Due to Insufficient System Memory
         href: ./issues_during_the_running_phase/running_failure_due_to_insufficient_memory.md
   - label: Uninstallation Issues
-    href: ./issues_during_the_uninstallation_phase/index.md
     sections:
+      - label: Overview
+        href: ./issues_during_the_uninstallation_phase/index.md
       - label: oGRAC Uninstallation Failure Caused by Residual Processes
         href: ./issues_during_the_uninstallation_phase/caused_by_residual_processes.md
