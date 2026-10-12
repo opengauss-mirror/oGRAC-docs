@@ -269,7 +269,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BACKUP_RETRY'
 
 **参数描述**
 
-限制数据库写入线程在检查点刷盘过程中一次提交的异步脏页写入数量。增大该值可能改变单批 I/O 请求规模，实际效果取决于工作负载和存储能力。
+仅在启用 DBStor（`ENABLE_DBSTOR=TRUE`）且启用 DBStor 批量刷盘（`ENABLE_DBSTOR_BATCH_FLUSH=TRUE`）时，限制数据库写入线程在该刷盘路径中一批异步脏页写入的数量。文件系统等未进入此路径的部署，不应把它当作通用的检查点刷盘调节参数。增大该值可能改变该路径的单批 I/O 请求规模，实际效果取决于工作负载和存储能力。
 
 **类型与取值范围**
 
@@ -285,7 +285,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BACKUP_RETRY'
 
 **配置建议与示例**
 
-无检查点刷盘瓶颈时保持默认值。生产持久调整应评估存储 I/O 和内存负载，通过 `SCOPE=PFILE` 写入配置并安排重启窗口。以下是在 7.0.0 实例上验证过的临时设置接口示例，假设原值为 `160`；示例会恢复原值，不重启数据库。
+未启用 DBStor 批量刷盘时保持默认值；在启用该功能的部署中，调整前应评估存储 I/O 和内存负载。生产持久调整需通过 `SCOPE=PFILE` 写入配置并安排重启窗口。以下是在 7.0.0 单节点文件系统实例上验证过的临时设置接口示例，假设原值为 `160`；示例会恢复原值，不重启数据库，也未验证 DBStor 批量刷盘效果。
 
 ```sql
 ALTER SYSTEM SET BATCH_FLUSH_CAPACITY = 161 SCOPE=MEMORY;
@@ -343,11 +343,13 @@ oGRAC 7.0.0 内核注册默认值为 `1`。安装器或管理员可能显式写�
 
 **配置建议与示例**
 
-与 `DATA_BUFFER_SIZE` 和服务器可用内存一起规划。资源有限时不要照搬大型性能测试中的高分区数。生产持久调整需按 `SCOPE=PFILE` 和数据库重启流程处理。以下是在 7.0.0 实例上验证过的临时设置接口示例，假设安装配置原值为 `1`；示例会恢复 `1`，不重启或重新分配缓冲池。
+与 `DATA_BUFFER_SIZE` 和服务器可用内存一起规划。资源有限时不要照搬大型性能测试中的高分区数。生产持久调整需按 `SCOPE=PFILE` 和数据库重启流程处理。修改前先查询当前实例的 `VALUE`、`RUNTIME_VALUE`，并核对持久化配置中的原值；下方恢复为 `1` 仅适用于原配置值为 `1` 的实例。若原值不是 `1`，须将恢复命令中的 `1` 换成事先记录的原值。以下是在 7.0.0 实例上验证过的临时设置接口示例，不重启或重新分配缓冲池。
 
 ```sql
+SELECT NAME, VALUE, RUNTIME_VALUE, DEFAULT_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUF_POOL_NUM';
 ALTER SYSTEM SET BUF_POOL_NUM = 2 SCOPE=MEMORY;
 SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUF_POOL_NUM';
+-- 仅当修改前配置值为 1 时执行；否则改用记录的原值。
 ALTER SYSTEM SET BUF_POOL_NUM = 1 SCOPE=MEMORY;
 SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUF_POOL_NUM';
 ```
@@ -385,7 +387,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUILD_DATAFIL
 
 **参数描述**
 
-控制提交时重做日志的刷盘调度方式。`IMMEDIATE` 在提交路径立即请求刷新；`BATCH` 允许短暂等待，以便合并刷新请求。提交是否等待日志写入还与 `COMMIT_WAIT_LOGGING` 有关。
+控制提交路径中重做日志刷新请求的调度方式。在会话采用 `COMMIT_WAIT_LOGGING=WAIT` 且需要刷新日志时，`IMMEDIATE` 不额外等待合并刷新，`BATCH` 可短暂等待以合并请求；若会话采用 `NOWAIT`，日志提交函数在这段调度逻辑之前返回，`IMMEDIATE` 也不会因此立即发起刷盘。
 
 **类型与取值范围**
 
@@ -397,7 +399,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUILD_DATAFIL
 
 **生效方式**
 
-立即生效。
+`DV_PARAMETERS.EFFECTIVE` 标记为 `immediately`。执行 `ALTER SYSTEM SET` 时，通知函数更新全局值和执行设置的当前会话；之后真正新初始化的会话继承全局值，已存在的其他会话保留各自原有设置。空闲会话复用时不会重新读取该值，因此仅重新连接也不能保证采用新值；应按实际会话核对，不能只凭 `RUNTIME_VALUE` 判断所有会话已切换。
 
 **配置建议与示例**
 
@@ -414,7 +416,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'COMMIT_MODE';
 
 **参数描述**
 
-控制连接异常断开后的会话失败处理路径。`TRUE` 时该路径调用提交；`FALSE` 时，若会话仍有未结束事务且并非强制终止，则调用回滚。此路径不代表所有正常断连情形，不能替代应用显式执行 `COMMIT` 或 `ROLLBACK`。
+控制会话失败处理路径中的事务处置：`TRUE` 时该路径尝试调用提交；`FALSE` 时，若会话仍有未结束事务且并非强制终止，则调用回滚。具体结果还取决于此前的处理步骤：例如等待客户端连接失败时，源码先回滚，再进入会话失败处理，因此即使设为 `TRUE`，也不能提交已回滚的事务。该参数不保证断连时一律提交，不能替代应用显式执行 `COMMIT` 或 `ROLLBACK`。
 
 **类型与取值范围**
 
@@ -448,7 +450,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'COMMIT_MODE';
 
 **生效方式**
 
-立即生效。
+`DV_PARAMETERS.EFFECTIVE` 标记为 `immediately`。执行 `ALTER SYSTEM SET` 时，通知函数更新全局值和执行设置的当前会话；之后真正新初始化的会话继承全局值，已存在的其他会话保留各自原有设置。空闲会话复用时不会重新读取该值，因此仅重新连接也不能保证采用新值；应按实际会话核对，不能只凭 `RUNTIME_VALUE` 判断所有会话已切换。
 
 **配置建议**
 
@@ -460,7 +462,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'COMMIT_MODE';
 
 指定数据库控制文件的路径列表。启动加载控制文件时，内核从该配置读取文件名，并尝试打开、读取和校验已有控制文件；若没有配置或所有文件均不可用，数据库无法按正常路径加载控制文件。
 
-**类型与格式**
+**类型与取值范围**
 
 `OG_TYPE_VARCHAR`。文件系统部署可采用括号包围、逗号分隔的路径列表，例如 `(/data/ograc/ctrl1, /data/ograc/ctrl2, /data/ograc/ctrl3)`。路径应指向该实例实际使用的控制文件，并保证运行用户有相应访问权限。`DV_PARAMETERS.RANGE` 显示为 `-`，不代表可使用任意无效路径。
 
@@ -468,7 +470,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'COMMIT_MODE';
 
 内核注册的默认字符串为空；这不是可直接启动数据库的控制文件配置。实际路径由安装或初始化配置提供，应查询当前实例的配置文件和 `DV_PARAMETERS` 确认。
 
-**可修改性与生效方式**
+**生效方式**
 
 `DV_PARAMETERS.MODIFIABLE=FALSE`，不支持通过 `ALTER SYSTEM SET` 修改；视图标记为 `reboot`。不得为了验证设置接口而修改正在使用的路径。
 
