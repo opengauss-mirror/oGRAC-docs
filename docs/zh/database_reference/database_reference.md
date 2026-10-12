@@ -214,20 +214,267 @@
 >
 >普通SQL语句中，以f/d结尾的浮点数字面量由该参数控制。
 
-### **BUF_POOL_NUM**
+## **AUTO_INHERIT_USER**
 
-**参数描述**  
-设置数据缓冲区（data buffer）的分区数量。
+**参数描述**
 
-**取值范围**  
-[0, 1024]
+控制创建用户时是否自动向 `PUBLIC` 授予对新用户的 `INHERIT PRIVILEGES` 权限。`ON` 会执行该授权；`OFF` 不执行。此参数影响后续创建的用户，不应将切换参数视为撤销已有授权。
 
-**默认值**  
-`0`
+**类型与取值范围**
 
-**特殊说明**
+`OG_TYPE_VARCHAR`；`OFF`、`ON`。
 
-- 当该参数**未配置**或**显式设置为 `0`** 时，系统会根据 `DATA_BUFFER_SIZE` 的实际值**自动计算并调整**一个合理的分区数。
+**默认值**
+
+`OFF`。
+
+**生效方式**
+
+立即生效。
+
+**配置建议**
+
+一般保持 `OFF`。`PUBLIC` 代表所有数据库用户，开启自动授权前应审查权限继承需求及现有授权策略。可通过 `DV_PARAMETERS` 查询参数状态；仅设置成功不能证明实际权限授予行为。
+
+## **BACKUP_RETRY**
+
+**参数描述**
+
+控制数据库备份在满足内核重试条件时是否尝试重试。源码中的重试路径还会检查失败原因、清理待重试备份集并等待集群 reform 完成；该参数不表示所有备份失败都会自动重试。
+
+**类型与取值范围**
+
+`OG_TYPE_BOOLEAN`；`FALSE`、`TRUE`。
+
+**默认值**
+
+`TRUE`。
+
+**生效方式**
+
+`DV_PARAMETERS.EFFECTIVE` 标记为 `immediately`。设置及读回成功不能证明实际备份重试路径已采用新值，还需在具备重试条件的隔离环境做功能验证。
+
+**配置建议与示例**
+
+通常保持 `TRUE`。以下示例仅用于无备份任务时验证设置接口，假设原值为 `TRUE`；验证后立即恢复，不代表已完成备份故障重试测试。
+
+```sql
+ALTER SYSTEM SET BACKUP_RETRY = FALSE SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BACKUP_RETRY';
+ALTER SYSTEM SET BACKUP_RETRY = TRUE SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BACKUP_RETRY';
+```
+
+## **BATCH_FLUSH_CAPACITY**
+
+**参数描述**
+
+限制数据库写入线程在检查点刷盘过程中一次提交的异步脏页写入数量。增大该值可能改变单批 I/O 请求规模，实际效果取决于工作负载和存储能力。
+
+**类型与取值范围**
+
+`OG_TYPE_INTEGER`；整数 `[1, 4096]`，单位为页。
+
+**默认值**
+
+`160`。
+
+**生效方式**
+
+重启生效。设置接口返回成功后，应分别查看 `VALUE` 与 `RUNTIME_VALUE`；配置值变化不能证明当前写入线程已采用新批次大小。
+
+**配置建议与示例**
+
+无检查点刷盘瓶颈时保持默认值。生产持久调整应评估存储 I/O 和内存负载，通过 `SCOPE=PFILE` 写入配置并安排重启窗口。以下是在 7.0.0 实例上验证过的临时设置接口示例，假设原值为 `160`；示例会恢复原值，不重启数据库。
+
+```sql
+ALTER SYSTEM SET BATCH_FLUSH_CAPACITY = 161 SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BATCH_FLUSH_CAPACITY';
+ALTER SYSTEM SET BATCH_FLUSH_CAPACITY = 160 SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BATCH_FLUSH_CAPACITY';
+```
+
+## **BLOCK_REPAIR_ENABLE**
+
+**参数描述**
+
+控制自动块修复开关。源码中的修复任务还要求存在有效备节点，并受 `BLOCK_REPAIR_TIMEOUT` 限制；单独打开开关不保证坏块可以修复。
+
+**类型与取值范围**
+
+`OG_TYPE_BOOLEAN`；`FALSE`、`TRUE`。
+
+**默认值**
+
+`FALSE`。
+
+**生效方式**
+
+立即生效。
+
+**配置建议与示例**
+
+仅在具备可用备节点、已确认修复流程和超时设置时考虑启用。单节点环境无法验证自动块修复功能。以下示例假设原值为 `FALSE`，只验证参数设置和读回，不制造坏块。
+
+```sql
+ALTER SYSTEM SET BLOCK_REPAIR_ENABLE = TRUE SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BLOCK_REPAIR_ENABLE';
+ALTER SYSTEM SET BLOCK_REPAIR_ENABLE = FALSE SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BLOCK_REPAIR_ENABLE';
+```
+
+## **BUF_POOL_NUM**
+
+**参数描述**
+
+设置数据缓冲区的缓冲池分区数量。启动时若 `DATA_BUFFER_SIZE` 不足以让每个配置分区达到 256 MiB，内核会降低实际分区数，因此参数配置值不一定等于最终创建的分区数。
+
+**类型与取值范围**
+
+`OG_TYPE_INTEGER`；整数 `[1, 4096]`。`0` 不属于 oGRAC 7.0.0 的合法值。
+
+**默认值**
+
+oGRAC 7.0.0 内核注册默认值为 `1`。安装器或管理员可能显式写入同一个数值；即使 `VALUE`、`RUNTIME_VALUE` 和 `DEFAULT_VALUE` 都为 `1`，`ISDEFAULT` 也可能为 `FALSE`，应另查配置文件。
+
+**生效方式**
+
+重启生效。仅设置成功或 `VALUE` 改变，不能证明当前缓冲池数量已改变。
+
+**配置建议与示例**
+
+与 `DATA_BUFFER_SIZE` 和服务器可用内存一起规划。资源有限时不要照搬大型性能测试中的高分区数。生产持久调整需按 `SCOPE=PFILE` 和数据库重启流程处理。以下是在 7.0.0 实例上验证过的临时设置接口示例，假设安装配置原值为 `1`；示例会恢复 `1`，不重启或重新分配缓冲池。
+
+```sql
+ALTER SYSTEM SET BUF_POOL_NUM = 2 SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUF_POOL_NUM';
+ALTER SYSTEM SET BUF_POOL_NUM = 1 SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUF_POOL_NUM';
+```
+
+## **BUILD_DATAFILE_PREALLOCATE**
+
+**参数描述**
+
+控制创建、扩展或恢复数据文件时是否向底层文件操作传递预分配标志。仅切换参数不会自行创建或扩展数据文件。
+
+**类型与取值范围**
+
+`OG_TYPE_BOOLEAN`；`FALSE`、`TRUE`。
+
+**默认值**
+
+`FALSE`。
+
+**生效方式**
+
+立即生效。
+
+**配置建议与示例**
+
+启用前应核对目标文件系统的可用空间及数据文件增长计划；预分配方式的实际磁盘效果还需结合文件系统和具体文件操作验证。以下示例假设原值为 `FALSE`，不执行任何数据文件操作。
+
+```sql
+ALTER SYSTEM SET BUILD_DATAFILE_PREALLOCATE = TRUE SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUILD_DATAFILE_PREALLOCATE';
+ALTER SYSTEM SET BUILD_DATAFILE_PREALLOCATE = FALSE SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'BUILD_DATAFILE_PREALLOCATE';
+```
+
+## **COMMIT_MODE**
+
+**参数描述**
+
+控制提交时重做日志的刷盘调度方式。`IMMEDIATE` 在提交路径立即请求刷新；`BATCH` 允许短暂等待，以便合并刷新请求。提交是否等待日志写入还与 `COMMIT_WAIT_LOGGING` 有关。
+
+**类型与取值范围**
+
+`OG_TYPE_VARCHAR`；`BATCH`、`IMMEDIATE`。
+
+**默认值**
+
+`IMMEDIATE`。
+
+**生效方式**
+
+立即生效。
+
+**配置建议与示例**
+
+通常保持 `IMMEDIATE`，并保持 `COMMIT_WAIT_LOGGING=WAIT`。调整前应评估事务延迟、吞吐与故障时的数据持久性要求。以下示例假设原值为 `IMMEDIATE`，只在没有业务事务的受控窗口验证设置接口，随后立即恢复；它不能证明提交性能或持久性。
+
+```sql
+ALTER SYSTEM SET COMMIT_MODE = BATCH SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'COMMIT_MODE';
+ALTER SYSTEM SET COMMIT_MODE = IMMEDIATE SCOPE=MEMORY;
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME = 'COMMIT_MODE';
+```
+
+## **COMMIT_ON_DISCONNECT**
+
+**参数描述**
+
+控制连接异常断开后的会话失败处理路径。`TRUE` 时该路径调用提交；`FALSE` 时，若会话仍有未结束事务且并非强制终止，则调用回滚。此路径不代表所有正常断连情形，不能替代应用显式执行 `COMMIT` 或 `ROLLBACK`。
+
+**类型与取值范围**
+
+`OG_TYPE_BOOLEAN`；`FALSE`、`TRUE`。
+
+**默认值**
+
+`FALSE`。
+
+**生效方式**
+
+`DV_PARAMETERS.EFFECTIVE` 标记为 `reboot`。源码同时存在更新运行开关的通知函数；因此不能仅凭设置成功或元数据推断断连事务行为，变更时应在隔离环境核对运行值并做事务测试。
+
+**配置建议**
+
+保持 `FALSE`，由应用显式决定事务提交或回滚。开启 `TRUE` 可能提交应用原本希望回滚的未完成事务，应先评估一致性风险。生产环境变更需安排维护及恢复方案。
+
+## **COMMIT_WAIT_LOGGING**
+
+**参数描述**
+
+控制提交时是否等待重做日志刷新完成。`WAIT` 等待日志写入确认；`NOWAIT` 可在等待前返回，因此实例异常时可能丢失尚未持久化的已提交事务。
+
+**类型与取值范围**
+
+`OG_TYPE_VARCHAR`；`WAIT`、`NOWAIT`。
+
+**默认值**
+
+`WAIT`。
+
+**生效方式**
+
+立即生效。
+
+**配置建议**
+
+一般保持 `WAIT`。只有明确接受相应持久性风险并完成隔离环境验证时才考虑 `NOWAIT`；调整 `COMMIT_MODE` 时也应同时核对本参数。未执行提交事务的参数设置测试不能证明日志持久性。
+
+## **CONTROL_FILES**
+
+**参数描述**
+
+指定数据库控制文件的路径列表。启动加载控制文件时，内核从该配置读取文件名，并尝试打开、读取和校验已有控制文件；若没有配置或所有文件均不可用，数据库无法按正常路径加载控制文件。
+
+**类型与格式**
+
+`OG_TYPE_VARCHAR`。文件系统部署可采用括号包围、逗号分隔的路径列表，例如 `(/data/ograc/ctrl1, /data/ograc/ctrl2, /data/ograc/ctrl3)`。路径应指向该实例实际使用的控制文件，并保证运行用户有相应访问权限。`DV_PARAMETERS.RANGE` 显示为 `-`，不代表可使用任意无效路径。
+
+**默认值**
+
+内核注册的默认字符串为空；这不是可直接启动数据库的控制文件配置。实际路径由安装或初始化配置提供，应查询当前实例的配置文件和 `DV_PARAMETERS` 确认。
+
+**可修改性与生效方式**
+
+`DV_PARAMETERS.MODIFIABLE=FALSE`，不支持通过 `ALTER SYSTEM SET` 修改；视图标记为 `reboot`。不得为了验证设置接口而修改正在使用的路径。
+
+**配置建议**
+
+保持现有有效配置。涉及控制文件迁移或恢复时，应先制定完整的备份、路径校验、停机和回退方案，并在维护窗口按专门流程执行；仅查询或截图不需要改动文件。
 
 ## `BUFFER_PAGE_CLEAN_PERIOD`
 
