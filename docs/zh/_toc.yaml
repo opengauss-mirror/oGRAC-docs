@@ -8,6 +8,7 @@ sections:
   - href: ./installation_guide/_toc.yaml
   - href: ./developer_guide/_toc.yaml
   - href: ./sql_reference/_toc.yaml
+  - href: ./compatibility/_toc.yaml
   - href: ./database_administration_guide/_toc.yaml
   - href: ./tool_and_commandreference/_toc.yaml
   - href: ./database_reference/_toc.yaml
