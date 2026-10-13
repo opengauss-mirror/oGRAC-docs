@@ -10,6 +10,7 @@
 - 复合索引包含的列数不超过16个，最大长度4052
 - LOB/ARRAY/IMAGE类型不支持创建普通索引，函数索引的参数是表达式时，结果不能为LOB/ARRAY/IMAGE类型
 - 函数索引支持abs、decode、jsonb_value、json_value、lower、nvl、nvl2、radians、regexp_instr、regexp_substr、reverse、substr、substrb、to_char、to_date、to_number、trim、trunc、upper
+- A 兼容模式下还支持 COSH、SINH、NANVL、REMAINDER、INITCAP、NCHR、TO_BINARY_FLOAT、TO_BINARY_DOUBLE，函数说明和适用限制见[A兼容性系统函数](../compatibility/a_compatibility/system_functions.md)。其中带 `DEFAULT ... ON CONVERSION ERROR` 的转换函数表达式要求开启 Bison 解析器。
 - 分区索引只支持分区表，分区表可以创建分区索引和全局索引，分区索引和分区数需要一致
 
 ## 语法格式
