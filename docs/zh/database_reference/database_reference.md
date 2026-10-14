@@ -177,6 +177,138 @@
 **默认值**  
 `100`
 
+**生效方式**
+
+重启生效（本实例实测 `EFFECTIVE=reboot`）。
+
+**实测补充**：本实例 `OPTIMIZED_WORKER_THREADS = 2000`，因此 `ALTER SYSTEM SET MAX_WORKER_THREADS = 1000 SCOPE=MEMORY;` 被拒绝：
+
+```
+OG-00209, The value of parameter "MAX_WORKER_THREADS" is too small, at least 2000
+```
+
+该下限来自与 `OPTIMIZED_WORKER_THREADS` 的依赖关系（本参数必须大于或等于 `OPTIMIZED_WORKER_THREADS`），并非固定下限；设置 `10001` 报 `OG-00202, The parameter value "MAX_WORKER_THREADS" was invalid`，与取值范围上限 `10000` 一致。
+
+## **AUTONOMOUS_SESSIONS**
+
+**参数描述**：设置自治会话数量。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `(0,256]`（左开右闭，即大于 0 且不超过 256）。
+
+**默认值**：8（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：本实例 `SHOW PARAMETER` 中 `AUTONOMOUS_SESSIONS` 与 `KNL_AUTONOMOUS_SESSIONS` 成对联动显示且取值相同，调整其中一个时请同时确认另一个的取值。取值范围上限为 256；本实例实测设 9999 被拒，报错原文：
+
+```
+alter system set AUTONOMOUS_SESSIONS = 9999;  ->  OG-00210, The value of parameter "AUTONOMOUS_SESSIONS" is too large, at most 256
+```
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 16）
+ALTER SYSTEM SET AUTONOMOUS_SESSIONS = 16 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='AUTONOMOUS_SESSIONS';
+
+-- 恢复安装后原值（本实例安装后原值为 8，请与实际实例核对后再执行）
+ALTER SYSTEM SET AUTONOMOUS_SESSIONS = 8 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **KNL_AUTONOMOUS_SESSIONS**
+
+**参数描述**：设置内核侧自治会话数量；本实例 `SHOW PARAMETER` 中与 `AUTONOMOUS_SESSIONS` 成对联动显示（同一数值）。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `(0,256]`（左开右闭，即大于 0 且不超过 256）。
+
+**默认值**：8（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：本实例 `SHOW PARAMETER` 中该参数与 `AUTONOMOUS_SESSIONS` 成对联动显示且取值相同，修改时建议保持两者一致。取值范围上限为 256；本实例实测设 9999 被拒，**报错里显示的名字是 `AUTONOMOUS_SESSIONS`**：
+
+```
+alter system set KNL_AUTONOMOUS_SESSIONS = 9999;  ->  OG-00210, The value of parameter "AUTONOMOUS_SESSIONS" is too large, at most 256
+```
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 16）
+ALTER SYSTEM SET KNL_AUTONOMOUS_SESSIONS = 16 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='KNL_AUTONOMOUS_SESSIONS';
+
+-- 恢复安装后原值（本实例安装后原值为 8，请与实际实例核对后再执行）
+ALTER SYSTEM SET KNL_AUTONOMOUS_SESSIONS = 8 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **NORMAL_USER_RESERVED_SESSIONS_FACTOR**
+
+**参数描述**：设置普通用户预留会话比例（视图 `RANGE=[0,1]`）。
+
+**类型与取值范围**：`OG_TYPE_REAL`；取值范围 `[0,1]`（闭区间）。
+
+**默认值**：1（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果写入实例配置文件 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：取值范围为 `[0,1]`，超出该区间会被拒绝。本实例实测 `ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 2 SCOPE=MEMORY;` 报错：
+
+```
+OG-00202, The parameter value "NORMAL_USER_RESERVED_SESSIONS_FACTOR" was invalid
+```
+
+（视图取值范围 `[0,1]` 可解释该报错。）
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 0.5）
+ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 0.5 SCOPE=MEMORY;
+
+-- 读回：该参数为 immediately 生效，VALUE 与 RUNTIME_VALUE 应同时为新值
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='NORMAL_USER_RESERVED_SESSIONS_FACTOR';
+
+-- 恢复安装后原值（本实例安装后原值为 1，请与实际实例核对后再执行）
+ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 1 SCOPE=MEMORY;
+```
+
+## **OPEN_CURSORS**
+
+**参数描述**：设置单个会话可同时打开的游标数量上限（视图 `RANGE=[1,16384]`）。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[1,16384]`。
+
+**默认值**：2000（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果写入实例配置文件 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：上限为 16384。本实例实测 `ALTER SYSTEM SET OPEN_CURSORS = 99999999 SCOPE=MEMORY;` 报错：
+
+```
+OG-00210, The value of parameter "OPEN_CURSORS" is too large, at most 16384
+```
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 3000）
+ALTER SYSTEM SET OPEN_CURSORS = 3000 SCOPE=MEMORY;
+
+-- 读回：该参数为 immediately 生效，VALUE 与 RUNTIME_VALUE 应同时为新值
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='OPEN_CURSORS';
+
+-- 恢复安装后原值（本实例安装后原值为 2000，请与实际实例核对后再执行）
+ALTER SYSTEM SET OPEN_CURSORS = 2000 SCOPE=MEMORY;
+```
+
 ## **STATS_LEVEL**
 
 **参数描述**  
@@ -918,6 +1050,102 @@ XA 接口显式指定有效的专用超时时间时，优先使用接口提供�
 **依赖与配置建议**
 启用前按 RAFT 库的安全配置要求准备令牌并协调集群各节点；未启用 RAFT 或尚未完成安全部署时保持默认值。设置接口接受 `TRUE` 不等于令牌校验已经工作。
 
+## **RAFT_PENDING_CMDS_BUFFER_SIZE**
+
+**参数描述**：设置 RAFT 待处理命令缓冲区大小。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；RANGE 为 `[1,-)`，按本实例视图表示法即下限为 1、无固定上限。
+
+**默认值**：1000（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：视图 `RANGE` 为 `[1,-)`，即未给出固定上限。本实例实测下限被拒，报错原文：
+
+```
+alter system set RAFT_PENDING_CMDS_BUFFER_SIZE = 0;  ->  OG-00209, The value of parameter "RAFT_PENDING_CMDS_BUFFER_SIZE" is too small, at least 1
+```
+
+实际可用上限**待确认**（视图未给），调整前建议结合实例负载评估。修改需重启。
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 2000）
+ALTER SYSTEM SET RAFT_PENDING_CMDS_BUFFER_SIZE = 2000 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='RAFT_PENDING_CMDS_BUFFER_SIZE';
+
+-- 恢复安装后原值（本实例安装后原值为 1000，请与实际实例核对后再执行）
+ALTER SYSTEM SET RAFT_PENDING_CMDS_BUFFER_SIZE = 1000 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **RAFT_RECEIVE_BUFFER_SIZE**
+
+**参数描述**：设置 RAFT 接收缓冲区大小。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[1,10000]`。
+
+**默认值**：100（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：取值范围 `[1,10000]`。本实例实测越界被拒，报错原文：
+
+```
+alter system set RAFT_RECEIVE_BUFFER_SIZE = 99999;  ->  OG-00211, The value of parameter "RAFT_RECEIVE_BUFFER_SIZE" should be in [1, 10000]
+```
+
+（`OG-00211` 是本实例见到的第三类越界错误码，`should be in [a, b]` 形式，与 `OG-00209`（too small）、`OG-00210`（too large）并列。）修改需重启。
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 200）
+ALTER SYSTEM SET RAFT_RECEIVE_BUFFER_SIZE = 200 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='RAFT_RECEIVE_BUFFER_SIZE';
+
+-- 恢复安装后原值（本实例安装后原值为 100，请与实际实例核对后再执行）
+ALTER SYSTEM SET RAFT_RECEIVE_BUFFER_SIZE = 100 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **RAFT_SEND_BUFFER_SIZE**
+
+**参数描述**：设置 RAFT 发送缓冲区大小。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[1,10000]`。
+
+**默认值**：100（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：取值范围 `[1,10000]`。本实例实测越界被拒，报错原文：
+
+```
+alter system set RAFT_SEND_BUFFER_SIZE = 0;  ->  OG-00211, The value of parameter "RAFT_SEND_BUFFER_SIZE" should be in [1, 10000]
+```
+
+修改需重启。
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 200）
+ALTER SYSTEM SET RAFT_SEND_BUFFER_SIZE = 200 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='RAFT_SEND_BUFFER_SIZE';
+
+-- 恢复安装后原值（本实例安装后原值为 100，请与实际实例核对后再执行）
+ALTER SYSTEM SET RAFT_SEND_BUFFER_SIZE = 100 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
 ## **USE_RBP**
 
 **参数描述**  
@@ -1199,6 +1427,18 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 **默认值**：32M  
 **安装脚本默认值**：使用 `install.py` 安装时，自动设为 **1G**
 
+**生效方式**
+
+重启生效（本实例实测 `EFFECTIVE=reboot`）。本实例实测：`ALTER SYSTEM SET TEMP_BUFFER_SIZE = 1G` 返回 `Succeed.`，随后回退为 `2G`；实例启动加载的仍是 `2G`。
+
+数据库启动时出现告警（原文来自本实例运行日志 `ogracd.rlog`）：
+
+```
+The parameter temp pool num (8) is too large, reset to (1), each temp pool must not be smaller than (2147483648).
+```
+
+该告警说明的是配置文件中 `TEMP_POOL_NUM = 8` 因单个临时池不得小于 `2G` 而被重置为 `1`，**每次启动均会出现，并非设置 `1G` 所触发**。
+
 #### `DATA_BUFFER_SIZE`
 
 **作用**：设置数据缓冲区（Data Buffer）的大小，用于缓存最近访问的数据页，提升数据访问效率。
@@ -1240,6 +1480,38 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 
   - 如需调小，必须通过修改配置文件或使用 `SCOPE=PFILE`，并**重启数据库**生效。  
 **安装脚本默认值**：使用 `install.py` 安装时，自动设为 **1G**
+
+## **PMA_BUFFER_SIZE**
+
+**参数描述**：设置 PMA 缓冲区大小。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[0,1T]`。
+
+**默认值**：128M（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入实例配置文件 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：视图 `RANGE` 为 `[0,1T]`。本实例实测越界被拒，报错原文：
+
+```
+alter system set PMA_BUFFER_SIZE = 2T;  ->  OG-00601, [1:36]Sql syntax error: size value is bigger than maximum(1099511627776) required
+```
+
+1099511627776 字节 = 1T，与视图上限一致。修改需重启，请安排在维护窗口。
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 256M）
+ALTER SYSTEM SET PMA_BUFFER_SIZE = 256M SCOPE=MEMORY;
+
+-- 读回：VALUE 立即为新值，RUNTIME_VALUE 在重启前仍为旧值
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='PMA_BUFFER_SIZE';
+
+-- 恢复安装后原值（本实例安装后原值为 128M，请与实际实例核对后再执行）
+ALTER SYSTEM SET PMA_BUFFER_SIZE = 128M SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
 
 ### 2. 检查点（Checkpoint）
 
