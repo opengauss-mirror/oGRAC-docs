@@ -68,6 +68,91 @@
 **默认值**  
 `300` 
 
+**生效方式**
+
+立即生效（本实例实测 `EFFECTIVE=immediately`）。本实例实测 `ALTER SYSTEM SET CHECKPOINT_PERIOD = 0 SCOPE=MEMORY;` 报错：
+
+```
+OG-00209, The value of parameter "CHECKPOINT_PERIOD" is too small, at least 1
+```
+
+## **DTC_CKPT_NOTIFY_TASK_RATIO**
+
+**参数描述**：设置 DTC 检查点通知任务比例（视图 `RANGE=[0.001,0.999]`）。
+
+**类型与取值范围**：`OG_TYPE_REAL`；取值范围 `[0.001,0.999]`（闭区间）。
+
+**默认值**：0.125（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入实例配置文件 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：请按视图取值区间 `[0.001,0.999]` 设置。本实例实测越界均被拒，且**报错里显示的名字是 `MES_TASK_RATIO`**（说明二者在引擎内部是同一校验对象，文档宜提示该别名关系）：
+
+```
+alter system set DTC_CKPT_NOTIFY_TASK_RATIO = 5;       ->  OG-00202, The parameter value "MES_TASK_RATIO" was invalid
+alter system set DTC_CKPT_NOTIFY_TASK_RATIO = 0.0001;  ->  OG-00202, The parameter value "MES_TASK_RATIO" was invalid
+```
+
+修改需重启，请安排在维护窗口。
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 0.05）
+ALTER SYSTEM SET DTC_CKPT_NOTIFY_TASK_RATIO = 0.05 SCOPE=MEMORY;
+
+-- 读回：VALUE 立即为新值，RUNTIME_VALUE 在重启前仍为旧值
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='DTC_CKPT_NOTIFY_TASK_RATIO';
+
+-- 恢复安装后原值（本实例安装后原值为 0.032，请与实际实例核对后再执行）
+ALTER SYSTEM SET DTC_CKPT_NOTIFY_TASK_RATIO = 0.032 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **PAGE_CLEAN_MODE**
+
+**参数描述**：设置页面清理模式，取值 `SINGLE`、`ALL`（视图 `RANGE` 直接为枚举串 `SINGLE,ALL`）。
+
+**类型与取值范围**：`OG_TYPE_VARCHAR`；RANGE 为枚举串 `SINGLE,ALL`。
+
+**默认值**：SINGLE（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果写入实例配置文件 `.../tmp/data/cfg/ogracd.ini`。
+
+**配置建议**：取值必须**不带引号**。本实例实测 `ALTER SYSTEM SET PAGE_CLEAN_MODE = 'SINGLE' SCOPE=MEMORY;`（带单引号）报错：
+
+```
+OG-00601, [1:36]Sql syntax error: SINGLE or ALL expected
+```
+
+写成 `ALTER SYSTEM SET PAGE_CLEAN_MODE = SINGLE;`（不带引号）则执行成功。
+
+**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+
+```sql
+-- 试设（本实例实测设置值 SINGLE，注意不加引号）
+ALTER SYSTEM SET PAGE_CLEAN_MODE = SINGLE SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='PAGE_CLEAN_MODE';
+
+-- 恢复安装后原值（本实例安装后原值为 ALL，请与实际实例核对后再执行）
+ALTER SYSTEM SET PAGE_CLEAN_MODE = ALL SCOPE=MEMORY;
+```
+
+## **ENABLE_QUICK_CKPT**
+
+**结论：本安装包中未发现该参数，因此本节不提供参数定义。**
+
+以下为本实例的核查过程与结果（均为本机一手实测）：
+
+- 执行 `SHOW PARAMETER ENABLE_QUICK_CKPT`，无任何返回。
+- 本实例 `DV_PARAMETERS` 视图共 442 个参数，其中不存在名称包含 `QUICK` 的参数。
+- 对整个 `/opt/ograc/` 目录执行 `grep -rl "ENABLE_QUICK_CKPT"`，仅命中 ogsql 自身的操作日志（即执行该查询命令所产生的记录），未命中配置文件或引擎二进制。
+- 对引擎二进制 `server/bin/ogracd`（约 112 MB）执行 `grep -ac "ENABLE_QUICK_CKPT"`，计数为 0，即该字符串未出现在该二进制中。
+
+据此**只能得出「本安装包中未发现该参数」**这一结论：既不能断言它是「隐藏参数」，也不能断言它「存在于二进制中」。该参数是否属于其它 oGRAC 版本或其它组件，需向社区确认（**待确认**）。在社区给出结论前，本文档不为该参数编写参数定义，也不提供 `ALTER SYSTEM SET` 示例。
+
 ## **CHECKPOINT_PAGES**
 
 **参数描述**  
@@ -87,6 +172,16 @@
   
 **默认值**  
 `100,000` 
+
+**生效方式**
+
+立即生效（本实例实测 `EFFECTIVE=immediately`）。本实例实测 `ALTER SYSTEM SET CHECKPOINT_PAGES = 0 SCOPE=MEMORY;` 报错：
+
+```
+OG-00209, The value of parameter "CHECKPOINT_PAGES" is too small, at least 1
+```
+
+设置 `4294967296` 报 `OG-00601, Sql syntax error: Convert uint32 failed, the number text is not in the range of uint32, text = 4294967296`，与取值范围上限 `4294967295` 一致。
 
 ## **REACTOR_THREADS**
 
@@ -498,13 +593,27 @@ Page Clean 是一种快速清理 Buffer 中脏页的机制。在常规业务场�
 **取值范围**：整数，(0, 16]  
 **默认值**：4  
 
+**生效方式**
+
+重启生效（本实例实测 `EFFECTIVE=reboot`）。执行 `ALTER SYSTEM SET` 后 `VALUE` 立即改变、`RUNTIME_VALUE` 不变，重启数据库后 `RUNTIME_VALUE` 才等于新的 `VALUE`。
+
 ## `LOG_BUFFER_SIZE`
 
 **参数说明**：定义每个 Log Buffer 的大小，用于缓存 REDO 日志。  
 适当增大该值有助于提升数据写入性能，应根据实际可用内存进行调整。
 
-**取值范围**：整数，[1M, 128M]（单位：字节）  
+**取值范围**：整数，[1M, 110M]（单位：字节）  
 **默认值**：4M  
+
+**生效方式**
+
+重启生效（本实例实测 `EFFECTIVE=reboot`）。本实例实测设置 `128M` 被拒：
+
+```
+OG-00601, [1:36]Sql syntax error: size value is bigger than maximum(115343360) required
+```
+
+即上限为 `115343360` 字节（`110M`）。
 
 ## `TIMED_STATS`（别名：`TIMED_STATISTICS`，不推荐使用）
 
@@ -1250,6 +1359,16 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 **取值范围**：整数，[1, 4096]  
 **默认值**：1024
 
+**生效方式**
+
+立即生效（本实例 `DV_PARAMETERS` 实测 `EFFECTIVE=immediately`、`MODIFIABLE=TRUE`）。
+
+本实例实测 `ALTER SYSTEM SET CHECKPOINT_IO_CAPACITY = 5000 SCOPE=MEMORY;` 报错：
+
+```
+OG-00210, The value of parameter "CHECKPOINT_IO_CAPACITY" is too large, at most 4096
+```
+
 #### `_CHECKPOINT_TIMED_TASK_DELAY`
 
 **作用**：设置两次定时 Checkpoint 任务之间的间隔时间（毫秒）。
@@ -1285,7 +1404,7 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 - **特殊建议**：当 `FILE_OPTIONS = ASYNCH` 或 `SETALL`（即启用异步 I/O）时，建议将该参数设为 **1**，因为异步 I/O 本身已具备高并发能力，无需额外增加 DBWR 线程。
 
 **取值范围**：整数，[1, 36]  
-**默认值**：1
+**默认值**：8
 
 ### 5. 会话级参数
 
