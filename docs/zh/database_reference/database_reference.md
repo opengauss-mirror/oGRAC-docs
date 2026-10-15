@@ -70,7 +70,7 @@
 
 **生效方式**
 
-立即生效（本实例实测 `EFFECTIVE=immediately`）。本实例实测 `ALTER SYSTEM SET CHECKPOINT_PERIOD = 0 SCOPE=MEMORY;` 报错：
+立即生效（7.0.0-LTS 实测 `EFFECTIVE=immediately`）。7.0.0-LTS 实测 `ALTER SYSTEM SET CHECKPOINT_PERIOD = 0 SCOPE=MEMORY;` 报错：
 
 ```
 OG-00209, The value of parameter "CHECKPOINT_PERIOD" is too small, at least 1
@@ -78,80 +78,83 @@ OG-00209, The value of parameter "CHECKPOINT_PERIOD" is too small, at least 1
 
 ## **DTC_CKPT_NOTIFY_TASK_RATIO**
 
-**参数描述**：设置 DTC 检查点通知任务比例（视图 `RANGE=[0.001,0.999]`）。
+**参数描述**
+
+设置 DTC（分布式事务集群）检查点通知任务的比例：在 MES 任务线程中分配给检查点通知消息组的线程数量为 `OGRAC_TASK_NUM × 该比例`（向下取整）。比例越高，检查点通知的调度越及时。
 
 **类型与取值范围**：`OG_TYPE_REAL`；取值范围 `[0.001,0.999]`（闭区间）。
 
-**默认值**：0.125（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+**默认值**
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。本实例实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果写入实例配置文件 `.../tmp/data/cfg/ogracd.ini`。
+- 内核缺省值：0.125。
+- 部署默认值：0.032（随包部署工具写入，见 ograc_ctl.py:610）。
 
-**配置建议**：请按视图取值区间 `[0.001,0.999]` 设置。本实例实测越界均被拒，且**报错里显示的名字是 `MES_TASK_RATIO`**（说明二者在引擎内部是同一校验对象，文档宜提示该别名关系）：
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果持久化至参数配置文件（ogracd.ini）。
+
+**配置建议**：请按视图取值区间 `[0.001,0.999]` 设置。7.0.0-LTS 实测越界均被拒，且**报错里显示的名字是 `MES_TASK_RATIO`**（说明二者在引擎内部是同一校验对象，文档宜提示该别名关系）：
 
 ```
 alter system set DTC_CKPT_NOTIFY_TASK_RATIO = 5;       ->  OG-00202, The parameter value "MES_TASK_RATIO" was invalid
 alter system set DTC_CKPT_NOTIFY_TASK_RATIO = 0.0001;  ->  OG-00202, The parameter value "MES_TASK_RATIO" was invalid
 ```
 
-修改需重启，请安排在维护窗口。
+修改需重启，请安排在维护窗口。上述试设/恢复示例使用 `SCOPE=MEMORY`，仅用于临时验证，不会写入参数配置文件；生产持久调整请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`，并安排重启后在维护窗口确认 `RUNTIME_VALUE` 更新。
 
-**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
 
 ```sql
--- 试设（本实例实测设置值 0.05）
+-- 试设（7.0.0-LTS 实测设置值 0.05）
 ALTER SYSTEM SET DTC_CKPT_NOTIFY_TASK_RATIO = 0.05 SCOPE=MEMORY;
 
 -- 读回：VALUE 立即为新值，RUNTIME_VALUE 在重启前仍为旧值
 SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='DTC_CKPT_NOTIFY_TASK_RATIO';
 
--- 恢复安装后原值（本实例安装后原值为 0.032，请与实际实例核对后再执行）
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 0.032，请与实际实例核对后再执行）
 ALTER SYSTEM SET DTC_CKPT_NOTIFY_TASK_RATIO = 0.032 SCOPE=MEMORY;
 -- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
 ```
 
 ## **PAGE_CLEAN_MODE**
 
-**参数描述**：设置页面清理模式，取值 `SINGLE`、`ALL`（视图 `RANGE` 直接为枚举串 `SINGLE,ALL`）。
+**参数描述**
+
+设置页面清理模式。`SINGLE`：逐个 buffer set 清理脏页；`ALL`：一次性清理全部 buffer set 的脏页。`ALL` 清理更彻底但单次停顿更大，`SINGLE` 更平滑。
 
 **类型与取值范围**：`OG_TYPE_VARCHAR`；RANGE 为枚举串 `SINGLE,ALL`。
 
-**默认值**：SINGLE（本实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+**默认值**
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果写入实例配置文件 `.../tmp/data/cfg/ogracd.ini`。
+- 内核缺省值：SINGLE。
+- 部署默认值：ALL（随包部署工具写入，见 ograc_ctl.py:682）。
 
-**配置建议**：取值必须**不带引号**。本实例实测 `ALTER SYSTEM SET PAGE_CLEAN_MODE = 'SINGLE' SCOPE=MEMORY;`（带单引号）报错：
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果持久化至参数配置文件（ogracd.ini）。
+
+**配置建议**：取值必须**不带引号**。7.0.0-LTS 实测 `ALTER SYSTEM SET PAGE_CLEAN_MODE = 'SINGLE' SCOPE=MEMORY;`（带单引号）报错：
 
 ```
 OG-00601, [1:36]Sql syntax error: SINGLE or ALL expected
 ```
 
-写成 `ALTER SYSTEM SET PAGE_CLEAN_MODE = SINGLE;`（不带引号）则执行成功。
+写成 `ALTER SYSTEM SET PAGE_CLEAN_MODE = SINGLE;`（不带引号）则执行成功。上述示例使用 `SCOPE=MEMORY`，修改立即生效但不会持久化，重启后丢失；如需持久化，请省略 scope（默认 `SCOPE=BOTH`）。
 
-**试设与恢复示例**（下列设置值取自本实例实测设置过的值）：
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
 
 ```sql
--- 试设（本实例实测设置值 SINGLE，注意不加引号）
+-- 试设（7.0.0-LTS 实测设置值 SINGLE，注意不加引号）
 ALTER SYSTEM SET PAGE_CLEAN_MODE = SINGLE SCOPE=MEMORY;
 
 -- 读回
 SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='PAGE_CLEAN_MODE';
 
--- 恢复安装后原值（本实例安装后原值为 ALL，请与实际实例核对后再执行）
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 ALL，请与实际实例核对后再执行）
 ALTER SYSTEM SET PAGE_CLEAN_MODE = ALL SCOPE=MEMORY;
 ```
 
 ## **ENABLE_QUICK_CKPT**
 
-**结论：本安装包中未发现该参数，因此本节不提供参数定义。**
+**结论**：该参数在 7.0.0-LTS 安装包中不存在，本节不提供参数定义；待升级到包含提交 `34f2b0f` 的版本后，在对应版本文档中补充定义。
 
-以下为本实例的核查过程与结果（均为本机一手实测）：
-
-- 执行 `SHOW PARAMETER ENABLE_QUICK_CKPT`，无任何返回。
-- 本实例 `DV_PARAMETERS` 视图共 442 个参数，其中不存在名称包含 `QUICK` 的参数。
-- 对整个 `/opt/ograc/` 目录执行 `grep -rl "ENABLE_QUICK_CKPT"`，仅命中 ogsql 自身的操作日志（即执行该查询命令所产生的记录），未命中配置文件或引擎二进制。
-- 对引擎二进制 `server/bin/ogracd`（约 112 MB）执行 `grep -ac "ENABLE_QUICK_CKPT"`，计数为 0，即该字符串未出现在该二进制中。
-
-据此**只能得出「本安装包中未发现该参数」**这一结论：既不能断言它是「隐藏参数」，也不能断言它「存在于二进制中」。该参数是否属于其它 oGRAC 版本或其它组件，需向社区确认（**待确认**）。在社区给出结论前，本文档不为该参数编写参数定义，也不提供 `ALTER SYSTEM SET` 示例。
+**版本说明**：该参数已在 oGRAC master 源码中引入——`srv_param.c:1228` 注册为 `BOOLEAN` 类型、默认 `FALSE`、重启生效，由 2026-06-21 提交 `34f2b0f feat(gbp): integrate kernel GBP paths` 带入。7.0.0-LTS 安装包版本早于该提交，经实机核查（`SHOW PARAMETER` 无返回、`DV_PARAMETERS` 视图 442 个参数中无该项、引擎二进制 grep 计数为 0），本安装包不含该参数。
 
 ## **CHECKPOINT_PAGES**
 
@@ -175,7 +178,7 @@ ALTER SYSTEM SET PAGE_CLEAN_MODE = ALL SCOPE=MEMORY;
 
 **生效方式**
 
-立即生效（本实例实测 `EFFECTIVE=immediately`）。本实例实测 `ALTER SYSTEM SET CHECKPOINT_PAGES = 0 SCOPE=MEMORY;` 报错：
+立即生效（7.0.0-LTS 实测 `EFFECTIVE=immediately`）。7.0.0-LTS 实测 `ALTER SYSTEM SET CHECKPOINT_PAGES = 0 SCOPE=MEMORY;` 报错：
 
 ```
 OG-00209, The value of parameter "CHECKPOINT_PAGES" is too small, at least 1
@@ -595,25 +598,26 @@ Page Clean 是一种快速清理 Buffer 中脏页的机制。在常规业务场�
 
 **生效方式**
 
-重启生效（本实例实测 `EFFECTIVE=reboot`）。执行 `ALTER SYSTEM SET` 后 `VALUE` 立即改变、`RUNTIME_VALUE` 不变，重启数据库后 `RUNTIME_VALUE` 才等于新的 `VALUE`。
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。执行 `ALTER SYSTEM SET` 后 `VALUE` 立即改变、`RUNTIME_VALUE` 不变，重启数据库后 `RUNTIME_VALUE` 才等于新的 `VALUE`。
 
 ## `LOG_BUFFER_SIZE`
 
 **参数说明**：定义每个 Log Buffer 的大小，用于缓存 REDO 日志。  
 适当增大该值有助于提升数据写入性能，应根据实际可用内存进行调整。
 
-**取值范围**：整数，[1M, 110M]（单位：字节）  
+**取值范围**：整数，[1M, 110M]（单位：字节；以 7.0.0-LTS 实测为准）  
+master 源码上限已放宽至 1024M（cm_defs.h:568），升级到包含该改动的版本后请以实际版本为准。  
 **默认值**：4M  
 
 **生效方式**
 
-重启生效（本实例实测 `EFFECTIVE=reboot`）。本实例实测设置 `128M` 被拒：
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。7.0.0-LTS 实测设置 `128M` 被拒：
 
 ```
 OG-00601, [1:36]Sql syntax error: size value is bigger than maximum(115343360) required
 ```
 
-即上限为 `115343360` 字节（`110M`）。
+即 7.0.0-LTS 实测上限为 `115343360` 字节（`110M`）。
 
 ## `TIMED_STATS`（别名：`TIMED_STATISTICS`，不推荐使用）
 
@@ -1361,9 +1365,9 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 
 **生效方式**
 
-立即生效（本实例 `DV_PARAMETERS` 实测 `EFFECTIVE=immediately`、`MODIFIABLE=TRUE`）。
+立即生效（7.0.0-LTS 实例 `DV_PARAMETERS` 实测 `EFFECTIVE=immediately`、`MODIFIABLE=TRUE`）。
 
-本实例实测 `ALTER SYSTEM SET CHECKPOINT_IO_CAPACITY = 5000 SCOPE=MEMORY;` 报错：
+7.0.0-LTS 实测 `ALTER SYSTEM SET CHECKPOINT_IO_CAPACITY = 5000 SCOPE=MEMORY;` 报错：
 
 ```
 OG-00210, The value of parameter "CHECKPOINT_IO_CAPACITY" is too large, at most 4096
@@ -1404,7 +1408,8 @@ OG-00210, The value of parameter "CHECKPOINT_IO_CAPACITY" is too large, at most 
 - **特殊建议**：当 `FILE_OPTIONS = ASYNCH` 或 `SETALL`（即启用异步 I/O）时，建议将该参数设为 **1**，因为异步 I/O 本身已具备高并发能力，无需额外增加 DBWR 线程。
 
 **取值范围**：整数，[1, 36]  
-**默认值**：8
+**默认值**：8  
+**生效方式**：重启生效（EFFECT_REBOOT），修改后需按部署流程重启数据库实例。
 
 ### 5. 会话级参数
 
