@@ -89,7 +89,7 @@ OG-00209, The value of parameter "CHECKPOINT_PERIOD" is too small, at least 1
 - 内核缺省值：0.125。
 - 部署默认值：0.032（随包部署工具写入，见 ograc_ctl.py:610）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。
 
 **配置建议**：请按视图取值区间 `[0.001,0.999]` 设置。7.0.0-LTS 实测越界均被拒，且**报错里显示的名字是 `MES_TASK_RATIO`**（说明二者在引擎内部是同一校验对象，文档宜提示该别名关系）：
 
@@ -127,7 +127,7 @@ ALTER SYSTEM SET DTC_CKPT_NOTIFY_TASK_RATIO = 0.032 SCOPE=MEMORY;
 - 内核缺省值：SINGLE。
 - 部署默认值：ALL（随包部署工具写入，见 ograc_ctl.py:682）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启。
 
 **配置建议**：取值必须**不带引号**。7.0.0-LTS 实测 `ALTER SYSTEM SET PAGE_CLEAN_MODE = 'SINGLE' SCOPE=MEMORY;`（带单引号）报错：
 
