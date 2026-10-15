@@ -171,7 +171,7 @@
 
 **生效方式**
 
-重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，新值持久化至参数配置文件（ogracd.ini），重启数据库实例后 `RUNTIME_VALUE` 更新为新值；上述试设示例使用 `SCOPE=MEMORY`，仅用于临时验证。
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，重启数据库实例后 `RUNTIME_VALUE` 更新为新值；上述试设示例使用 `SCOPE=MEMORY`，仅用于临时验证。
 
 **7.0.0-LTS 实测补充**：实例 `OPTIMIZED_WORKER_THREADS = 2000` 时，`ALTER SYSTEM SET MAX_WORKER_THREADS = 1000 SCOPE=MEMORY;` 被拒绝：
 
@@ -197,7 +197,7 @@ OG-00209, The value of parameter "MAX_WORKER_THREADS" is too small, at least 200
 
 **生效方式**
 
-重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，新值持久化至参数配置文件（ogracd.ini），重启数据库实例后 `RUNTIME_VALUE` 更新为新值。
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，重启数据库实例后 `RUNTIME_VALUE` 更新为新值。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议与示例**
 
@@ -237,7 +237,7 @@ ALTER SYSTEM SET AUTONOMOUS_SESSIONS = 8 SCOPE=MEMORY;
 
 **生效方式**
 
-重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，新值持久化至参数配置文件（ogracd.ini），重启数据库实例后 `RUNTIME_VALUE` 更新为新值。
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，重启数据库实例后 `RUNTIME_VALUE` 更新为新值。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议与示例**
 
@@ -267,13 +267,13 @@ ALTER SYSTEM SET KNL_AUTONOMOUS_SESSIONS = 8 SCOPE=MEMORY;
 
 设置普通用户可占用的超级用户预留会话比例：普通用户最多可使用 `SUPER_USER_RESERVED_SESSIONS × 该值`（向下取整）个预留会话。取值 `1` 表示普通用户可占满全部预留会话，`0` 表示普通用户不可使用预留会话。
 
-**与 SUPER_USER_RESERVED_SESSIONS 的关系**：该参数作用于超级用户预留会话（该参数默认 `10`、范围 `[1,32]`、重启生效）；实际可用的预留会话数随两者配置联动计算。
+**与 SUPER_USER_RESERVED_SESSIONS 的关系**：该参数作用于超级用户预留会话（`SUPER_USER_RESERVED_SESSIONS` 的取值与生效方式见其自身条目）；实际可用的预留会话数随两者配置联动计算。
 
 **类型与取值范围**：`OG_TYPE_REAL`；取值范围 `[0,1]`（闭区间）。
 
 **默认值**：1（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议**：取值范围为 `[0,1]`，超出该区间会被拒绝。7.0.0-LTS 实测 `ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 2 SCOPE=MEMORY;` 报错：
 
@@ -304,7 +304,7 @@ ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 1 SCOPE=MEMORY;
 
 **默认值**：2000（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启；设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议**：上限为 16384。7.0.0-LTS 实测 `ALTER SYSTEM SET OPEN_CURSORS = 99999999 SCOPE=MEMORY;` 报错：
 
@@ -1076,7 +1076,7 @@ XA 接口显式指定有效的专用超时时间时，优先使用接口提供�
 
 **默认值**：1000（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议**：视图 `RANGE` 为 `[1,-)`，即未给出固定上限。7.0.0-LTS 实测下限被拒，报错原文：
 
@@ -1108,7 +1108,7 @@ ALTER SYSTEM SET RAFT_PENDING_CMDS_BUFFER_SIZE = 1000 SCOPE=MEMORY;
 
 **默认值**：100（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议**：取值范围 `[1,10000]`。7.0.0-LTS 实测越界被拒，报错原文：
 
@@ -1140,7 +1140,7 @@ ALTER SYSTEM SET RAFT_RECEIVE_BUFFER_SIZE = 100 SCOPE=MEMORY;
 
 **默认值**：100（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议**：取值范围 `[1,10000]`。7.0.0-LTS 实测越界被拒，报错原文：
 
@@ -1507,7 +1507,7 @@ The parameter temp pool num (8) is too large, reset to (1), each temp pool must 
 
 **默认值**：128M（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
 
-**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。设置结果持久化至参数配置文件（ogracd.ini）。
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
 
 **配置建议**：视图 `RANGE` 为 `[0,1T]`。7.0.0-LTS 实测越界被拒，报错原文：
 
