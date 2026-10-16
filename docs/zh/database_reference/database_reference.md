@@ -153,29 +153,177 @@
 **参数描述**  
 设置数据库工作线程池的最大容量。
 
-**与 OPTIMIZED_WORKER_THREADS 的关系**
+**线程池扩展机制（通用行为说明）**
 
-1. **数值关系**：本参数值**必须大于或等于** `OPTIMIZED_WORKER_THREADS`。若尝试将其设置为小于当前 `OPTIMIZED_WORKER_THREADS` 的值，系统将报错。
-  
-2. **线程扩展**：当活跃会话数超过 `OPTIMIZED_WORKER_THREADS` 时，工作线程数可以从最优值继续扩展，直到达到本参数设定的**最大值**。即可额外扩展的线程数为 `MAX_WORKER_THREADS - OPTIMIZED_WORKER_THREADS`。
-  
+当活跃会话数超过 `OPTIMIZED_WORKER_THREADS` 时，工作线程数可以从最优值继续扩展，直到达到本参数设定的**最大值**。即可额外扩展的线程数为 `MAX_WORKER_THREADS - OPTIMIZED_WORKER_THREADS`。
+
 **配置建议与约束**
 
-- **最大值参考**：`OPTIMIZED_WORKER_THREADS` 不建议超过 `SESSIONS` 参数的配置值，否则会造成线程资源浪费。
-  
-- **资源消耗**：
-  
-  - 每个工作线程约占用 **0.5 M+** 的内存。
-    
-  - 设置过大会显著增加 CPU 和线程管理开销，在资源不足时可能导致数据库异常。
-    
-- **绝对上限**：受系统安全函数内存限制，本参数最大值为 **10000**。
-  
+- **最大值参考**：`OPTIMIZED_WORKER_THREADS` 不建议超过 `SESSIONS` 参数的配置值，否则会造成线程资源浪费。
+- **资源消耗**：每个工作线程约占用 **0.5 M+** 的内存；设置过大会显著增加 CPU 和线程管理开销，在资源不足时可能导致数据库异常。
+- **静态校验范围**：[2, 10000]（cm_defs.h:405-406、set_server.c:145）。
+
 **取值范围**  
 [2, 10000]
 
 **默认值**  
 `100`
+
+**生效方式**
+
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，重启数据库实例后 `RUNTIME_VALUE` 更新为新值；上述试设示例使用 `SCOPE=MEMORY`，仅用于临时验证。
+
+**7.0.0-LTS 实测补充**：实例 `OPTIMIZED_WORKER_THREADS = 2000` 时，`ALTER SYSTEM SET MAX_WORKER_THREADS = 1000 SCOPE=MEMORY;` 被拒绝：
+
+```
+OG-00209, The value of parameter "MAX_WORKER_THREADS" is too small, at least 2000
+```
+
+即该版本存在动态下限（实测不低于当时的 `OPTIMIZED_WORKER_THREADS` 值），该动态下限的来源在 master 源码中未见对应实现（master 仅做静态范围校验），**来源待确认**。另设置 `10001` 报 `OG-00202, The parameter value "MAX_WORKER_THREADS" was invalid`，与取值范围上限 `10000` 一致。
+
+## **AUTONOMOUS_SESSIONS**
+
+**参数描述**
+
+设置自治会话数量。当前版本该参数仅保存与校验：可以设置、可以读回、重启后保留，但内核尚未消费该值，调整不影响运行时行为；后续版本启用后请重新确认行为。
+
+**类型与取值范围**
+
+`OG_TYPE_INTEGER`；取值范围 `(0,256]`（左开右闭，即大于 0 且不超过 256）。
+
+**默认值**
+
+8。
+
+**生效方式**
+
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，重启数据库实例后 `RUNTIME_VALUE` 更新为新值。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议与示例**
+
+`SHOW PARAMETER` 按名称模糊匹配，查询 `AUTONOMOUS_SESSIONS` 时会同时列出 `KNL_AUTONOMOUS_SESSIONS`；两者是相互独立的参数。设置 `KNL_AUTONOMOUS_SESSIONS` 越界时报错信息中出现的是 `AUTONOMOUS_SESSIONS`，因两者共用同一校验函数。越界校验证据：
+
+```
+alter system set AUTONOMOUS_SESSIONS = 9999;  ->  OG-00210, The value of parameter "AUTONOMOUS_SESSIONS" is too large, at most 256
+```
+
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 16）
+ALTER SYSTEM SET AUTONOMOUS_SESSIONS = 16 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='AUTONOMOUS_SESSIONS';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 8，请与实际实例核对后再执行）
+ALTER SYSTEM SET AUTONOMOUS_SESSIONS = 8 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **KNL_AUTONOMOUS_SESSIONS**
+
+**参数描述**
+
+设置内核侧自治会话数量。当前版本该参数仅保存与校验：可以设置、可以读回、重启后保留，但内核尚未消费该值，调整不影响运行时行为；后续版本启用后请重新确认行为。
+
+**类型与取值范围**
+
+`OG_TYPE_INTEGER`；取值范围 `(0,256]`（左开右闭，即大于 0 且不超过 256）。
+
+**默认值**
+
+8。
+
+**生效方式**
+
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。通过 `ALTER SYSTEM SET` 修改后，重启数据库实例后 `RUNTIME_VALUE` 更新为新值。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议与示例**
+
+`SHOW PARAMETER` 按名称模糊匹配，查询 `KNL_AUTONOMOUS_SESSIONS` 时会同时列出 `AUTONOMOUS_SESSIONS`；两者是相互独立的参数。设置 `KNL_AUTONOMOUS_SESSIONS` 越界时报错信息中出现的是 `AUTONOMOUS_SESSIONS`，因两者共用同一校验函数。越界校验证据：
+
+```
+alter system set KNL_AUTONOMOUS_SESSIONS = 9999;  ->  OG-00210, The value of parameter "AUTONOMOUS_SESSIONS" is too large, at most 256
+```
+
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 16）
+ALTER SYSTEM SET KNL_AUTONOMOUS_SESSIONS = 16 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='KNL_AUTONOMOUS_SESSIONS';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 8，请与实际实例核对后再执行）
+ALTER SYSTEM SET KNL_AUTONOMOUS_SESSIONS = 8 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **NORMAL_USER_RESERVED_SESSIONS_FACTOR**
+
+**参数描述**
+
+设置普通用户可占用的超级用户预留会话比例：普通用户最多可使用 `SUPER_USER_RESERVED_SESSIONS × 该值`（向下取整）个预留会话。取值 `1` 表示普通用户可占满全部预留会话，`0` 表示普通用户不可使用预留会话。
+
+**与 SUPER_USER_RESERVED_SESSIONS 的关系**：该参数作用于超级用户预留会话（`SUPER_USER_RESERVED_SESSIONS` 的取值与生效方式见其自身条目）；实际可用的预留会话数随两者配置联动计算。
+
+**类型与取值范围**：`OG_TYPE_REAL`；取值范围 `[0,1]`（闭区间）。
+
+**默认值**：1（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议**：取值范围为 `[0,1]`，超出该区间会被拒绝。7.0.0-LTS 实测 `ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 2 SCOPE=MEMORY;` 报错：
+
+```
+OG-00202, The parameter value "NORMAL_USER_RESERVED_SESSIONS_FACTOR" was invalid
+```
+
+（视图取值范围 `[0,1]` 可解释该报错。）
+
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 0.5）
+ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 0.5 SCOPE=MEMORY;
+
+-- 读回：该参数为 immediately 生效，VALUE 与 RUNTIME_VALUE 应同时为新值
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='NORMAL_USER_RESERVED_SESSIONS_FACTOR';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 1，请与实际实例核对后再执行）
+ALTER SYSTEM SET NORMAL_USER_RESERVED_SESSIONS_FACTOR = 1 SCOPE=MEMORY;
+```
+
+## **OPEN_CURSORS**
+
+**参数描述**：设置单个会话可同时打开的游标数量上限（视图 `RANGE=[1,16384]`）。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[1,16384]`。
+
+**默认值**：2000（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`，修改后立即生效，不需要重启。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议**：上限为 16384。7.0.0-LTS 实测 `ALTER SYSTEM SET OPEN_CURSORS = 99999999 SCOPE=MEMORY;` 报错：
+
+```
+OG-00210, The value of parameter "OPEN_CURSORS" is too large, at most 16384
+```
+
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 3000）
+ALTER SYSTEM SET OPEN_CURSORS = 3000 SCOPE=MEMORY;
+
+-- 读回：该参数为 immediately 生效，VALUE 与 RUNTIME_VALUE 应同时为新值
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='OPEN_CURSORS';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 2000，请与实际实例核对后再执行）
+ALTER SYSTEM SET OPEN_CURSORS = 2000 SCOPE=MEMORY;
+```
 
 ## **STATS_LEVEL**
 
@@ -918,6 +1066,104 @@ XA 接口显式指定有效的专用超时时间时，优先使用接口提供�
 **依赖与配置建议**
 启用前按 RAFT 库的安全配置要求准备令牌并协调集群各节点；未启用 RAFT 或尚未完成安全部署时保持默认值。设置接口接受 `TRUE` 不等于令牌校验已经工作。
 
+## **RAFT_PENDING_CMDS_BUFFER_SIZE**
+
+**参数描述**：设置 RAFT 待处理命令缓冲区大小。
+
+**类型与取值范围**
+
+`OG_TYPE_INTEGER`；取值范围 `[1, 4294967295]`（下限 1；上限按 32 位无符号整数校验）。
+
+**默认值**：1000（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议**：视图 `RANGE` 为 `[1,-)`，即未给出固定上限。7.0.0-LTS 实测下限被拒，报错原文：
+
+```
+alter system set RAFT_PENDING_CMDS_BUFFER_SIZE = 0;  ->  OG-00209, The value of parameter "RAFT_PENDING_CMDS_BUFFER_SIZE" is too small, at least 1
+```
+
+上限为 4294967295（32 位无符号整数校验上限）。修改需重启。**生效条件**：仅在启用 RAFT 的部署中生效；单节点、未启用 RAFT 时该值仅保存，不代表已生效。
+
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 2000）
+ALTER SYSTEM SET RAFT_PENDING_CMDS_BUFFER_SIZE = 2000 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='RAFT_PENDING_CMDS_BUFFER_SIZE';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 1000，请与实际实例核对后再执行）
+ALTER SYSTEM SET RAFT_PENDING_CMDS_BUFFER_SIZE = 1000 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **RAFT_RECEIVE_BUFFER_SIZE**
+
+**参数描述**：设置 RAFT 接收缓冲区大小。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[1,10000]`。
+
+**默认值**：100（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议**：取值范围 `[1,10000]`。7.0.0-LTS 实测越界被拒，报错原文：
+
+```
+alter system set RAFT_RECEIVE_BUFFER_SIZE = 99999;  ->  OG-00211, The value of parameter "RAFT_RECEIVE_BUFFER_SIZE" should be in [1, 10000]
+```
+
+（`OG-00211` 是 7.0.0-LTS 实测见到的第三类越界错误码，`should be in [a, b]` 形式，与 `OG-00209`（too small）、`OG-00210`（too large）并列。）修改需重启。**生效条件**：仅在启用 RAFT 的部署中生效；单节点、未启用 RAFT 时该值仅保存，不代表已生效。
+
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 200）
+ALTER SYSTEM SET RAFT_RECEIVE_BUFFER_SIZE = 200 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='RAFT_RECEIVE_BUFFER_SIZE';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 100，请与实际实例核对后再执行）
+ALTER SYSTEM SET RAFT_RECEIVE_BUFFER_SIZE = 100 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
+## **RAFT_SEND_BUFFER_SIZE**
+
+**参数描述**：设置 RAFT 发送缓冲区大小。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[1,10000]`。
+
+**默认值**：100（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议**：取值范围 `[1,10000]`。7.0.0-LTS 实测越界被拒，报错原文：
+
+```
+alter system set RAFT_SEND_BUFFER_SIZE = 0;  ->  OG-00211, The value of parameter "RAFT_SEND_BUFFER_SIZE" should be in [1, 10000]
+```
+
+修改需重启。**生效条件**：仅在启用 RAFT 的部署中生效；单节点、未启用 RAFT 时该值仅保存，不代表已生效。
+
+**试设与恢复示例**（下列设置值取自 7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 200）
+ALTER SYSTEM SET RAFT_SEND_BUFFER_SIZE = 200 SCOPE=MEMORY;
+
+-- 读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='RAFT_SEND_BUFFER_SIZE';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 100，请与实际实例核对后再执行）
+ALTER SYSTEM SET RAFT_SEND_BUFFER_SIZE = 100 SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
+
 ## **USE_RBP**
 
 **参数描述**  
@@ -1199,6 +1445,18 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 **默认值**：32M  
 **安装脚本默认值**：使用 `install.py` 安装时，自动设为 **1G**
 
+**生效方式**
+
+重启生效（7.0.0-LTS 实测 `EFFECTIVE=reboot`）。7.0.0-LTS 实测：`ALTER SYSTEM SET TEMP_BUFFER_SIZE = 1G` 返回 `Succeed.`，随后回退为 `2G`；实例启动加载的仍是 `2G`。
+
+数据库启动时出现告警（原文来自7.0.0-LTS 实例运行日志 `ogracd.rlog`）：
+
+```
+The parameter temp pool num (8) is too large, reset to (1), each temp pool must not be smaller than (2147483648).
+```
+
+该告警说明的是配置文件中 `TEMP_POOL_NUM = 8` 因单个临时池不得小于 `2G` 而被重置为 `1`，**每次启动均会出现，并非设置 `1G` 所触发**。
+
 #### `DATA_BUFFER_SIZE`
 
 **作用**：设置数据缓冲区（Data Buffer）的大小，用于缓存最近访问的数据页，提升数据访问效率。
@@ -1240,6 +1498,38 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 
   - 如需调小，必须通过修改配置文件或使用 `SCOPE=PFILE`，并**重启数据库**生效。  
 **安装脚本默认值**：使用 `install.py` 安装时，自动设为 **1G**
+
+## **PMA_BUFFER_SIZE**
+
+**参数描述**：设置 PMA 缓冲区大小。
+
+**类型与取值范围**：`OG_TYPE_INTEGER`；取值范围 `[0,1T]`。
+
+**默认值**：128M（7.0.0-LTS 实例 `DV_PARAMETERS.DEFAULT_VALUE`）。
+
+**生效方式**：`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`。7.0.0-LTS 实测：`ALTER SYSTEM SET` 后 `VALUE` 立即变、`RUNTIME_VALUE` 不变；`deploy stop` 后 `deploy start` 重启，重启后 `RUNTIME_VALUE` 才等于新 `VALUE`。使用 `SCOPE=MEMORY` 仅用于临时验证、不持久化；持久化请省略 scope（默认 `SCOPE=BOTH`）或使用 `SCOPE=PFILE`。
+
+**配置建议**：视图 `RANGE` 为 `[0,1T]`。7.0.0-LTS 实测越界被拒，报错原文：
+
+```
+alter system set PMA_BUFFER_SIZE = 2T;  ->  OG-00601, [1:36]Sql syntax error: size value is bigger than maximum(1099511627776) required
+```
+
+1099511627776 字节 = 1T，与视图上限一致。修改需重启，请安排在维护窗口。
+
+**试设与恢复示例**（下列设置值取自7.0.0-LTS 实测设置过的值）：
+
+```sql
+-- 试设（7.0.0-LTS 实测设置值 256M）
+ALTER SYSTEM SET PMA_BUFFER_SIZE = 256M SCOPE=MEMORY;
+
+-- 读回：VALUE 立即为新值，RUNTIME_VALUE 在重启前仍为旧值
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='PMA_BUFFER_SIZE';
+
+-- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 128M，请与实际实例核对后再执行）
+ALTER SYSTEM SET PMA_BUFFER_SIZE = 128M SCOPE=MEMORY;
+-- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
+```
 
 ### 2. 检查点（Checkpoint）
 
