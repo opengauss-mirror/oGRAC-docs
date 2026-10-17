@@ -738,6 +738,86 @@ Page Clean 是一种快速清理 Buffer 中脏页的机制。在常规业务场�
 **取值范围**：整数，[1, 32]  
 **默认值**：4
 
+## `INTERCONNECT_TYPE`
+
+**参数说明**：设置节点间通信（MES）使用的协议类型。取值 `TCP`、`UC`、`UC_RDMA`，分别对应 TCP 传输、统一通信协议、统一通信协议 + RDMA；其中 `UC` 在节点内进程间使用共享内存、节点间使用 TCP。
+
+**取值范围**：`TCP`、`UC`、`UC_RDMA`（参数视图 `RANGE` 为 `TCP,UC,UC_RDMA`）。
+
+**默认值**
+
+- 内核缺省值：`TCP`。
+- 安装部署值随部署形态而定：随附的《数据库参数配置说明》记载"默认值 TCP，安装默认值为 UC"（见 `database_administration_guide/data_object_management/parameter_description.md` 的 INTERCONNECT_TYPE 条目），请以实际配置文件为准。
+
+**生效方式**：重启生效（参数视图 `EFFECTIVE=reboot`）。该参数**不能通过 SQL 修改**：执行 `ALTER SYSTEM SET` 会被拒绝（报错原文见下）。修改须通过集群配置文件完成并重启。
+
+```
+ALTER SYSTEM SET INTERCONNECT_TYPE = 'UC';
+OG-00219, The parameter "INTERCONNECT_TYPE" is not modifiable with this option
+```
+
+> 说明：参数视图中该参数的 `MODIFIABLE` 为 `TRUE`，但 SQL 修改实际被拒——`MODIFIABLE` 列不能单独作为"可通过 SQL 修改"的判据，请以实测与配置方式为准。
+
+**配置建议**：多节点部署时各节点的协议类型须保持一致；协议变更影响节点间传输行为，修改前确认所有节点支持目标协议，并安排在维护窗口重启。
+
+## `LSNR_ADDR`
+
+**参数说明**：设置数据库监听地址，支持配置多个地址（英文逗号分隔，最多 8 个）。除配置文件外，还支持通过 `ALTER SYSTEM ADD/DELETE LSNR_ADDR` 语法动态增删监听地址（见 `sql_reference/alter_system.md` 的 LSNR_ADDR 条目）。
+
+**取值范围**：有效的 IP 地址或域名，多地址用英文逗号分隔；参数视图未提供范围。
+
+**默认值**：`127.0.0.1`。
+
+**生效方式**：参数视图为 `EFFECTIVE=reboot`（配置文件修改后重启生效）。另有一条**动态语法路径**：`ALTER SYSTEM ADD/DELETE LSNR_ADDR` 执行后立即生效——参数读回值即时更新，`ss -ltnp` 可观察到新地址的监听套接字，无需重启。两条路径的语义不同：前者是参数值，后者是监听地址列表的动态增删。
+
+**配置建议**：
+
+- 增加一个不存在于本机网卡的 IP 会直接报错（`OG-00259`）。
+- 删除正在使用的监听地址会导致相关连接中断。
+- 动态增删只影响运行时监听；若需持久化，请同步更新配置文件。
+
+**示例**（`192.0.2.0/24` 为文档示例网段）：
+
+```sql
+-- 边界：非本机网卡地址被拒绝
+ALTER SYSTEM ADD LSNR_ADDR '192.0.2.77';
+-- OG-00259, IP address 192.0.2.77 is not local ip, please check your ifconfig
+
+-- 动态添加本机网卡地址（立即生效）
+ALTER SYSTEM ADD LSNR_ADDR '<本机网卡IP>';
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='LSNR_ADDR';
+-- VALUE = RUNTIME_VALUE = 127.0.0.1,<本机网卡IP>
+-- ss -ltnp 可同时看到 127.0.0.1:1611 与 <本机网卡IP>:1611 两个监听
+
+-- 动态删除（还原）
+ALTER SYSTEM DELETE LSNR_ADDR '<本机网卡IP>';
+```
+
+## `LSNR_PORT`
+
+**参数说明**：设置数据库监听端口。
+
+**取值范围**：整数，`[1024,65535]`。
+
+**默认值**：`1611`。
+
+**生效方式**：重启生效（`EFFECTIVE=reboot`）。执行 `ALTER SYSTEM SET LSNR_PORT = 1612 SCOPE=MEMORY` 后，读回 `VALUE=1612`、`RUNTIME_VALUE=1611`——配置值已更新但未应用，需重启后 `RUNTIME_VALUE` 才等于新端口。生产环境修改后需重启实例，并同步调整客户端连接端口。
+
+**配置建议**：
+
+- 修改监听端口会导致既有连接全部需要改用新端口，请安排在维护窗口。
+- 修改前确认新端口未被其他进程占用，且与集群内其他通信端口不冲突。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET LSNR_PORT = 1612 SCOPE=MEMORY;   -- 仅改配置值，不重启
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='LSNR_PORT';
+-- VALUE = 1612, RUNTIME_VALUE = 1611（reboot 语义）
+
+ALTER SYSTEM SET LSNR_PORT = 1611 SCOPE=MEMORY;   -- 还原
+```
+
 ## `LOG_BUFFER_COUNT`
 
 **参数说明**：设置 Log Buffer 的数量。  
@@ -787,12 +867,159 @@ OG-00601, [1:36]Sql syntax error: size value is bigger than maximum(115343360) r
 
 ## `MES_ELAPSED_SWITCH`
 
-**参数说明**：是否启用 MES 内部通信的时延统计功能。  
+**参数说明**：是否启用 MES 内部通信的时延统计功能。
 
-- **TRUE**：开启时延统计  
-- **FALSE**：关闭时延统计  
+- **TRUE**：开启时延统计
+- **FALSE**：关闭时延统计
 
-**默认值**：FALSE
+**取值范围**：布尔值，`FALSE` / `TRUE`。
+
+**默认值**：`TRUE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设置为 FALSE 后立即读回 `VALUE=RUNTIME_VALUE=FALSE`；还原 TRUE 后立即读回 TRUE/TRUE，无需重启。
+
+**配置建议**：仅在需要采集 MES 内部通信时延时开启；关闭后相关时延统计不再采集。调整立即生效，不影响已有连接。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET MES_ELAPSED_SWITCH = FALSE;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='MES_ELAPSED_SWITCH';
+-- FALSE / FALSE
+
+ALTER SYSTEM SET MES_ELAPSED_SWITCH = TRUE;    -- 还原
+```
+
+
+## `MES_CHANNEL_DEGRADE_TIME_MS`
+
+**参数说明**：设置 MES 通道降级判定的持续时间（毫秒）。该参数的完整触发条件与降级行为在 7.0.0-LTS 的公开文档与安装包中未见说明，**实现细节待确认**；本节仅描述参数配置接口层面的实测结果。
+
+**取值范围**：整数，单位为毫秒；参数视图未提供范围。
+
+**默认值**：`0`（内核缺省值，实例当前值同为 0）。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 5000 → `deploy stop` / `deploy start` 重启 → 读回 `VALUE=RUNTIME_VALUE=5000`；还原为 0 → 重启 → 读回 0/0。
+
+**配置建议**：参数视图未提供取值区间，调整前请在测试环境验证；单节点部署下 MES 通道的降级行为与多节点部署可能不同，无明确需求时建议保持默认值。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET MES_CHANNEL_DEGRADE_TIME_MS = 5000;   -- 省略 scope：默认 SCOPE=BOTH，写入配置文件
+-- 执行 deploy stop / deploy start 重启后读回
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='MES_CHANNEL_DEGRADE_TIME_MS';
+-- 5000 / 5000
+
+ALTER SYSTEM SET MES_CHANNEL_DEGRADE_TIME_MS = 0;      -- 还原
+-- 重启后读回 0 / 0
+```
+
+## `MES_CHANNEL_UPGRADE_TIME_MS`
+
+**参数说明**：设置 MES 通道升级判定的持续时间（毫秒）。该参数的完整触发条件与升级行为在 7.0.0-LTS 的公开文档与安装包中未见说明，**实现细节待确认**；本节仅描述参数配置接口层面的实测结果。
+
+**取值范围**：整数，单位为毫秒；参数视图未提供范围。
+
+**默认值**：`0`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 5000 → 重启 → 读回 `VALUE=RUNTIME_VALUE=5000`；还原为 0 → 重启 → 读回 0/0。
+
+**配置建议**：同 `MES_CHANNEL_DEGRADE_TIME_MS`。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET MES_CHANNEL_UPGRADE_TIME_MS = 5000;   -- 持久化（默认 SCOPE=BOTH）
+-- 重启后读回 5000 / 5000
+ALTER SYSTEM SET MES_CHANNEL_UPGRADE_TIME_MS = 0;      -- 还原
+```
+
+## `MES_CPU_INFO`
+
+**参数说明**：设置 MES 模块使用的 CPU 信息。**可接受的取值格式未确认**：7.0.0-LTS 实测中，形如 `1-3` 的 CPU 区间与任意字符串均被拒绝（报错原文见下），该参数接受的格式需结合产品实现确认；本节仅描述参数配置接口层面的实测结果。
+
+**取值范围**：`OG_TYPE_VARCHAR`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：可接受格式未确认前，请勿在生产环境调整。实例启动日志中同类参数 `CPU_GROUP_INFO` 的取值为 `1-3` 形式，可供参考，但同一形式用于本参数仍被拒绝。
+
+**边界证据**：
+
+```
+ALTER SYSTEM SET MES_CPU_INFO = '1-3' SCOPE=MEMORY;
+OG-00601, [1:33]Sql syntax error: expected end but '1-3' found
+
+ALTER SYSTEM SET MES_CPU_INFO = 'grac-verify';
+OG-00601, [1:33]Sql syntax error: expected end but 'grac-verify' found
+```
+
+## `MES_CRC_CHECK_SWITCH`
+
+**参数说明**：设置 MES 消息的 CRC 校验开关。开启后对 MES 消息启用 CRC 校验；校验的覆盖范围属实现细节，**待确认**。
+
+**取值范围**：布尔值，`FALSE` / `TRUE`（参数视图 `RANGE` 为 `FALSE,TRUE`）。
+
+**默认值**：`TRUE`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 FALSE → 重启 → 读回 `RUNTIME_VALUE=FALSE`；还原 TRUE → 重启 → 读回 TRUE/TRUE。
+
+**配置建议**：关闭校验会失去 MES 消息的完整性校验能力。生产环境建议保持 `TRUE`；确需关闭时请评估通信环境的可信度，并在验证后恢复。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET MES_CRC_CHECK_SWITCH = FALSE;   -- 持久化（默认 SCOPE=BOTH）
+-- 重启后读回 FALSE / FALSE
+ALTER SYSTEM SET MES_CRC_CHECK_SWITCH = TRUE;    -- 还原
+-- 重启后读回 TRUE / TRUE
+```
+
+## `MES_POOL_SIZE`
+
+**参数说明**：设置 MES 模块的内存池大小。该参数的具体消费方式（池数量或容量、单位换算）在 7.0.0-LTS 的公开文档与安装包中未见说明，**实现细节待确认**；本节仅描述参数配置接口层面的实测结果。
+
+**取值范围**：整数，`[256,16384]`。
+
+**默认值**：`256`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 300 → 重启 → 读回 `RUNTIME_VALUE=300`；还原 256 → 重启 → 读回 256/256。
+
+**配置建议**：调整会影响 MES 相关的内存占用，请结合实例总体内存余量评估；建议先小幅偏移验证，实例内存不足时可能导致启动失败，需预留回滚方案。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET MES_POOL_SIZE = 300;   -- 持久化（默认 SCOPE=BOTH）
+-- 重启后读回 300 / 300
+ALTER SYSTEM SET MES_POOL_SIZE = 256;   -- 还原（下限值）
+-- 重启后读回 256 / 256
+```
+
+## `MES_SSL_CRT_KEY_PATH`
+
+**参数说明**：设置 MES 的 SSL 证书密钥路径。7.0.0-LTS 实测：**该参数要求路径指向已存在的目录**——指向已存在的目录设置成功；指向该目录下不存在的文件被拒绝。
+
+**取值范围**：字符串路径；参数视图未提供范围。
+
+**默认值**：（空）。单节点、未启用 SSL（`MES_SSL_SWITCH=FALSE`）的部署下为空。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：与 `MES_SSL_SWITCH`、`MES_SSL_KEY_PWD` 联动——**开启 SSL 前必须先配置有效的证书目录与密钥口令**。7.0.0-LTS 实测：在未配置有效证书的情况下将 `MES_SSL_SWITCH` 持久化为 TRUE 并重启，ogracd 无法启动（详见 issue #62 的边界证据）；路径须为已存在目录，且 oGRAC 运行用户具备读权限。
+
+**边界证据**：
+
+```
+ALTER SYSTEM SET MES_SSL_CRT_KEY_PATH = '<已存在目录>';
+Succeed.
+
+ALTER SYSTEM SET MES_SSL_CRT_KEY_PATH = '<已存在目录>/grac.crt';
+OG-00601, [1:41]Sql syntax error: <已存在目录>/grac.crt is not an existing folder
+```
 
 ## `SESSIONS`
 
