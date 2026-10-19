@@ -751,7 +751,7 @@ Page Clean 是一种快速清理 Buffer 中脏页的机制。在常规业务场�
 
 **生效方式**：重启生效（参数视图 `EFFECTIVE=reboot`）。该参数**不能通过 SQL 修改**：执行 `ALTER SYSTEM SET` 会被拒绝（报错原文见下）。修改须通过集群配置文件完成并重启。
 
-```
+```sql
 ALTER SYSTEM SET INTERCONNECT_TYPE = 'UC';
 OG-00219, The parameter "INTERCONNECT_TYPE" is not modifiable with this option
 ```
@@ -960,7 +960,7 @@ ALTER SYSTEM SET MES_CHANNEL_UPGRADE_TIME_MS = 0;      -- 还原
 
 **边界证据**：
 
-```
+```sql
 ALTER SYSTEM SET MES_CPU_INFO = '1-3' SCOPE=MEMORY;
 OG-00601, [1:33]Sql syntax error: expected end but '1-3' found
 
@@ -1024,7 +1024,7 @@ ALTER SYSTEM SET MES_POOL_SIZE = 256;   -- 还原（下限值）
 
 **边界证据**：
 
-```
+```sql
 ALTER SYSTEM SET MES_SSL_CRT_KEY_PATH = '<已存在目录>';
 Succeed.
 
