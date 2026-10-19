@@ -815,7 +815,7 @@ ALTER SYSTEM SET ALARM_LOG_DIR = '/path/to/alarm_log_dir';   -- 持久化（默�
 
 **边界证据**：
 
-```
+```sql
 ALTER SYSTEM SET ALARM_LOG_DIR = '';
 OG-00601, [1:34]Sql syntax error: " is not an existing folder
 ```
@@ -917,7 +917,7 @@ ALTER SYSTEM SET MES_SSL_KEY_PWD = '<BASE64 编码后的口令>' SCOPE=MEMORY;
 - 确需开启时按"先配置证书目录与密钥口令 → 再置本参数为 TRUE → 重启验证"的顺序操作，并预留配置文件备份以便回滚。
 - 不建议在持久化开启后首次重启前关闭已有连接；重启失败时应优先回滚本参数。
 
-```
+```sql
 -- 可复现的操作序列（不建议在生产环境重放）
 ALTER SYSTEM SET MES_SSL_SWITCH = TRUE;    -- 持久化（默认 SCOPE=BOTH）
 -- deploy stop / deploy start 重启
@@ -1172,7 +1172,7 @@ XA 接口显式指定有效的专用超时时间时，优先使用接口提供�
 
 **生效方式**：**只读参数**（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），不能通过 SQL 修改；调整须通过配置文件完成并重启。
 
-```
+```sql
 ALTER SYSTEM SET ARCHIVE_CONFIG = 'SEND';
 OG-00203, ARCHIVE_CONFIG is a readonly parameter
 ```
@@ -1189,7 +1189,7 @@ OG-00203, ARCHIVE_CONFIG is a readonly parameter
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：归档功能正在使用该目标时，修改会被拒绝：
 
-```
+```sql
 ALTER SYSTEM SET ARCHIVE_DEST_1 = 'location=/path/to/archive_dest_1';
 OG-00857, ARCHIVE_DEST is in use, please disable it firstly
 ```
@@ -1206,7 +1206,7 @@ OG-00857, ARCHIVE_DEST is in use, please disable it firstly
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：带 `location=` 前缀设置成功，读回 `VALUE` 与 `RUNTIME_VALUE` 同步更新；**不带 `location=` 前缀的裸路径会被拒绝**，报错中的参数名为占位名 `ARCHIVE_DEST_n`：
 
-```
+```sql
 ALTER SYSTEM SET ARCHIVE_DEST_2 = '/path/to/archive_dest_2';
 OG-00202, The parameter value "ARCHIVE_DEST_n" was invalid
 ```
