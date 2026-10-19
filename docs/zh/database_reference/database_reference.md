@@ -768,13 +768,13 @@ OG-00219, The parameter "INTERCONNECT_TYPE" is not modifiable with this option
 
 **默认值**：`127.0.0.1`。
 
-**生效方式**：参数视图为 `EFFECTIVE=reboot`（配置文件修改后重启生效）。另有一条**动态语法路径**：`ALTER SYSTEM ADD/DELETE LSNR_ADDR` 执行后立即生效——参数读回值即时更新，`ss -ltnp` 可观察到新地址的监听套接字，无需重启。两条路径的语义不同：前者是参数值，后者是监听地址列表的动态增删。
+**生效方式**：参数视图为 `EFFECTIVE=reboot`（配置文件修改后重启生效）。另有一条**动态语法路径**：`ALTER SYSTEM ADD/DELETE LSNR_ADDR` 执行后立即生效——参数读回值即时更新，`ss -ltnp` 可观察到新地址的监听套接字，无需重启。两条路径的语义不同：前者改的是参数值（重启后生效）；后者是对监听地址列表的增删，默认同时写入参数配置文件，增删后立即生效。
 
 **配置建议**：
 
 - 增加一个不存在于本机网卡的 IP 会直接报错（`OG-00259`）。
 - 删除正在使用的监听地址会导致相关连接中断。
-- 动态增删只影响运行时监听；若需持久化，请同步更新配置文件。
+- `ALTER SYSTEM ADD/DELETE LSNR_ADDR` 默认按持久化处理：既更新运行时监听，也同步写入参数配置文件，一般无需再手工修改配置文件；需要回滚时反向执行 `DELETE` / `ADD` 即可。
 
 **示例**（`192.0.2.0/24` 为文档示例网段）：
 
@@ -801,7 +801,12 @@ ALTER SYSTEM DELETE LSNR_ADDR '<本机网卡IP>';
 
 **默认值**：`1611`。
 
-**生效方式**：重启生效（`EFFECTIVE=reboot`）。执行 `ALTER SYSTEM SET LSNR_PORT = 1612 SCOPE=MEMORY` 后，读回 `VALUE=1612`、`RUNTIME_VALUE=1611`——配置值已更新但未应用，需重启后 `RUNTIME_VALUE` 才等于新端口。生产环境修改后需重启实例，并同步调整客户端连接端口。
+**生效方式**：重启生效（`EFFECTIVE=reboot`）。两种 scope 的语义不同：
+
+- `SCOPE=MEMORY`：只改内存中的参数值（`VALUE=1612`、`RUNTIME_VALUE=1611`），**不写入参数配置文件，重启后不应用**（仍使用原来的 1611）。
+- 默认 scope（`SCOPE=BOTH`）或 `SCOPE=PFILE`：写入参数配置文件，**重启后 `RUNTIME_VALUE` 才等于新端口**，届时需同步调整客户端连接端口。
+
+生产环境修改请在维护窗口进行，修改前备份参数配置文件。
 
 **配置建议**：
 
@@ -811,11 +816,17 @@ ALTER SYSTEM DELETE LSNR_ADDR '<本机网卡IP>';
 **示例**：
 
 ```sql
-ALTER SYSTEM SET LSNR_PORT = 1612 SCOPE=MEMORY;   -- 仅改配置值，不重启
+-- 语义演示（SCOPE=MEMORY：只改内存值，配置文件不变，重启后仍为 1611）
+ALTER SYSTEM SET LSNR_PORT = 1612 SCOPE=MEMORY;
 SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='LSNR_PORT';
--- VALUE = 1612, RUNTIME_VALUE = 1611（reboot 语义）
+-- VALUE = 1612, RUNTIME_VALUE = 1611
 
-ALTER SYSTEM SET LSNR_PORT = 1611 SCOPE=MEMORY;   -- 还原
+-- 持久化修改（默认 SCOPE=BOTH：写入配置文件，重启后生效）
+ALTER SYSTEM SET LSNR_PORT = 1612;
+-- 重启（deploy stop / deploy start）后 RUNTIME_VALUE = 1612，同时调整客户端连接端口
+
+-- 还原（默认 SCOPE=BOTH，重启后恢复 1611）
+ALTER SYSTEM SET LSNR_PORT = 1611;
 ```
 
 ## `LOG_BUFFER_COUNT`
@@ -878,7 +889,7 @@ OG-00601, [1:36]Sql syntax error: size value is bigger than maximum(115343360) r
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设置为 FALSE 后立即读回 `VALUE=RUNTIME_VALUE=FALSE`；还原 TRUE 后立即读回 TRUE/TRUE，无需重启。
 
-**配置建议**：仅在需要采集 MES 内部通信时延时开启；关闭后相关时延统计不再采集。调整立即生效，不影响已有连接。
+**配置建议**：默认开启（内核缺省值 `TRUE`），持续采集 MES 内部通信时延；无需统计时可关闭以降低开销，关闭后相关时延统计不再采集。调整立即生效，不影响已有连接。
 
 **示例**：
 
@@ -893,13 +904,13 @@ ALTER SYSTEM SET MES_ELAPSED_SWITCH = TRUE;    -- 还原
 
 ## `MES_CHANNEL_DEGRADE_TIME_MS`
 
-**参数说明**：设置 MES 通道降级判定的持续时间（毫秒）。该参数的完整触发条件与降级行为在 7.0.0-LTS 的公开文档与安装包中未见说明，**实现细节待确认**；本节仅描述参数配置接口层面的实测结果。
+**参数说明**：设置 MES 通道降级判定的持续时间（毫秒）。默认值 `0` 表示使用引擎默认的 subhealth 判定阈值；当本参数与 `MES_CHANNEL_UPGRADE_TIME_MS` **两者均非 0** 时，毫秒值才换算为纳秒并作为自定义阈值生效（源码 `set_subhealth_threshold`）——仅设置其中一个、另一个仍为 0 时自定义阈值不生效。UC 传输侧的通道行为细节依赖实现，待确认。
 
 **取值范围**：整数，单位为毫秒；参数视图未提供范围。
 
-**默认值**：`0`（内核缺省值，实例当前值同为 0）。
+**默认值**：`0`。
 
-**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 5000 → `deploy stop` / `deploy start` 重启 → 读回 `VALUE=RUNTIME_VALUE=5000`；还原为 0 → 重启 → 读回 0/0。
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 5000 → `deploy stop` / `deploy start` 重启 → 读回 `VALUE=RUNTIME_VALUE=5000`；还原为 0 → 重启 → 读回 0/0。注意两者的区别：**参数值本身被加载 ≠ 自定义阈值启用**——按上节语义，若另一个通道参数仍为 0，自定义阈值不生效。默认 scope（`SCOPE=BOTH`）下 `ALTER SYSTEM SET` 既更新内存中的参数值（`VALUE` 立即变化）又写入参数配置文件；本参数为重启生效，`RUNTIME_VALUE` 在重启后才更新为新值。
 
 **配置建议**：参数视图未提供取值区间，调整前请在测试环境验证；单节点部署下 MES 通道的降级行为与多节点部署可能不同，无明确需求时建议保持默认值。
 
@@ -917,13 +928,13 @@ ALTER SYSTEM SET MES_CHANNEL_DEGRADE_TIME_MS = 0;      -- 还原
 
 ## `MES_CHANNEL_UPGRADE_TIME_MS`
 
-**参数说明**：设置 MES 通道升级判定的持续时间（毫秒）。该参数的完整触发条件与升级行为在 7.0.0-LTS 的公开文档与安装包中未见说明，**实现细节待确认**；本节仅描述参数配置接口层面的实测结果。
+**参数说明**：设置 MES 通道升级判定的持续时间（毫秒）。默认值 `0` 表示使用引擎默认的 subhealth 判定阈值；与 `MES_CHANNEL_DEGRADE_TIME_MS` **两者均非 0** 时自定义阈值才生效（源码 `set_subhealth_threshold`），仅设置其中一个不生效。UC 传输侧的通道行为细节依赖实现，待确认。
 
 **取值范围**：整数，单位为毫秒；参数视图未提供范围。
 
 **默认值**：`0`。
 
-**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 5000 → 重启 → 读回 `VALUE=RUNTIME_VALUE=5000`；还原为 0 → 重启 → 读回 0/0。
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 5000 → 重启 → 读回 `VALUE=RUNTIME_VALUE=5000`；还原为 0 → 重启 → 读回 0/0。注意两者的区别：**参数值本身被加载 ≠ 自定义阈值启用**——按上节语义，若另一个通道参数仍为 0，自定义阈值不生效。默认 scope（`SCOPE=BOTH`）下 `ALTER SYSTEM SET` 既更新内存中的参数值（`VALUE` 立即变化）又写入参数配置文件；本参数为重启生效，`RUNTIME_VALUE` 在重启后才更新为新值。
 
 **配置建议**：同 `MES_CHANNEL_DEGRADE_TIME_MS`。
 
@@ -1009,7 +1020,7 @@ ALTER SYSTEM SET MES_POOL_SIZE = 256;   -- 还原（下限值）
 
 **生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
 
-**配置建议**：与 `MES_SSL_SWITCH`、`MES_SSL_KEY_PWD` 联动——**开启 SSL 前必须先配置有效的证书目录与密钥口令**。7.0.0-LTS 实测：在未配置有效证书的情况下将 `MES_SSL_SWITCH` 持久化为 TRUE 并重启，ogracd 无法启动（详见 issue #62 的边界证据）；路径须为已存在目录，且 oGRAC 运行用户具备读权限。
+**配置建议**：与 `MES_SSL_SWITCH`、`MES_SSL_KEY_PWD` 联动——**开启 SSL 前必须先配置有效的证书目录与密钥口令（口令须为 Base64 编码）**。7.0.0-LTS 实测：在未配置有效证书的情况下将 `MES_SSL_SWITCH` 持久化为 TRUE 并重启，ogracd 无法启动（详见 issue #62 的边界证据）；路径须为已存在目录，且 oGRAC 运行用户具备读权限。
 
 **边界证据**：
 
