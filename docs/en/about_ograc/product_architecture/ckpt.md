@@ -20,7 +20,7 @@ oGRAC maintains several core log points, all of which share a basic structure th
 
 `LRP_POINT`: Represents the minimum log point to which the database must recover in order to guarantee data consistency.
 
-During `log_flush` within a checkpoint, `LRP_POINT` is advanced to `CURR_POINT`, and `RCY_POINT` is advanced to the `TRUNC_POINT` of the oldest dirty page. During recovery, log replay begins from `RCY_POINT`.
+During a checkpoint, redo related to the dirty pages is flushed first, then dirty pages and checkpoint control information are persisted. `RCY_POINT` normally advances to a safe position determined by the oldest dirty page that has not yet met persistence conditions. It can advance to `LRP_POINT` only after the checkpoint queue is empty, the related dirty pages have been written back and persisted, checkpoint control information has been updated, and required recovery work has completed. An empty queue alone is not sufficient. Parallel log flushing may overlap with these operations, but does not change these persistence conditions and does not by itself permit earlier log recycling or make the recovery start point durable. During recovery, log replay begins from `RCY_POINT`.
 
 ### Checkpoint Worker Thread
 
@@ -59,6 +59,10 @@ To further reduce latency, oGRAC launches multiple flushing threads to execute d
 `CHECKPOINT_GROUP_SIZE`: Maximum number of pages processed in a single incremental checkpoint.
 
 `DBWR_PROCESSES`: Number of threads for dirty page flushing.
+
+`DTC_CKPT_NOTIFY_TASK_RATIO`: Ratio of MES message-processing tasks assigned to checkpoint EDP notifications in a multi-write cluster. These tasks process notifications for the DRC Master and Page Owner. The current default is `0.125`; changes take effect after an instance restart.
+
+`ENABLE_QUICK_CKPT`: Controls the quick checkpoint path. The current default is `FALSE`; changes take effect after an instance restart.
 
 ## Related Views
 

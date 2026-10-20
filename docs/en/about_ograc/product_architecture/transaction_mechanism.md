@@ -7,7 +7,7 @@ ACID is implemented through the following technologies:
 
 - Undo mechanism: Records the original data of each user record. During rollback, the undo data can be used for recovery, thereby ensuring the atomicity of user operations.
 - Row lock mechanism: Uses row locks to ensure that the same row is not modified concurrently.
-- Visibility determination: Determines whether a record is visible to the querier by comparing the querier's SCN with the record's SCN. An SCN is a 64-bit integer with a time attribute, consisting of second + microsecond + sequence. When a change occurs in the system, the global SCN of the database increments. It serves as the primary identifier for visibility determination.
+- Visibility determination: Determines whether a record is visible by combining the query snapshot, transaction status, and the record's SCN. An SCN is a 64-bit time-sequence value consisting of seconds, microseconds, and a sequence field. In a multi-instance cluster, SCNs are advanced through cluster messages; SCN is a visibility boundary, not an independent global commit-order number.
 - Redo mechanism: Modifications to each data page are recorded. Writing redo logs enables rapid data persistence, and the redo logs are guaranteed to be persisted to disk upon transaction commit.
 
 ## Transaction Management
@@ -57,6 +57,8 @@ When a savepoint is set, oGRAC records the current transaction's undo row inform
 ## Transaction Isolation Levels
 
 The transaction isolation levels supported by oGRAC are Read Committed and Serializable.
+
+Some internal maintenance paths use a current-committed view: at the time the read starts, the path evaluates the committed version visible under the current SCN. This is an internal execution strategy, not an additional user transaction isolation level.
 
 ### Read Committed (RC)
 

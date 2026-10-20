@@ -6,8 +6,7 @@
 
 ![](public_sys-resources/running.png)
 
-- oGRAC is a shared-storage cluster architecture.
-- It consists of the CMS cluster management component, the DB database instance component, and the DSS open-source cluster file system component.
+oGRAC uses a shared-storage multi-instance cluster architecture. Each node runs a database instance, CMS, and DSS. Database instances access the same shared data files through DSS and coordinate in-memory state through the DTC execution layer. From the application perspective, any normally opened database instance can accept read and write requests; there is no fixed primary write node.
 
 ## Logical Architecture
 
@@ -17,7 +16,7 @@
 - Instance management module: includes communication management and service scheduling, thread pool management, session pool management, global memory management (SGA), and private memory management (PGA).
 - SQL engine module: supports lexical analysis, syntax analysis, semantic analysis, logical optimization, physical optimization, executor, and stored procedures.
 - Storage engine module: includes tablespace management, heap table management, index management, page buffer management, DC metadata management, transaction management, redo management, and checkpoint.
-- DSS is a high-performance shared cluster file system based on LUN.
-- DMS is a multi-write shared cluster service that provides distributed resource control (DRC), distributed lock service (DLS), and distributed cache service (DCS).
-- CMS is the cluster management component.
-- CBB is a foundational capability library for DSS and DMS, covering communication, data structure, security, and file management.
+- DSS (Distributed Storage Service) provides shared file and block-device access based on LUN.
+- DMS (Distributed Memory Service) provides cross-instance memory coordination for multi-write clusters through DRC, DLS, DCS, and MES.
+- CMS is the cluster management component that maintains member and resource status.
+- CBB is a foundational capability library reused by DSS and DMS, covering communication, data structures, security, and file management.
