@@ -6,7 +6,7 @@
 
 In conventional database systems, an exclusive lock is placed on a table when its schema is altered (for example, adding a column, creating an index, or modifying a column type). For large tables, such changes may last hours or even days. During this period, all DML and query operations on the database are blocked, rendering the business unavailable. This is unacceptable for services that require 24/7 availability.
 
-Online schema change technology enables modifications to table definitions with no or minimal impact on the normal service of the database. It is key to ensuring smooth database evolution and business continuity.
+Online schema change technology reduces the duration of exclusive-lock phases by separating the long-running build phase from the metadata switch phase. It reduces, but does not eliminate, the impact of schema changes on DML and queries.
 
 ## Working Mechanism
 
@@ -14,7 +14,7 @@ Online schema change technology enables modifications to table definitions with 
 
 The overall process of altering a table schema follows these steps: Acquire DDL latch (shared lock) -> Execute alteration -> Release DDL latch
 
-Typically, before an alteration operation begins, a table-level exclusive lock is added to the target table and its parent and child tables, and the lock is released after the alteration is completed. All DML operations are blocked while the table lock is held. oGRAC has implemented extensive optimizations to address this issue.
+For ordinary operations, the target table and its parent and child tables may be locked for the duration of the build and metadata change, so concurrent DML can be blocked. In a multi-write cluster, ordinary object DDL must also complete logical DDL synchronization. `CREATE INDEX ONLINE` and `REBUILD INDEX ONLINE` use a specific online index path and are not supported in cluster mode.
 
 ### Shadow Index
 
@@ -22,7 +22,7 @@ Index creation is inherently a resource-intensive task. In addition to significa
 
 oGRAC employs the shadow index technique, which separates the "physical creation" and "logical activation" of an index into two distinct phases, with a "buffer" introduced between them. The index is created safely in the background and remains invisible throughout this process. Since the optimizer ignores it, there is no risk of sudden execution plan changes even if the creation process is relatively slow. All DML operations are also applied to the shadow index. Once index creation is complete, the shadow index is brought online through an extremely fast metadata modification operation.
 
-Background index creation does not require a table-level exclusive lock, and the metadata modification operation takes only milliseconds. Through the shadow index technique, oGRAC implements an online index creation method that completely avoids blocking DML operations, representing a more advanced and safer implementation pattern of online DDL.
+The build scan uses the committed data version visible at the start of the read according to the current SCN, avoiding a long-lived user transaction snapshot. This only defines the scan semantics of index construction; it does not introduce a new transaction isolation level. The shadow index path applies only in non-cluster mode, and its final metadata switch may still wait for concurrent access to finish.
 
 ### Parallel DDL
 
@@ -40,15 +40,16 @@ An entity is a concrete representation that holds the actual metadata of a scann
 
 | Operation       | Operation | Allow Concurrent DML | Allow Concurrent DQL | Remarks |
 |-----------------|--------------------|----------------------|----------------------|---------|
-| Secondary index operations | Add secondary index | Yes | Yes | Transient impact on DML at the start and end phases |
-|                 | Delete secondary index | No | Yes |  |
-|                 | Rename index | No | Yes | Only metadata modification, transient impact on DML |
-| Primary key operations | Add primary key | No | Yes |  |
-|                 | Delete primary key | No | Yes |  |
-| Column operations | Add column | No | Yes | If adding a NULL column, transient impact on DML |
-|                 | Delete column | No | Yes |  |
-|                 | Rename column | No | Yes | Only metadata modification, transient impact on DML |
-|                 | Change column type | No | Yes |  |
+| Secondary index operations | Add secondary index | No | Yes | Ordinary construction holds a table lock and blocks concurrent DML; cluster DDL synchronization is also required. |
+|                 | Add secondary index online | Yes | Yes | Non-cluster mode only; the start and final switch phases may still wait. `CREATE INDEX ONLINE` and `REBUILD INDEX ONLINE` are not supported in cluster mode. |
+|                 | Delete secondary index | No | Yes | Lock and dictionary refresh phases may cause additional waits for special dependencies. |
+|                 | Rename index | No | Yes | Metadata and dictionary refresh phases may briefly wait. |
+| Primary key operations | Add primary key | No | Yes | Constraint, index, and dictionary changes are required. |
+|                 | Delete primary key | No | Yes | Constraint and dictionary changes are required. |
+| Column operations | Add column | No | Yes | A nullable column is usually shorter; defaults or data changes may extend lock holding. |
+|                 | Delete column | No | Yes | Dictionary and object-version refresh are required. |
+|                 | Rename column | No | Yes | Metadata and dictionary refresh phases may briefly wait. |
+|                 | Change column type | No | Yes | May involve data rewrite or object-version switching. |
 
 ## Best Practices
 
