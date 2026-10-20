@@ -19,7 +19,7 @@ The oGRAC engine implements clustering functionality through distributed compone
 
 ## 2. DMS Components
 
-Distributed Management System (DMS) is the core of the transparent multi-write architecture and primarily includes the following features.
+Distributed Memory Service (DMS) is the cross-instance memory coordination part of the transparent multi-write architecture. It works with DRC, DCS, DLS, and MES and does not provide persistent storage or merge local buffer pools into a globally addressable memory pool.
 
 ### 2.1 Cross-Node MVCC Implementation
 
@@ -66,9 +66,9 @@ DCS is a key component in the transparent multi-write architecture responsible f
 
 **Page Ownership**
 
-- Each data page has exactly one owner at any given moment.
-- The owner node holds an exclusive lock on the page and is permitted to perform modification operations.
-- Other nodes may hold a shared lock and are only permitted to perform read operations.
+- The directory marks one current owner for a page, and multiple nodes may retain controlled shared (`S`) replicas.
+- The owner may hold either a shared (`S`) or exclusive (`X`) page lock; only the node holding `X` may modify the page.
+- When `X` is requested, shared replicas that are no longer valid are invalidated.
 
 **Earlier Dirty Page (EDP) Mechanism**
 
@@ -84,13 +84,15 @@ DCS is a key component in the transparent multi-write architecture responsible f
 
 #### 2.4.2 DCS Message Structure
 
+DCS messages do not all carry the same fields. Page-request and ownership-transfer messages may carry a page identifier, request mode, current mode, and request version, while the common message header carries source information. Page-transfer messages may also carry the page LSN, SCN, dirty/EDP status, and page contents. CR requests and EDP notifications carry only the fields required for their respective operations. The receiver validates versions and page LSN/SCN values according to the message type.
+
 #### 2.4.3 DCS Core Features
 
 **1. Page Request and Ownership Management**
 
 DCS implements a sophisticated page request and ownership transfer mechanism:
 
-- **Page request process**: The requester initiates a page request by first querying the primary node (Master) for the current owner of the page, and then requesting the page data from the owner.
+- **Page request process**: The requester first queries the DRC Master for the page's current owner and then requests the page data from that owner. The DRC Master is a resource-partition role, not a fixed business primary node.
 - **Ownership transfer**: Upon receiving the request, the page owner transfers the page data to the requester and updates the lock status.
 - **Batch operations**: Supports batch page requests and ownership claims to improve system throughput.
 
@@ -99,15 +101,15 @@ DCS implements a sophisticated page request and ownership transfer mechanism:
 DCS provides a comprehensive dirty page management mechanism:
 
 - **Dirty page tracking**: Tracks the dirty page status on nodes through the EDP bitmap.
-- **Dirty page cleanup**: Cleans up global dirty pages during checkpoint.
-- **Primary node coordination**: The primary node is responsible for coordinating cross-node dirty page cleanup.
+- **Dirty page cleanup**: During checkpoint, the storage engine writes eligible dirty pages to shared data files; DCS maintains ownership-transfer and EDP state during this process.
+- **Directory coordination**: The DRC Master for the resource partition coordinates cross-node dirty page cleanup.
 
 **3. CR Page Construction and Consistent Read**
 
 To support distributed MVCC, DCS implements cross-node CR page construction:
 
 - **CR request processing**: Capable of processing different types of CR requests.
-- **Primary node query**: Queries the page primary node to determine the CR construction location.
+- **Directory query**: Queries the page's DRC Master to determine the CR construction location.
 - **CR page construction**: The CR page is constructed on the node that holds the original page and then transferred to the requesting node.
 
 #### 2.4.4 DCS Communication Mechanism
@@ -117,13 +119,13 @@ DCS employs a reliable message-based communication mechanism to ensure the corre
 **Message Retry Mechanism**
 
 - Achieves reliable message delivery through the MES messaging mechanism.
-- Supports configurable retry interval and retry count.
+- Uses a configured retry interval and wait timeout; while the destination remains alive, a request can continue to retry. Periodic retry counts are used for warnings and do not represent a fixed retry limit.
 - Detects the status of target nodes to avoid sending messages to unavailable nodes.
 
 **Timeout Control**
 
-- Sets a message wait timeout to prevent prolonged blocking.
-- Configures a separate timeout control for CR requests.
+- Sets a per-message wait timeout to prevent prolonged blocking; this is not the same as the total wait time of a page or transaction request.
+- Configures separate timeout control for CR requests and handles the overall wait according to the request type.
 
 **Status Synchronization**
 
@@ -171,10 +173,10 @@ DRC is a core component in the transparent multi-write architecture responsible 
 
 3. **DRC resource concentration mode**
 
-DRC supports the resource concentration mode (`DRC_IN_REFORMER_MODE`). When all services run exclusively on the reformer node, this mode can be enabled to improve performance:
+DRC supports the resource concentration mode (`DRC_IN_REFORMER_MODE`). When business read and write traffic is concentrated on the Reformer node, this mode can be enabled to reduce cross-node resource requests:
 
 - All resources are centralized on the reformer node, reducing cross-node resource requests.
-- This is controlled by modifying `DRC_IN_REFORMER_MODE`.
+- This is controlled by modifying `DRC_IN_REFORMER_MODE`; the parameter takes effect after an instance restart.
 - It is suitable for scenarios where read and write loads are concentrated on specific nodes.
 
 #### 2.5.4 Collaboration with Reform
@@ -187,7 +189,7 @@ Cluster reform is a key mechanism in the transparent multi-write architecture fo
 
 #### 2.6.1 Reform Core Concepts
 
-- **Reformer node**: primary node responsible for coordinating the Reform process, typically the current primary node of the cluster.
+- **Reformer node**: the instance selected from the CMS cluster view to coordinate the current Reform process. It is not the Page Owner or the DRC Master for a particular resource.
 - **Reform role**: The role played by a node during the Reform process (`STAY`/`LEAVE`/`JOIN`/`ABORT`)
 - **Reform mode**: triggering method of Reform (planned/unplanned).
 - **Resource reallocation**: redistribution of system resource ownership during the Reform process.
@@ -230,9 +232,9 @@ Based on these state combinations, the state machine determines:
 - Whether it is a membership change operation
 - Whether it is an impossible state transition (used for error detection)
 
-##### 2.6.3.3 Primary Node Reform Process
+##### 2.6.3.3 Reformer Node Process
 
-The specific responsibilities of the primary node include:
+The specific responsibilities of the Reformer node include:
 
 - Establishing and maintaining the Reform communication channel
 - Coordinating the resource reallocation process
@@ -240,9 +242,9 @@ The specific responsibilities of the primary node include:
 - Handling exception scenarios and error recovery
 - Notifying all nodes that the reform is complete
 
-##### 2.6.3.4 Reform Process on the Secondary Node
+##### 2.6.3.4 Reform Process on Other Participating Nodes
 
-The primary responsibility of the secondary node during the reform process is to respond to instructions from the primary node and execute the corresponding operations:
+Other participating nodes respond to instructions from the Reformer and execute the corresponding operations:
 
 ##### 2.6.3.5 Cluster View Management
 
@@ -301,7 +303,7 @@ During the Reform process, the collaboration flow between Reform and DRC is as f
 
 1. Reform triggers the resource redistribution (Remaster) process.
 2. DRC coordinates each node to prepare for redistribution.
-3. The primary node computes a new resource allocation plan.
+3. The Reformer computes a new resource allocation plan.
 4. Each node performs resource migration.
 5. After the migration is complete, confirmation is sent to notify Reform.
 6. Reform proceeds with the subsequent Reform steps.
@@ -369,7 +371,7 @@ oGRAC provides a comprehensive set of Reform performance monitoring metrics, fac
 
 ### 3.1 DSS Core Features
 
-Distributed Storage System (DSS) provides underlying storage management capabilities, delivering a stable data storage foundation for the transparent multi-write architecture.
+Distributed Storage Service (DSS) provides shared file and block-device access for database instances and supplies the persistent storage foundation for the transparent multi-write architecture.
 
 **Features**
 
@@ -377,33 +379,8 @@ Distributed Storage System (DSS) provides underlying storage management capabili
 - Distributed storage access
 - Multi-node data sharing
 
-**Implementation**
+**Responsibilities**
 
-- Storage access is provided through the dynamic library `libdssapi.so`.
-- Complete file operations are supported: creation, read/write, deletion, renaming, and more.
-- Asynchronous I/O (AIO) operations are implemented to enhance performance.
-- Provides log callback and connection management mechanisms
-
-**Main APIs**
-
-```c
-// Core file operation APIs
-dss_fcreate — Creates a file.
-dss_fopen — Opens a file.
-dss_fread — Reads data from a file.
-dss_fwrite — Writes data to a file.
-dss_fclose — Closes a file.
-dss_fremove — Removes a file.
-dss_frename — Renames a file.
-
-// Asynchronous I/O APIs
-dss_aio_prep_pread — Prepares an asynchronous pre-read operation.
-dss_aio_prep_pwrite — Prepares an asynchronous pre-write operation.
-dss_aio_post_pwrite — Posts an asynchronous write operation.
-```
-
-**Log Levels**
-
-- `DSS_LOG_LEVEL_ERROR`: error level
-- `DSS_LOG_LEVEL_WARN`: warning level
-- `DSS_LOG_LEVEL_INFO`: information level
+- Provides unified file creation, opening, reading, writing, deletion, renaming, and asynchronous I/O capabilities.
+- Hides differences between underlying shared-storage media.
+- Does not manage page ownership, distributed locks, transaction visibility, or cache-copy invalidation; these responsibilities belong to DTC/DMS.
