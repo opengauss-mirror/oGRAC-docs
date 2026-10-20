@@ -4,7 +4,7 @@
 
 ## Core Objectives
 
-For performance reasons, all data modifications in a database are performed in memory buffers. If every modification were written back to disk immediately, performance would be severely degraded. However, if modifications are never written back, all in-memory changes will be lost in the event of a database crash. The redo log is designed to address this problem. Its core objective is to ensure transaction durability: once a transaction is committed, the modifications it has made to the data are permanently preserved and will never be lost, even if a system crash occurs subsequently.
+For performance reasons, data modifications are first made in memory and then persisted through redo and checkpoint processing. Redo records the changes required for crash recovery, while checkpoints write eligible dirty pages to data files. Commit durability depends on the commit redo reaching the required persistence state; it does not require all dirty pages to be written at commit time.
 
 ## Working Mechanism
 
@@ -21,6 +21,8 @@ When `buffer_enter_page` is invoked, an exclusive lock is placed on the page, pr
 When multiple sessions generate log records, they need to directly contend for the lock of the global buffer, and each log record append operation may cause contention. If generating a single log entry involves multiple modifications (for example, multiple steps within a transaction), a lock must be acquired for each log write, leading to intense lock contention under high concurrency.
 
 In oGRAC, when an atomic log operation begins, the log is written to the session's private buffer, and upon completion of the atomic operation, it is copied from the private buffer to the global buffer. This approach reduces global buffer lock contention to some extent. However, during the copy to the global buffer, concurrent operations by multiple sessions can still cause lock contention and degrade performance. To address this issue, oGRAC provides a multi-log buffer mechanism, which divides the global buffer into multiple parts and uses a hashing algorithm to load-balance the copy operations. To ensure log ordering, oGRAC reorders logs during restart recovery, thereby improving database runtime efficiency.
+
+With the default `COMMIT_WAIT_LOGGING=WAIT`, commit waits until the transaction-end redo reaches the required persistence state. With `NOWAIT`, commit may return without waiting for the redo flush; a successful return does not mean that the related redo is already durable.
 
 ## Redo Log Management
 
@@ -58,5 +60,8 @@ Example:
 
 - Redo log files must be created and deleted through SQL commands. Direct operations on redo files are not permitted.
 - Redo log files can be added or deleted when the database is in the OPEN state and read/write operations are allowed.
+- When `ENABLE_PARA_LOG_FLUSH` is enabled, redo log files cannot be added or deleted.
 - The number of redo log files is limited to a maximum of 256 and a minimum of 3.
 - DDL operations will be blocked during the addition or deletion of redo log files, and DML operations may be briefly blocked due to a temporary pause in redo flushing. It is recommended to perform these operations during off-peak hours whenever possible.
+
+In a multi-write cluster, redo files are managed independently by each database instance. `ALTER DATABASE ADD LOGFILE` and `ALTER DATABASE DROP LOGFILE` modify only the instance on which they are executed and are not broadcast as ordinary logical DDL. To adjust multiple instances, execute the commands separately on each target instance and confirm its log capacity and recovery capability.
