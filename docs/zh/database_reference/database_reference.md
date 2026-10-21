@@ -1629,7 +1629,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_9 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_10**
 
-**参数说明**：设置归档目标 10，取值格式为 `location=<目录>`；当前未配置（空）。引擎注册了 `ARCHIVE_DEST_1` 至 `ARCHIVE_DEST_10` 共十个归档目标参数（master 源码 `srv_param.c:262-291`），编号连续；各编号的参数说明见本文档对应小节。
+**参数说明**：设置归档目标 10，取值格式为 `location=<目录>`；当前未配置（空）。引擎注册了 `ARCHIVE_DEST_1` 至 `ARCHIVE_DEST_10` 共十个归档目标参数（master 源码 `srv_param.c:262-291`），编号连续；本 issue 的参数清单覆盖其中的 1、2、3、10 四个，其余编号不在本 issue 范围。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
