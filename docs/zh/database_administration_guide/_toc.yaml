@@ -35,6 +35,10 @@ sections:
     sections:   
       - label: 性能调优
         href: ./performance_tuning_guide/ograc_performance_tuning_guide.md
+  - label: 备份与恢复
+    sections:
+      - label: 在线备份与离线恢复
+        href: ./online_backup_offline_restore.md
   - label: 故障诊断
     sections:   
       - label: WSR报告
