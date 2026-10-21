@@ -114,6 +114,32 @@ ALTER SYSTEM SET DTC_CKPT_NOTIFY_TASK_RATIO = 0.032 SCOPE=MEMORY;
 -- 该参数为 reboot 生效：重启（deploy stop / deploy start）后 RUNTIME_VALUE 才恢复为新设置值
 ```
 
+## **OGRAC_TASK_NUM**
+
+**参数说明**：设置 oGRAC 的 MES 任务线程总数。该值是 MES 任务线程分配比例的基数：检查点通知消息组分配到的线程数为 `OGRAC_TASK_NUM × DTC_CKPT_NOTIFY_TASK_RATIO`（向下取整，见 `DTC_CKPT_NOTIFY_TASK_RATIO` 小节）。
+
+**取值范围**：整数，`[1,500]`（SQL 设置阶段的校验范围；`CLUSTER_DATABASE=TRUE` 时实例启动检查要求 `≥16`，见配置建议）。
+
+**默认值**
+
+- 内核缺省值：`16`。
+- 部署默认值：`256`（部署工具写入的常见默认值；小规格部署另有 `64` 档），以实际部署配置为准。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设为 300 → 重启 → 读回 `RUNTIME_VALUE=300`；还原 256 → 重启 → 读回 256/256。
+
+**配置建议**：本参数是 DTC 系列比例参数的计算基数——调整后 `DTC_CKPT_NOTIFY_TASK_RATIO`、`DTC_CLEAN_EDP_TASK_RATIO`、`DTC_TXN_INFO_TASK_RATIO` 对应的实际线程数会按新基数重新计算，请一并评估；修改需重启，建议在维护窗口进行。
+
+> ⚠️ **SQL 校验范围与启动检查是两道独立约束**：`[1,500]` 是 SQL 设置阶段的校验范围；部署为 `CLUSTER_DATABASE=TRUE` 时，**实例启动检查要求 `OGRAC_TASK_NUM ≥ 16`**。低于 16 的值（如 8）在 SQL 阶段不会被拦截，且默认 scope 会写入参数配置文件——重启后启动检查报该参数无效、实例无法启动。调整下限时不得低于 16，并保留参数配置文件备份以便回滚。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET OGRAC_TASK_NUM = 300;   -- 持久化（默认 SCOPE=BOTH）
+-- 重启后读回 300 / 300
+ALTER SYSTEM SET OGRAC_TASK_NUM = 256;   -- 还原（部署默认值 256；小规格部署为 64 或按实际原值）
+-- 重启后读回 256 / 256
+```
+
 ## **PAGE_CLEAN_MODE**
 
 **参数描述**
@@ -829,6 +855,62 @@ ALTER SYSTEM SET LSNR_PORT = 1612;
 ALTER SYSTEM SET LSNR_PORT = 1611;
 ```
 
+## `OG_CLUSTER_STRICT_CHECK`
+
+**参数说明**：设置集群状态的严格检查开关。开启后对集群状态执行严格校验。
+
+**取值范围**：布尔值，`FALSE` / `TRUE`。
+
+**默认值**
+
+- 内核缺省值：`TRUE`。
+- 部署默认值：`TRUE`（安装/预装路径默认值；实际以部署配置为准）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 TRUE → 立即读回 `VALUE=RUNTIME_VALUE=TRUE`；还原 FALSE → 立即读回 FALSE/FALSE，无需重启。
+
+**配置建议**：关闭严格检查会放宽集群状态校验；单节点部署与多节点部署的校验行为可能不同，调整前请确认部署形态与业务要求。修改立即生效，请评估对在线业务的影响。本次验证实例的当前值为 `FALSE`（取值来源未核实，仅作实例状态参考）。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET OG_CLUSTER_STRICT_CHECK = TRUE;    -- 立即生效
+SELECT NAME, DATATYPE, RANGE, DEFAULT_VALUE, VALUE, RUNTIME_VALUE
+  FROM DV_PARAMETERS WHERE NAME='OG_CLUSTER_STRICT_CHECK';
+-- DEFAULT_VALUE = TRUE, VALUE = RUNTIME_VALUE = TRUE
+
+ALTER SYSTEM SET OG_CLUSTER_STRICT_CHECK = FALSE;   -- 还原为本次验证前的取值（该实例为 FALSE）
+```
+
+## `ALARM_LOG_DIR`
+
+**参数说明**：设置告警日志的存储目录。告警日志文件名为 `<实例名>_alarm.log`（取值来自 `INSTANCE_NAME` 参数：内核缺省值为 `oGRAC`，部署脚本默认写入 `ograc`）；参数未配置时，告警日志写入数据目录下的 `log` 子目录。告警日志的开启条件（`_LOG_LEVEL` 大于 0）与命名规则见《日志管理》的 ALARM_LOG_DIR 条目（`database_administration_guide/data_object_management/log_management.md`）。
+
+**取值范围**：目录路径字符串；参数视图未提供范围。
+
+**默认值**：（空）——为空时使用上述默认目录。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置为已存在的目录 → 重启 → 读回 `VALUE=RUNTIME_VALUE=<该目录>`，配置已应用。
+
+**配置建议**：
+
+- 路径**必须已存在**：指向不存在的目录会被拒绝（`OG-00601 ... is not an existing folder`）。
+- 该参数**不接受空值**：以空值设置会被拒绝；如需恢复默认路径，请删除配置文件中的该键并重启。
+- 目录须保证 oGRAC 运行用户有写权限；变更后建议重启后确认告警文件在新目录生成。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ALARM_LOG_DIR = '/path/to/alarm_log_dir';   -- 持久化（默认 SCOPE=BOTH）
+-- 重启后读回 VALUE = RUNTIME_VALUE = /path/to/alarm_log_dir
+```
+
+**边界证据**：
+
+```sql
+ALTER SYSTEM SET ALARM_LOG_DIR = '';
+OG-00601, [1:34]Sql syntax error: " is not an existing folder
+```
+
 ## `LOG_BUFFER_COUNT`
 
 **参数说明**：设置 Log Buffer 的数量。  
@@ -1030,6 +1112,55 @@ Succeed.
 
 ALTER SYSTEM SET MES_SSL_CRT_KEY_PATH = '<已存在目录>/grac.crt';
 OG-00601, [1:41]Sql syntax error: <已存在目录>/grac.crt is not an existing folder
+```
+
+## `MES_SSL_KEY_PWD`
+
+**参数说明**：设置 MES 的 SSL 证书密钥口令。属敏感参数：**口令值不应写入文档、不应出现在任何公开截图或平台字段中**。7.0.0-LTS 实测：可通过 `SCOPE=MEMORY` 临时设置（不写入参数配置文件），设置返回 `Succeed.`，读回可见值——因含明文口令，不提供该参数的公开截图。
+
+**取值须为 Base64 编码后的口令**：明文口令可被 `ALTER SYSTEM SET` 接受，但实例启动时解码失败；应填写对明文口令做 Base64 编码后的字符串。
+
+**取值范围**：字符串；参数视图未提供范围。
+
+**默认值**：（空）。单节点、未启用 SSL 的部署下为空。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：与 `MES_SSL_SWITCH`、`MES_SSL_CRT_KEY_PATH` 联动——开启 SSL 前必须先配置有效的证书目录与本口令。生产环境建议通过配置文件管理并控制文件权限，避免口令以明文形式出现在 SQL 历史或日志中；证书与口令须匹配同一套密钥。
+
+**示例**（口令以占位符表示）：
+
+```sql
+-- 口令先做 Base64 编码（明文不要直接写进 SQL）
+--   echo -n '<明文口令>' | base64
+-- 仅用于临时验证：SCOPE=MEMORY 不写入参数配置文件，重启后失效
+ALTER SYSTEM SET MES_SSL_KEY_PWD = '<BASE64 编码后的口令>' SCOPE=MEMORY;
+```
+
+## `MES_SSL_SWITCH`
+
+**参数说明**：设置 MES 的 SSL 加密开关。开启后 MES 模块启用 SSL 加密传输。
+
+**取值范围**：布尔值，`FALSE` / `TRUE`。
+
+**默认值**：`FALSE`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**重要边界（7.0.0-LTS 实测）**：在**未配置有效证书目录与密钥口令**的情况下，将本参数持久化为 `TRUE` 并重启，**ogracd 进程无法启动**（cms 正常启动，ogracd 未起来）；回滚配置文件中该参数为 `FALSE` 后重启恢复。该现象表明本开关与证书配置强耦合：**开启前必须先完成 `MES_SSL_CRT_KEY_PATH` 与 `MES_SSL_KEY_PWD` 的有效配置**。失败时的具体报错以引擎日志为准（属实现细节，待确认），本节只给出可复现的操作序列与结果。
+
+**配置建议**：
+
+- 单节点、未启用 SSL 的部署建议保持默认 `FALSE`。
+- 确需开启时按"先配置证书目录与密钥口令 → 再置本参数为 TRUE → 重启验证"的顺序操作，并预留配置文件备份以便回滚。
+- 不建议在持久化开启后首次重启前关闭已有连接；重启失败时应优先回滚本参数。
+
+```sql
+-- 可复现的操作序列（不建议在生产环境重放）
+ALTER SYSTEM SET MES_SSL_SWITCH = TRUE;    -- 持久化（默认 SCOPE=BOTH）
+-- deploy stop / deploy start 重启
+-- 结果：cms start success，ogracd 未启动（实例不可用）
+-- 回滚：配置文件中恢复 MES_SSL_SWITCH = FALSE → 重启 → 恢复
 ```
 
 ## `SESSIONS`
@@ -1268,6 +1399,117 @@ XA 接口显式指定有效的专用超时时间时，优先使用接口提供�
 - 在适用的存储后端上，较小的值可能增加归档处理频次，应结合日志产生速率和归档时间策略调整。
 - 试设可采用 `ALTER SYSTEM SET ARCH_SIZE='256M' SCOPE=MEMORY;`。测试时记录原值并恢复，不需要通过生成大量日志来验证设置是否被接受。
 - 文件模式下应区分参数设置验证与 DBStor 归档触发功能验证；参数视图可读回新值并不证明执行了后者。
+
+## **ARCHIVE_CONFIG**
+
+**参数说明**：设置归档配置，取值为逗号分隔的组合值；当前配置为 `SEND,RECEIVE,NODG_CONFIG`。
+
+**取值范围**：字符串（参数视图未提供范围）；默认值为 `SEND,RECEIVE,NODG_CONFIG`。
+
+**默认值**：`SEND,RECEIVE,NODG_CONFIG`。
+
+**生效方式**：**只读参数**（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），不能通过 SQL 修改；调整须通过配置文件完成并重启。
+
+```sql
+ALTER SYSTEM SET ARCHIVE_CONFIG = 'SEND';
+OG-00203, ARCHIVE_CONFIG is a readonly parameter
+```
+
+**配置建议**：只读参数，变更前请确认归档模式与业务影响，通过配置文件修改并安排在维护窗口重启；修改前备份归档配置与数据。
+
+## **ARCHIVE_DEST_1**
+
+**参数说明**：设置归档目标 1，取值格式为 `location=<目录>`。本次验证实例中该目标已由部署写入并被归档功能占用；**当归档已启用且该目标在用，修改本参数会被拒绝**（`OG-00857`，见边界证据）；未启用归档时的行为本次未验证。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）；当前实例配置为 `location=<归档目录>`（随部署写入，以实际配置为准）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：归档功能正在使用该目标时，修改会被拒绝：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_1 = 'location=/path/to/archive_dest_1';
+OG-00857, ARCHIVE_DEST is in use, please disable it firstly
+```
+
+**配置建议**：修改在用的归档目标前，需先将该目标状态置为 `DEFER`（对应 `ARCHIVE_DEST_STATE_1` 参数，其文档在后续任务中补充），完成本参数修改后再恢复 `ENABLE`；否则会报 `OG-00857`。调整前备份归档数据。
+
+## **ARCHIVE_DEST_2**
+
+**参数说明**：设置归档目标 2，取值格式为 `location=<目录>`；当前未配置（空）。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：带 `location=` 前缀设置成功，读回 `VALUE` 与 `RUNTIME_VALUE` 同步更新；**不带 `location=` 前缀的裸路径会被拒绝**，报错中的参数名为占位名 `ARCHIVE_DEST_n`：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_2 = '/path/to/archive_dest_2';
+OG-00202, The parameter value "ARCHIVE_DEST_n" was invalid
+```
+
+**配置建议**：
+
+- 取值须为 `location=<目录>` 形式；目录应已存在并具备写权限。
+- 临时验证可用 `SCOPE=MEMORY`（不写入配置文件），持久化请省略 scope。
+- 参数视图未提供范围；单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
+
+**示例**：
+
+```sql
+-- 临时验证（不写入配置文件）
+ALTER SYSTEM SET ARCHIVE_DEST_2 = 'location=/path/to/archive_dest_2' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_2';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_2
+
+-- 置空（SCOPE=MEMORY 下可执行成功）
+ALTER SYSTEM SET ARCHIVE_DEST_2 = '' SCOPE=MEMORY;
+```
+
+## **ARCHIVE_DEST_3**
+
+**参数说明**：设置归档目标 3，取值格式为 `location=<目录>`；当前未配置（空）。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_2` 一致：带 `location=` 前缀设置成功并立即读回；裸路径被拒绝（报错中的参数名为占位名 `ARCHIVE_DEST_n`）。
+
+**配置建议**：同 `ARCHIVE_DEST_2`（目录须存在、注意写权限、临时验证用 `SCOPE=MEMORY`）。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_3 = 'location=/path/to/archive_dest_3' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_3';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_3
+
+ALTER SYSTEM SET ARCHIVE_DEST_3 = '' SCOPE=MEMORY;   -- 置空
+```
+
+## **ARCHIVE_DEST_10**
+
+**参数说明**：设置归档目标 10，取值格式为 `location=<目录>`；当前未配置（空）。引擎注册了 `ARCHIVE_DEST_1` 至 `ARCHIVE_DEST_10` 共十个归档目标参数（master 源码 `srv_param.c:262-291`），编号连续；本 issue 的参数清单覆盖其中的 1、2、3、10 四个，其余编号不在本 issue 范围。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_2` 一致。
+
+**配置建议**：同 `ARCHIVE_DEST_2`。`LOG_ARCHIVE_DEST_1/2/3/10` 是 `ARCHIVE_DEST_1/2/3/10` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），因此取值始终一致；查询 `ARCHIVE_DEST_1` 时会同时带出 `ARCHIVE_DEST_10`，属名称前缀包含（两者是不同参数），不代表参数间联动。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_10 = 'location=/path/to/archive_dest_10' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_10';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_10
+
+ALTER SYSTEM SET ARCHIVE_DEST_10 = '' SCOPE=MEMORY;   -- 置空
+```
 
 ## **RAFT_PEER_ADDRS**
 
