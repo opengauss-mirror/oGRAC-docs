@@ -81,7 +81,7 @@ oGRAC（openGauss Real Application Cluster）7.0.0(LTS) 是 openGauss 社区 202
 
 ### 继承功能
 
-  - 基础功能：[SQL基础能力](../about_ograc/product_description/sql_ability.md#sql基础能力概述)、[SQL优化器](../about_ograc/product_description/sql_ability.md#sql优化器能力概述)、[事务管理](../about_ograc/product_architecture/transaction_mechanism.md#事务机制)等。
+  - 基础功能：[SQL基础能力](../about_ograc/product_description/sql_ability.md#sql基础能力概述)、[SQL优化器](../about_ograc/product_description/sql_ability.md#sql-优化器能力概述)、[事务管理](../about_ograc/product_architecture/transaction_mechanism.md#事务机制)等。
   - [多写能力](../about_ograc/product_architecture/technical_feature_overview_of_database_multi_write_capability.md#ograc引擎多写技术特性概述)
   - 存储引擎特性
     - [检查点机制](../about_ograc/product_architecture/ckpt.md)，在内存和磁盘之间建立一个同步点，以确保数据的一致性和持久性，并加速数据库的恢复过程。

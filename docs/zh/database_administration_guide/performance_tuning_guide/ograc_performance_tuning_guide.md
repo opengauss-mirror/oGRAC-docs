@@ -27,7 +27,7 @@
 
 ## 组网方式
 
-![组网参考](./network1.png)
+![组网参考](./figures/network1.png)
 
 ## 磁阵连通性配置指导
 

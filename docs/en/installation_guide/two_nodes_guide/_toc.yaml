@@ -7,5 +7,7 @@ sections:
     href: ./ograc_two_node_installation.md
   - label: oGRAC Two-Node Multi-Write Test Demo
     href: ./ograc_two_nodes_multiwrite_testdemo.md
+  - label: oGRAC Two-Node ISCSI SETTING
+    href: ./ograc_two_nodes_iscsi_setting.md
   - label: oGRAC Installation and Deployment Troubleshooting
     href: ./installation_deployment_issues.md
