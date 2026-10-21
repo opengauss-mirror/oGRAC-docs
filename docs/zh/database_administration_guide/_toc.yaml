@@ -35,6 +35,8 @@ sections:
     sections:   
       - label: 性能调优
         href: ./performance_tuning_guide/ograc_performance_tuning_guide.md
+      - label: 基于鲲鹏服务器的NoF连通性配置指导
+        href: ./performance_tuning_guide/nof_configure_guide.md
   - label: 备份与恢复
     sections:
       - label: 在线备份与离线恢复

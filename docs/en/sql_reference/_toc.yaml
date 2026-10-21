@@ -127,3 +127,7 @@ sections:
         href: ./dml/delete.md
       - label: UPDATE
         href: ./dml/update.md
+  - label: Shared
+    sections:
+      - label: CREATE TABLE Shared Clauses
+        href: ./shared/create_table_common_clauses.md

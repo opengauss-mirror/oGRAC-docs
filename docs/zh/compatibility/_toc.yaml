@@ -2,7 +2,8 @@ label: 兼容性
 isManual: true
 sections:
   - label: A兼容性适配
-    href: ./a_compatibility/index.md
     sections:
+      - label: 概述
+        href: ./a_compatibility/index.md
       - label: 系统函数
         href: ./a_compatibility/system_functions.md

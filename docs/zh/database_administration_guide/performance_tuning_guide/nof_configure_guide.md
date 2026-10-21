@@ -24,7 +24,7 @@
 
 ## 组网方式
 
-![组网参考](./network1.png)
+![组网参考](./figures/network1.png)
 
 ## 安装网卡驱动
 
@@ -48,13 +48,13 @@ sync;reboot
 前提：存储阵列的RoCE网卡已经连接到交换机
 
 1. 登陆存储的DeviceManager，选择**服务$\rightarrow$网络$\rightarrow$ROCE网络**，选择连接正常的RoCE端口，点击操作$\rightarrow$修改，参考下图配置，主要配置MTU和信任模式
-   ![nof1](./nof1.jpg)
+   ![nof1](./figures/nof1.jpg)
 
 2. 选择**服务$\rightarrow$网络$\rightarrow$ROCE网络**，点击VLAN$\rightarrow$创建，选择连接正常的RoCE端口，参考下图配置：
-   ![nof2](./nof2.jpg)
+   ![nof2](./figures/nof2.jpg)
 
 3. 选择**服务$\rightarrow$网络$\rightarrow$逻辑端口**，点击创建，参考下图配置，主端口选择需要配置的物理端口：
-   ![nof3](./nof3.jpg)
+   ![nof3](./figures/nof3.jpg)
 
 ## 交换机配置
     
@@ -89,7 +89,7 @@ NVMe over RoCE对网络要求较高，要求交换机能够支持无损以太网
 ```
 5. 确认端口使能PFC成功
 
-   ![nof4](./nof4.jpg)
+   ![nof4](./figures/nof4.jpg)
 
 ## 主机配置
 

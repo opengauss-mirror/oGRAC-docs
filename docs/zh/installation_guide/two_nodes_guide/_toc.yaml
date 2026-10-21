@@ -7,5 +7,7 @@ sections:
     href: ./ograc_two_node_installation.md
   - label: oGRAC 两节点多写功能测试 DEMO 使用指南
     href: ./ograc_two_nodes_multiwrite_testdemo.md
+  - label: oGRAC搭建存储设备挂载配置完整操作指南
+    href: ./ograc_two_nodes_iscsi_setting.md    
   - label: oGRAC 安装部署常见问题定位与解决
     href: ./installation_deployment_issues.md
