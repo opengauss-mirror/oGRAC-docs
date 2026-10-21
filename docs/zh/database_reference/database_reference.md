@@ -1491,7 +1491,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_3 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_4**
 
-**参数说明**：设置归档目标 4，取值格式为 `location=<目录>`；当前未配置（空）。
+**参数说明**：设置归档目标 4，取值格式为 `location=<目录>`；当前未配置（空）。**当前限制**：当前版本启用非默认归档目标（`ARCHIVE_DEST_2`~`ARCHIVE_DEST_10`）时，实例启动会报 `Multiple ARCHIVE_DEST not supported` 并启动失败，实际可启用的归档目标仅为默认目标 `ARCHIVE_DEST_1`。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
@@ -1504,7 +1504,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_4 = '/path/to/archive_dest_4';
 OG-00202, The parameter value "ARCHIVE_DEST_n" was invalid
 ```
 
-**配置建议**：同 `ARCHIVE_DEST_2`（取值须为 `location=<目录>` 形式、目录应已存在并具备写权限、临时验证用 `SCOPE=MEMORY`）。另有独立的 `LOG_ARCHIVE_DEST_4` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
+**配置建议**：同 `ARCHIVE_DEST_2`（取值须为 `location=<目录>` 形式、目录应已存在并具备写权限）。受上述当前限制约束，本参数仅建议用于 `SCOPE=MEMORY` 的临时验证，请勿持久化到配置文件。`LOG_ARCHIVE_DEST_4` 是 `ARCHIVE_DEST_4` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1519,7 +1519,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_4 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_5**
 
-**参数说明**：设置归档目标 5，取值格式为 `location=<目录>`；当前未配置（空）。
+**参数说明**：设置归档目标 5，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`：启用非默认归档目标会导致实例启动失败。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
@@ -1527,7 +1527,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_4 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致：带 `location=` 前缀设置成功并立即读回；裸路径被拒绝（报错中的参数名为占位名 `ARCHIVE_DEST_n`）。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_5` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
+**配置建议**：同 `ARCHIVE_DEST_2`，并受 `ARCHIVE_DEST_4` 所述当前限制约束：仅建议 `SCOPE=MEMORY` 临时验证，请勿持久化到配置文件。`LOG_ARCHIVE_DEST_5` 是 `ARCHIVE_DEST_5` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1541,7 +1541,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_5 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_6**
 
-**参数说明**：设置归档目标 6，取值格式为 `location=<目录>`；当前未配置（空）。
+**参数说明**：设置归档目标 6，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`：启用非默认归档目标会导致实例启动失败。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
@@ -1549,7 +1549,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_5 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_6` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
+**配置建议**：同 `ARCHIVE_DEST_2`，并受 `ARCHIVE_DEST_4` 所述当前限制约束：仅建议 `SCOPE=MEMORY` 临时验证，请勿持久化到配置文件。`LOG_ARCHIVE_DEST_6` 是 `ARCHIVE_DEST_6` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1563,7 +1563,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_6 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_7**
 
-**参数说明**：设置归档目标 7，取值格式为 `location=<目录>`；当前未配置（空）。
+**参数说明**：设置归档目标 7，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`：启用非默认归档目标会导致实例启动失败。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
@@ -1571,7 +1571,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_6 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_7` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
+**配置建议**：同 `ARCHIVE_DEST_2`，并受 `ARCHIVE_DEST_4` 所述当前限制约束：仅建议 `SCOPE=MEMORY` 临时验证，请勿持久化到配置文件。`LOG_ARCHIVE_DEST_7` 是 `ARCHIVE_DEST_7` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1585,7 +1585,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_7 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_8**
 
-**参数说明**：设置归档目标 8，取值格式为 `location=<目录>`；当前未配置（空）。
+**参数说明**：设置归档目标 8，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`：启用非默认归档目标会导致实例启动失败。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
@@ -1593,7 +1593,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_7 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_8` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
+**配置建议**：同 `ARCHIVE_DEST_2`，并受 `ARCHIVE_DEST_4` 所述当前限制约束：仅建议 `SCOPE=MEMORY` 临时验证，请勿持久化到配置文件。`LOG_ARCHIVE_DEST_8` 是 `ARCHIVE_DEST_8` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1607,7 +1607,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_8 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_9**
 
-**参数说明**：设置归档目标 9，取值格式为 `location=<目录>`；当前未配置（空）。
+**参数说明**：设置归档目标 9，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`：启用非默认归档目标会导致实例启动失败。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
@@ -1615,7 +1615,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_8 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_9` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
+**配置建议**：同 `ARCHIVE_DEST_2`，并受 `ARCHIVE_DEST_4` 所述当前限制约束：仅建议 `SCOPE=MEMORY` 临时验证，请勿持久化到配置文件。`LOG_ARCHIVE_DEST_9` 是 `ARCHIVE_DEST_9` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1663,9 +1663,9 @@ ALTER SYSTEM SET ARCHIVE_DEST_10 = '' SCOPE=MEMORY;   -- 置空
 ALTER SYSTEM SET ARCHIVE_DEST_STATE_1 = 'DEFER' SCOPE=MEMORY;   -- Succeed.，即时读回 DEFER/DEFER
 ```
 
-取值范围外的值同样被拒绝（同族参数 `ARCHIVE_DEST_STATE_4` 实测，见 issue #64 对应小节），报错中的参数名为占位名 `archive_dest_state_n`。
+取值范围外的值同样被拒绝，报错中的参数名为占位名 `archive_dest_state_n`。
 
-**配置建议**：修改立即生效，调整前请确认目标部署形态下的归档行为；另有独立的 `LOG_ARCHIVE_DEST_STATE_1` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下状态变更对归档的实际影响未做功能验证。
+**配置建议**：修改立即生效，调整前请确认目标部署形态下的归档行为。`LOG_ARCHIVE_DEST_STATE_1` 是 `ARCHIVE_DEST_STATE_1` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。单节点部署下状态变更对归档的实际影响未做功能验证。
 
 **示例**：
 
@@ -1687,7 +1687,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_1 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_2` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_2` 是 `ARCHIVE_DEST_STATE_2` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1709,7 +1709,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_2 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_3` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_3` 是 `ARCHIVE_DEST_STATE_3` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
@@ -1731,7 +1731,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_3 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_10` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_10` 是 `ARCHIVE_DEST_STATE_10` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
 
 **示例**：
 
