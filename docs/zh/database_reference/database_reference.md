@@ -1887,7 +1887,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_10 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **参数说明**：设置归档文件的命名格式。默认值 `arch_%t_%r_%s.arc`。
 
-**取值范围**：字符串；参数视图未提供范围。实测格式存在校验：`%s`（asn）与 `%r`（resetlog）为强制要素，缺任一即被拒绝；`%t`（instance）不是强制条件——报错文案中的 `instance[t]` 与实际校验逻辑不一致，实际判定只要求 `%s` 与 `%r`，按该判定逻辑，不含 `%t` 的取值（如 `arch_%s_%r.arc`）可通过校验（该分支未实测）。格式串中还可使用 `%t`（instance）、`%d`（start_lsn）、`%e`（end_lsn）占位符；同一占位符重复出现、或出现未知占位符（`%` 后跟 s/t/r/d/e 之外的字符）均被拒绝。DBS 模式下额外强制包含 `%d` 与 `%e`。与 Oracle `LOG_ARCHIVE_FORMAT` 要求文件名必须包含 %s（日志序列号）、%t（线程号）、%r（resetlogs ID，否则报 ORA-19905）的规则相比，oGRAC 未强制 `%t`，要求更宽。占位符语义参考 Oracle Database Reference（%s=序列号、%t=线程号、%r=resetlogs ID；%d/%e 为 LSN 要素），oGRAC 各占位符展开后的实际值以生成的归档文件名为准。
+**取值范围**：字符串；参数视图未提供范围。源码校验（`knl_archive.c:3953`）强制要求 `%s`（asn）与 `%r`（resetlog）；`%t`（instance）不在强制条件内——报错文案中的 "or instance[t]" 与实际判定逻辑不一致。按该判定逻辑，不含 `%t` 的取值（如 `arch_%s_%r.arc`）应可通过；本次未实测该分支。DBS 模式（`cm_dbs_is_enable_dbs()`）还强制要求 `%d`、`%e`（`knl_archive.c:3944`）。
 
 **默认值**：`arch_%t_%r_%s.arc`。
 
@@ -1912,9 +1912,9 @@ ALTER SYSTEM SET ARCHIVE_FORMAT = 'arch_%t_%r_%s.arc';        -- 还原默认值
 
 ## **ARCHIVE_FORMAT_WITH_LSN**
 
-**参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系：两者的参数变更通知最终写同一个内核归档格式字段（均经 `arch_set_format`，后设置者生效）；强制归档流程直接读取本参数的配置值。单节点部署下两者的实际分工差异未做功能级验证。
+**参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系：两者的参数变更通知最终写同一个内核归档格式字段（均经 `arch_set_format`）；强制归档流程直接读取本参数的配置值。具体覆盖顺序未实测。单节点部署下两者的实际分工差异未做功能级验证。
 
-**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：缺强制要素（`%s`、`%r`）时被拒，实测报错文本中的参数名显示为 `ARCHIVE_FORMAT`。
+**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：强制 `%s`/`%r`；DBS 模式另加强制 `%d`/`%e`；缺要素时报 `OG-00842`，报错文本中的参数名显示为 `ARCHIVE_FORMAT`。
 
 **默认值**：`arch_%t_%r_%s_%d_%e.arc`。
 
