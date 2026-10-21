@@ -1527,7 +1527,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_4 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致：带 `location=` 前缀设置成功并立即读回；裸路径被拒绝（报错中的参数名为占位名 `ARCHIVE_DEST_n`）。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_5` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_5` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
 
 **示例**：
 
@@ -1549,7 +1549,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_5 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_6` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_6` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
 
 **示例**：
 
@@ -1571,7 +1571,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_6 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_7` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_7` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
 
 **示例**：
 
@@ -1593,7 +1593,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_7 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_8` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_8` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
 
 **示例**：
 
@@ -1615,7 +1615,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_8 = '' SCOPE=MEMORY;   -- 置空
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
 
-**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_9` 参数在视图中单独注册，实测两者取值同步显示。
+**配置建议**：同 `ARCHIVE_DEST_2`。另有独立的 `LOG_ARCHIVE_DEST_9` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下归档目标的实际消费行为未验证，请在目标部署形态下确认后再用于生产。
 
 **示例**：
 
@@ -1629,7 +1629,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_9 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_10**
 
-**参数说明**：设置归档目标 10，取值格式为 `location=<目录>`；当前未配置（空）。引擎注册了 `ARCHIVE_DEST_1` 至 `ARCHIVE_DEST_10` 共十个归档目标参数（master 源码 `srv_param.c:262-291`），编号连续；本 issue 的参数清单覆盖其中的 1、2、3、10 四个，其余编号不在本 issue 范围。
+**参数说明**：设置归档目标 10，取值格式为 `location=<目录>`；当前未配置（空）。引擎注册了 `ARCHIVE_DEST_1` 至 `ARCHIVE_DEST_10` 共十个归档目标参数（master 源码 `srv_param.c:262-291`），编号连续；各编号的参数说明见本文档对应小节。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
@@ -1651,17 +1651,19 @@ ALTER SYSTEM SET ARCHIVE_DEST_10 = '' SCOPE=MEMORY;   -- 置空
 
 ## **ARCHIVE_DEST_STATE_1**
 
-**参数说明**：设置归档目标 1 的状态。取值为枚举 `ENABLE`、`DEFER`、`ALTERNATE`（参数视图 `RANGE` 原文）；各取值对应的具体归档行为属实现细节，待确认。
+**参数说明**：设置归档目标 1 的状态。取值为枚举 `ENABLE`、`DEFER`、`ALTERNATE`（参数视图 `RANGE` 原文），语义参考 Oracle `LOG_ARCHIVE_DEST_STATE_n` 的通用定义（见 Oracle Database Reference 与 Administrator's Guide §10.4.3）：`ENABLE` 表示该归档目标可用于后续归档操作；`DEFER` 表示目标定义与属性保留但暂时禁用，重新启用前不参与归档；`ALTERNATE` 表示备用目标，其可用状态相当于 `DEFER`，当其主目标失效时转为 `ENABLE`。参数默认值为 `ENABLE`。上述为 Oracle 通用归档语义参考，oGRAC 单节点部署下各枚举对实际归档行为的影响未做功能级验证。
 
 **取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
 
 **默认值**：`ENABLE`。
 
-**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。实测归档目标 1 处于使用中（归档已启用）时，修改本参数**不被拒绝**——与 `ARCHIVE_DEST_1` 的取值本身在使用中被 `OG-00857` 拒绝形成对照：目标取值在使用中不可改，目标状态可修改。取值范围外的值被拒绝（同族参数 `ARCHIVE_DEST_STATE_4` 实测），报错中的参数名为占位名 `archive_dest_state_n`：
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。实测归档目标 1 处于使用中（归档已启用）时，修改本参数**不被拒绝**——与 `ARCHIVE_DEST_1` 的取值本身在使用中被 `OG-00857` 拒绝形成对照：目标取值在使用中不可改，目标状态可修改。设为 `DEFER` 的实测输出：
 
 ```
 ALTER SYSTEM SET ARCHIVE_DEST_STATE_1 = 'DEFER' SCOPE=MEMORY;   -- Succeed.，即时读回 DEFER/DEFER
 ```
+
+取值范围外的值同样被拒绝（同族参数 `ARCHIVE_DEST_STATE_4` 实测，见 issue #64 对应小节），报错中的参数名为占位名 `archive_dest_state_n`。
 
 **配置建议**：修改立即生效，调整前请确认目标部署形态下的归档行为；另有独立的 `LOG_ARCHIVE_DEST_STATE_1` 参数在视图中单独注册，实测两者取值同步显示。单节点部署下状态变更对归档的实际影响未做功能验证。
 
