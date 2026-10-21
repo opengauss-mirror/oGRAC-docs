@@ -1739,7 +1739,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'BOGUS_TEST' SCOPE=MEMORY;
 OG-00202, The parameter value "archive_dest_state_n" was invalid
 ```
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_4` 参数在视图中单独注册（当前取值同为 `ENABLE`）。`ALTERNATE` 的联动语义参考 Oracle：备用目标的可用状态为 `DEFER`，其主目标失效时转为 `ENABLE`（见 Administrator's Guide §10.4.3）；oGRAC 中与主目标的配对配置方式未实测。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_4` 是 `ARCHIVE_DEST_STATE_4` 的别名（同一配置项注册两个名字），取值天然一致。`ALTERNATE` 的联动语义参考 Oracle：备用目标的可用状态为 `DEFER`，其主目标失效时转为 `ENABLE`（见 Administrator's Guide §10.4.3）；oGRAC 中与主目标的配对配置方式未实测。
 
 **示例**：
 
@@ -1761,7 +1761,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_5` 参数在视图中单独注册（当前取值同为 `ENABLE`）。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_5` 是 `ARCHIVE_DEST_STATE_5` 的别名（同一配置项注册两个名字），取值天然一致。
 
 **示例**：
 
@@ -1783,7 +1783,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_5 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_6` 参数在视图中单独注册（当前取值同为 `ENABLE`）。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_6` 是 `ARCHIVE_DEST_STATE_6` 的别名（同一配置项注册两个名字），取值天然一致。
 
 **示例**：
 
@@ -1805,7 +1805,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_6 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_7` 参数在视图中单独注册（当前取值同为 `ENABLE`）。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_7` 是 `ARCHIVE_DEST_STATE_7` 的别名（同一配置项注册两个名字），取值天然一致。
 
 **示例**：
 
@@ -1827,7 +1827,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_7 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_8` 参数在视图中单独注册（当前取值同为 `ENABLE`）。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_8` 是 `ARCHIVE_DEST_STATE_8` 的别名（同一配置项注册两个名字），取值天然一致。
 
 **示例**：
 
@@ -1849,7 +1849,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_8 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_9` 参数在视图中单独注册（当前取值同为 `ENABLE`）。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_9` 是 `ARCHIVE_DEST_STATE_9` 的别名（同一配置项注册两个名字），取值天然一致。
 
 **示例**：
 
@@ -1887,11 +1887,11 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_10 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **参数说明**：设置归档文件的命名格式。默认值 `arch_%t_%r_%s.arc`。
 
-**取值范围**：字符串；参数视图未提供范围。实测格式存在校验：取值须包含报错原文所述的 `asn[s]`、`resetlog[r]`、`instance[t]` 三类要素，否则被拒绝。报错要素括号中的字母即格式串占位符，对应关系为 `asn[s]` ↔ `%s`、`resetlog[r]` ↔ `%r`、`instance[t]` ↔ `%t`；三要素强制与 Oracle `LOG_ARCHIVE_FORMAT` 要求文件名必须包含 %s（日志序列号）、%t（线程号）、%r（resetlogs ID，否则报 ORA-19905）的规则一致。占位符语义参考 Oracle Database Reference（%s=序列号、%t=线程号、%r=resetlogs ID），oGRAC 各占位符展开后的实际值以生成的归档文件名为准。
+**取值范围**：字符串；参数视图未提供范围。实测格式存在校验：`%s`（asn）与 `%r`（resetlog）为强制要素，缺任一即被拒绝；`%t`（instance）不是强制条件——报错文案中的 `instance[t]` 与实际校验逻辑不一致，实际判定只要求 `%s` 与 `%r`，按该判定逻辑，不含 `%t` 的取值（如 `arch_%s_%r.arc`）可通过校验（该分支未实测）。格式串中还可使用 `%t`（instance）、`%d`（start_lsn）、`%e`（end_lsn）占位符；同一占位符重复出现、或出现未知占位符（`%` 后跟 s/t/r/d/e 之外的字符）均被拒绝。DBS 模式下额外强制包含 `%d` 与 `%e`。与 Oracle `LOG_ARCHIVE_FORMAT` 要求文件名必须包含 %s（日志序列号）、%t（线程号）、%r（resetlogs ID，否则报 ORA-19905）的规则相比，oGRAC 未强制 `%t`，要求更宽。占位符语义参考 Oracle Database Reference（%s=序列号、%t=线程号、%r=resetlogs ID；%d/%e 为 LSN 要素），oGRAC 各占位符展开后的实际值以生成的归档文件名为准。
 
 **默认值**：`arch_%t_%r_%s.arc`。
 
-**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式不含必需要素时设置被拒：
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式缺强制要素（`%s`、`%r`）时设置被拒（下例被拒原因是缺 `%r`；报错文案列出的 `instance[t]` 与实际校验条件不符）：
 
 ```text
 ALTER SYSTEM SET ARCHIVE_FORMAT = 'v63fmt_%s.arc';
@@ -1912,20 +1912,20 @@ ALTER SYSTEM SET ARCHIVE_FORMAT = 'arch_%t_%r_%s.arc';        -- 还原默认值
 
 ## **ARCHIVE_FORMAT_WITH_LSN**
 
-**参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系（各自适用场景与覆盖关系）属实现细节，待确认。
+**参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系：两者的参数变更通知最终写同一个内核归档格式字段（均经 `arch_set_format`，后设置者生效）；强制归档流程直接读取本参数的配置值。单节点部署下两者的实际分工差异未做功能级验证。
 
-**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：不含必需要素时被拒，实测报错文本中的参数名显示为 `ARCHIVE_FORMAT`。
+**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：缺强制要素（`%s`、`%r`）时被拒，实测报错文本中的参数名显示为 `ARCHIVE_FORMAT`。
 
 **默认值**：`arch_%t_%r_%s_%d_%e.arc`。
 
-**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s_%d_%e` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式不含必需要素时设置被拒（报错文本中的参数名显示为 `ARCHIVE_FORMAT`）：
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s_%d_%e` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式缺强制要素（`%s`、`%r`）时设置被拒（报错文本中的参数名显示为 `ARCHIVE_FORMAT`）：
 
 ```text
 ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'v63lsn_%e.arc';
 OG-00842, Invalid parameter('v63lsn_%e.arc' does not contains asn[s], resetlog[r] or instance[t] option for ARCHIVE_FORMAT)
 ```
 
-**配置建议**：同 `ARCHIVE_FORMAT`。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 时返回**两行**记录，`DEFAULT_VALUE` 分别为 `arch_%t_%r_%s.arc` 与 `arch_%t_%r_%s_%d_%e.arc`（后者与本参数默认值一致），属参数视图的注册与显示现象，不代表参数间的联动关系，机制待确认。
+**配置建议**：同 `ARCHIVE_FORMAT`。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 时返回**两行**记录，`DEFAULT_VALUE` 分别为 `arch_%t_%r_%s.arc` 与 `arch_%t_%r_%s_%d_%e.arc`（后者与本参数默认值一致）。成因：`ARCHIVE_FORMAT` 与 `ARCHIVE_FORMAT_WITH_LSN` 两个配置项注册了**同一个别名** `LOG_ARCHIVE_FORMAT`，按该别名查询时两个配置项均被匹配，故返回两行；两行取值不同只是两个配置项各自的默认值，不代表参数间联动。
 
 **示例**：
 
@@ -1939,7 +1939,7 @@ ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'arch_%t_%r_%s_%d_%e.arc';        -- 
 
 ## **ARCHIVE_MAX_THREADS**
 
-**参数说明**：设置归档的线程数量（参数名语义）。该参数的具体生效机制属实现细节，待确认。
+**参数说明**：设置归档的线程数量（参数名语义）。当前版本未发现内核消费该参数值的实现，具体生效机制待确认。
 
 **取值范围**：整数；参数视图未提供范围。
 
@@ -1952,11 +1952,11 @@ ALTER SYSTEM SET ARCHIVE_MAX_THREADS = 2;
 OG-00626, Set ARCHIVE_MAX_THREADS is not supported
 ```
 
-**配置建议**：只读参数，不能通过 SQL 修改；通过配置文件调整的路径未实测；调整前请评估对归档吞吐的影响。
+**配置建议**：只读参数，不能通过 SQL 修改（报 `OG-00626`）。当前版本的设置处理函数直接返回不支持，未发现消费该参数值的实现；通过配置文件调整的路径与效果待确认，请勿据此调整生产配置。
 
 ## **ARCHIVE_MIN_SUCCEED_DEST**
 
-**参数说明**：设置归档的最少成功目标数（参数名语义）。该参数与 `ARCHIVE_DEST_n` 系列的联动关系及具体生效机制属实现细节，待确认。
+**参数说明**：设置归档的最少成功目标数（参数名语义）。当前版本未发现内核消费该参数值的实现，与 `ARCHIVE_DEST_n` 系列的联动关系及生效机制待确认。
 
 **取值范围**：整数；参数视图未提供范围。
 
@@ -1969,7 +1969,7 @@ ALTER SYSTEM SET ARCHIVE_MIN_SUCCEED_DEST = 2;
 OG-00626, Set ARCHIVE_MIN_SUCCEED_DEST is not supported
 ```
 
-**配置建议**：只读参数，如需调整请通过配置文件方式并重启（该修改路径未实测）；该参数影响归档成功判定，调整前请谨慎评估。
+**配置建议**：只读参数，不能通过 SQL 修改（报 `OG-00626`）。「影响归档成功判定」为参数名语义推断，当前版本的设置处理函数直接返回不支持，未发现消费该参数值的实现；通过配置文件调整的路径与效果待确认，请勿据此调整生产配置。
 
 ## **RAFT_PEER_ADDRS**
 
