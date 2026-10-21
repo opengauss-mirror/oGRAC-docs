@@ -1739,7 +1739,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'BOGUS_TEST' SCOPE=MEMORY;
 OG-00202, The parameter value "archive_dest_state_n" was invalid
 ```
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_4` 参数在视图中单独注册（当前取值同为 `ENABLE`）。`ALTERNATE` 状态与备用归档目标之间的联动机制属实现细节，待确认。
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。另有独立的 `LOG_ARCHIVE_DEST_STATE_4` 参数在视图中单独注册（当前取值同为 `ENABLE`）。`ALTERNATE` 的联动语义参考 Oracle：备用目标的可用状态为 `DEFER`，其主目标失效时转为 `ENABLE`（见 Administrator's Guide §10.4.3）；oGRAC 中与主目标的配对配置方式未实测。
 
 **示例**：
 
@@ -1887,13 +1887,13 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_10 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **参数说明**：设置归档文件的命名格式。默认值 `arch_%t_%r_%s.arc`。
 
-**取值范围**：字符串；参数视图未提供范围。实测格式存在校验：取值须包含报错原文所述的 `asn[s]`、`resetlog[r]`、`instance[t]` 三类要素，否则被拒绝。
+**取值范围**：字符串；参数视图未提供范围。实测格式存在校验：取值须包含报错原文所述的 `asn[s]`、`resetlog[r]`、`instance[t]` 三类要素，否则被拒绝。报错要素括号中的字母即格式串占位符，对应关系为 `asn[s]` ↔ `%s`、`resetlog[r]` ↔ `%r`、`instance[t]` ↔ `%t`；三要素强制与 Oracle `LOG_ARCHIVE_FORMAT` 要求文件名必须包含 %s（日志序列号）、%t（线程号）、%r（resetlogs ID，否则报 ORA-19905）的规则一致。占位符语义参考 Oracle Database Reference（%s=序列号、%t=线程号、%r=resetlogs ID），oGRAC 各占位符展开后的实际值以生成的归档文件名为准。
 
 **默认值**：`arch_%t_%r_%s.arc`。
 
 **生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式不含必需要素时设置被拒：
 
-```
+```text
 ALTER SYSTEM SET ARCHIVE_FORMAT = 'v63fmt_%s.arc';
 OG-00842, Invalid parameter('v63fmt_%s.arc' does not contains asn[s], resetlog[r] or instance[t] option for ARCHIVE_FORMAT)
 ```
@@ -1918,9 +1918,9 @@ ALTER SYSTEM SET ARCHIVE_FORMAT = 'arch_%t_%r_%s.arc';        -- 还原默认值
 
 **默认值**：`arch_%t_%r_%s_%d_%e.arc`。
 
-**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s_%d_%e` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s_%d_%e` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式不含必需要素时设置被拒（报错文本中的参数名显示为 `ARCHIVE_FORMAT`）：
 
-```
+```text
 ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'v63lsn_%e.arc';
 OG-00842, Invalid parameter('v63lsn_%e.arc' does not contains asn[s], resetlog[r] or instance[t] option for ARCHIVE_FORMAT)
 ```
@@ -1952,7 +1952,7 @@ ALTER SYSTEM SET ARCHIVE_MAX_THREADS = 2;
 OG-00626, Set ARCHIVE_MAX_THREADS is not supported
 ```
 
-**配置建议**：只读参数，不能通过 SQL 修改；通过配置文件调整的路径与生效方式未实测（参数视图登记为 `EFFECTIVE=immediately`），待确认；调整前请评估对归档吞吐的影响。
+**配置建议**：只读参数，不能通过 SQL 修改；通过配置文件调整的路径未实测；调整前请评估对归档吞吐的影响。
 
 ## **ARCHIVE_MIN_SUCCEED_DEST**
 
@@ -1969,7 +1969,7 @@ ALTER SYSTEM SET ARCHIVE_MIN_SUCCEED_DEST = 2;
 OG-00626, Set ARCHIVE_MIN_SUCCEED_DEST is not supported
 ```
 
-**配置建议**：只读参数，如需调整请通过配置文件方式并重启（该路径未实测，生效方式待确认）；该参数影响归档成功判定，调整前请谨慎评估。
+**配置建议**：只读参数，如需调整请通过配置文件方式并重启（该修改路径未实测）；该参数影响归档成功判定，调整前请谨慎评估。
 
 ## **RAFT_PEER_ADDRS**
 
