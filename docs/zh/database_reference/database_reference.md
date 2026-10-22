@@ -1493,7 +1493,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_3 = '' SCOPE=MEMORY;   -- 置空
 
 **参数说明**：设置归档目标 4，取值格式为 `location=<目录>`；当前未配置（空）。
 
-**当前限制**：实例启动时（源码 `arch_init_single_proc_ctx`）对编号大于 1 的归档目标逐一检查；同时满足“路径非空 + 对应 `ARCHIVE_DEST_STATE_n=ENABLE`（默认 ENABLE）”即判定启动失败；状态为 `DEFER`/`ALTERNATE` 的目标不触发该检查。该检查只针对编号大于 1 的目标，`ARCHIVE_DEST_1` 不参与该判定。失败时运行日志为 `Multiple ARCHIVE_DEST not supported`；启动过程报 `OG-00130, Operation Set multiple ARCHIVE_DEST is not supported on the situation when ARCHIVE_DEST is set`。该检查发生在实例启动阶段。
+**当前限制**：实例启动时（源码 `arch_init_single_proc_ctx`）对编号大于 1 的归档目标逐一检查；同时满足“路径非空 + 对应 `ARCHIVE_DEST_STATE_n=ENABLE`（默认 ENABLE）”即判定启动失败；状态为 `DEFER`/`ALTERNATE` 的目标不触发该检查。该检查只针对编号大于 1 的目标，`ARCHIVE_DEST_1` 不参与该判定。失败时运行日志为 `Multiple ARCHIVE_DEST not supported`；启动过程报 `OG-00130 : Operation Set multiple ARCHIVE_DEST is not supported on the situation when ARCHIVE_DEST is set`。该检查发生在实例启动阶段。
 
 **取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
 
