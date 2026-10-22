@@ -1739,7 +1739,9 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'BOGUS_TEST' SCOPE=MEMORY;
 OG-00202, The parameter value "archive_dest_state_n" was invalid
 ```
 
-**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_4` 是 `ARCHIVE_DEST_STATE_4` 的别名（同一配置项注册两个名字），取值天然一致。`ALTERNATE` 的联动语义参考 Oracle：备用目标的可用状态为 `DEFER`，其主目标失效时转为 `ENABLE`（见 Administrator's Guide §10.4.3）；oGRAC 中与主目标的配对配置方式未实测。
+**说明**：上述“设置成功/读回”是参数值层面的结果，不代表归档目标被启用，也不代表发生自动切换。
+
+**配置建议**：源码中 `arch_set_dest_state` 仅对 `ENABLE` 使该目标处于启用状态；`DEFER` 与 `ALTERNATE` 保留目标定义但不启用，当前版本未实现“主目标失效后自动转为 `ENABLE`”的切换。`ALTERNATE` 是合法枚举值，在启用判定上与 `DEFER` 相同，不会自动切换。`LOG_ARCHIVE_DEST_STATE_4` 是 `ARCHIVE_DEST_STATE_4` 的别名（同一配置项注册两个名字），取值天然一致。
 
 **示例**：
 
@@ -1885,9 +1887,9 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_10 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 ## **ARCHIVE_FORMAT**
 
-**参数说明**：设置归档文件的命名格式。默认值 `arch_%t_%r_%s.arc`。
+**参数说明**：设置归档文件的命名格式。默认值 `arch_%t_%r_%s.arc`。非 DBS（file）模式启动时读入本参数值作为内核归档格式；DBS 模式启动时读入 `ARCHIVE_FORMAT_WITH_LSN`。
 
-**取值范围**：字符串；参数视图未提供范围。源码校验（`knl_archive.c:3953`）强制要求 `%s`（asn）与 `%r`（resetlog）；`%t`（instance）不在强制条件内——报错文案中的 "or instance[t]" 与实际判定逻辑不一致。按该判定逻辑，不含 `%t` 的取值（如 `arch_%s_%r.arc`）应可通过；本次未实测该分支。DBS 模式（`cm_dbs_is_enable_dbs()`）还强制要求 `%d`、`%e`（`knl_archive.c:3944`）。
+**取值范围**：字符串；参数视图未提供范围。源码校验（`arch_set_format`；`knl_archive.c:3953`）在非 DBS 模式下只强制 `%s`（asn）与 `%r`（resetlog）；`%t`（instance）不在强制条件内，报错文案中的 `instance[t]` 与实际判定不一致。`%d`（start LSN）/`%e`（end LSN）能通过参数校验，但 file 模式的落盘函数 `arch_set_archive_log_name` 只展开 `%s/%S`、`%t/%T`、`%r/%R`；`%d/%e` 会进入 `default` 分支并触发 `CM_ABORT`。因此 file 模式请勿使用含 `%d/%e` 的取值（参数校验不会拦截，风险发生在归档落盘阶段）。DBS 模式则强制包含 `%d/%e`（`knl_archive.c:3944`）；其报错文案写作 `start_lsn[s], end_lsn[r]`，括号字母与实际占位符不一致，与 `instance[t]` 属同类文案问题。
 
 **默认值**：`arch_%t_%r_%s.arc`。
 
@@ -1898,7 +1900,9 @@ ALTER SYSTEM SET ARCHIVE_FORMAT = 'v63fmt_%s.arc';
 OG-00842, Invalid parameter('v63fmt_%s.arc' does not contains asn[s], resetlog[r] or instance[t] option for ARCHIVE_FORMAT)
 ```
 
-**配置建议**：调整归档文件命名格式前请确认归档目录的写权限与磁盘容量；本参数重启生效，请安排在维护窗口操作。单节点部署下该格式对实际落盘归档文件名的影响未做功能验证。
+**说明**：`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核归档格式串在 SET 成功时已由 notify（`arch_set_format`）更新。
+
+**配置建议**：调整归档文件命名格式前请确认归档目录的写权限与磁盘容量；本参数重启生效，请安排在维护窗口操作。file 模式不要使用含 `%d/%e` 的格式串（见取值范围）。
 
 **示例**：
 
@@ -1912,9 +1916,9 @@ ALTER SYSTEM SET ARCHIVE_FORMAT = 'arch_%t_%r_%s.arc';        -- 还原默认值
 
 ## **ARCHIVE_FORMAT_WITH_LSN**
 
-**参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系：两者的参数变更通知最终写同一个内核归档格式字段（均经 `arch_set_format`）；强制归档流程直接读取本参数的配置值。具体覆盖顺序未实测。单节点部署下两者的实际分工差异未做功能级验证。
+**参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系（源码启动/变更规则）：启动时 `arch_init` 按部署形态二选一读取——非 DBS（file）模式读 `ARCHIVE_FORMAT`，DBS 模式读本参数；读到的值写入 `arch_ctx->arch_format`。运行期对任一参数执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 时，`sql_set_param` 会立即调用 notify（不看 `EFFECT_REBOOT`），notify 调用 `arch_set_format` 覆盖该内核字段。`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核格式串在 SET 成功时已更新。强制归档流程还会直接读取本参数的配置值。
 
-**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：强制 `%s`/`%r`；DBS 模式另加强制 `%d`/`%e`；缺要素时报 `OG-00842`，报错文本中的参数名显示为 `ARCHIVE_FORMAT`。
+**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：非 DBS 只强制 `%s/%r`；`%d/%e` 能通过校验，但 file 落盘会进入 `default` 并触发 `CM_ABORT`；DBS 模式强制 `%d/%e`，报错文本中的参数名显示为 `ARCHIVE_FORMAT`，括号字母与实际占位符不一致。
 
 **默认值**：`arch_%t_%r_%s_%d_%e.arc`。
 
@@ -1925,7 +1929,9 @@ ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'v63lsn_%e.arc';
 OG-00842, Invalid parameter('v63lsn_%e.arc' does not contains asn[s], resetlog[r] or instance[t] option for ARCHIVE_FORMAT)
 ```
 
-**配置建议**：同 `ARCHIVE_FORMAT`。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 时返回**两行**记录，`DEFAULT_VALUE` 分别为 `arch_%t_%r_%s.arc` 与 `arch_%t_%r_%s_%d_%e.arc`（后者与本参数默认值一致）。成因：`ARCHIVE_FORMAT` 与 `ARCHIVE_FORMAT_WITH_LSN` 两个配置项注册了**同一个别名** `LOG_ARCHIVE_FORMAT`，按该别名查询时两个配置项均被匹配，故返回两行；两行取值不同只是两个配置项各自的默认值，不代表参数间联动。
+**说明**：`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核格式串在 SET 成功时已由 notify（`arch_set_format`）更新。本节 `%t_%r_%s_%d_%e` 测试值只验证参数设置/持久化/读回，不代表 file 模式落盘安全。
+
+**配置建议**：**file 模式风险**：本参数默认值 `arch_%t_%r_%s_%d_%e.arc` 含 `%d/%e`；在非 DBS（file）模式下执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 会立即把该格式串写入内核归档格式字段，下一次 file 归档落盘时 `%d/%e` 会进入 `default` 并触发 `CM_ABORT`；file 模式请勿修改本参数。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 返回两行，是因为 `ARCHIVE_FORMAT` 与 `ARCHIVE_FORMAT_WITH_LSN` 都注册了别名 `LOG_ARCHIVE_FORMAT`（`srv_param.c:324/327`），别名查找分别命中两个配置项；两行不代表参数联动。
 
 **示例**：
 
