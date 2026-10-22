@@ -1889,7 +1889,7 @@ ALTER SYSTEM SET ARCHIVE_DEST_STATE_10 = 'ENABLE' SCOPE=MEMORY;   -- 还原
 
 **参数说明**：设置归档文件的命名格式。默认值 `arch_%t_%r_%s.arc`。非 DBS（file）模式启动时读入本参数值作为内核归档格式；DBS 模式启动时读入 `ARCHIVE_FORMAT_WITH_LSN`。
 
-**取值范围**：字符串；参数视图未提供范围。源码校验（`arch_set_format`；`knl_archive.c:3953`）在非 DBS 模式下只强制 `%s`（asn）与 `%r`（resetlog）；`%t`（instance）不在强制条件内，报错文案中的 `instance[t]` 与实际判定不一致。`%d`（start LSN）/`%e`（end LSN）能通过参数校验，但 file 模式的落盘函数 `arch_set_archive_log_name` 只展开 `%s/%S`、`%t/%T`、`%r/%R`；`%d/%e` 会进入 `default` 分支并触发 `CM_ABORT`。因此 file 模式请勿使用含 `%d/%e` 的取值（参数校验不会拦截，风险发生在归档落盘阶段）。DBS 模式则强制包含 `%d/%e`（`knl_archive.c:3944`）；其报错文案写作 `start_lsn[s], end_lsn[r]`，括号字母与实际占位符不一致，与 `instance[t]` 属同类文案问题。
+**取值范围**：字符串；参数视图未提供范围。源码校验（`arch_set_format`；`knl_archive.c:3953`）在非 DBS 模式下只强制 `%s`（asn）与 `%r`（resetlog）；`%t`（instance）不在强制条件内，报错文案中的 `instance[t]` 与实际判定不一致。`%d`（start LSN）/`%e`（end LSN）能通过参数校验，但 file 模式的落盘函数 `arch_set_archive_log_name` 只展开 `%s/%S`、`%t/%T`、`%r/%R`；`%d/%e` 无法展开，归档线程报 `ABORT INFO: ARCHIVE_FORMAT '<格式串>' has wrong format '<占位符>' for ARCHIVE_FORMAT`（`knl_archive.c:458`）并终止实例（ogracd 进程退出）。因此 file 模式请勿使用含 `%d/%e` 的取值（参数校验不会拦截，风险发生在归档落盘阶段）。DBS 模式则强制包含 `%d/%e`（`knl_archive.c:3944`）；其报错文案写作 `start_lsn[s], end_lsn[r]`，括号字母与实际占位符不一致，与 `instance[t]` 属同类文案问题。
 
 **默认值**：`arch_%t_%r_%s.arc`。
 
@@ -1918,7 +1918,7 @@ ALTER SYSTEM SET ARCHIVE_FORMAT = 'arch_%t_%r_%s.arc';        -- 还原默认值
 
 **参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系（源码启动/变更规则）：启动时 `arch_init` 按部署形态二选一读取——非 DBS（file）模式读 `ARCHIVE_FORMAT`，DBS 模式读本参数；读到的值写入 `arch_ctx->arch_format`。运行期对任一参数执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 时，`sql_set_param` 会立即调用 notify（不看 `EFFECT_REBOOT`），notify 调用 `arch_set_format` 覆盖该内核字段。`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核格式串在 SET 成功时已更新。强制归档流程还会直接读取本参数的配置值。
 
-**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：非 DBS 只强制 `%s/%r`；`%d/%e` 能通过校验，但 file 落盘会进入 `default` 并触发 `CM_ABORT`；DBS 模式强制 `%d/%e`，报错文本中的参数名显示为 `ARCHIVE_FORMAT`，括号字母与实际占位符不一致。
+**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：非 DBS 只强制 `%s/%r`；`%d/%e` 能通过校验，但 file 落盘时 `%d/%e` 无法展开，归档线程报 `ABORT INFO: ARCHIVE_FORMAT '<格式串>' has wrong format '<占位符>' for ARCHIVE_FORMAT`（`knl_archive.c:458`）并终止实例；DBS 模式强制 `%d/%e`，报错文本中的参数名显示为 `ARCHIVE_FORMAT`，括号字母与实际占位符不一致。
 
 **默认值**：`arch_%t_%r_%s_%d_%e.arc`。
 
@@ -1931,7 +1931,7 @@ OG-00842, Invalid parameter('v63lsn_%e.arc' does not contains asn[s], resetlog[r
 
 **说明**：`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核格式串在 SET 成功时已由 notify（`arch_set_format`）更新。本节 `%t_%r_%s_%d_%e` 测试值只验证参数设置/持久化/读回，不代表 file 模式落盘安全。
 
-**配置建议**：**file 模式风险**：本参数默认值 `arch_%t_%r_%s_%d_%e.arc` 含 `%d/%e`；在非 DBS（file）模式下执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 会立即把该格式串写入内核归档格式字段，下一次 file 归档落盘时 `%d/%e` 会进入 `default` 并触发 `CM_ABORT`；file 模式请勿修改本参数。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 返回两行，是因为 `ARCHIVE_FORMAT` 与 `ARCHIVE_FORMAT_WITH_LSN` 都注册了别名 `LOG_ARCHIVE_FORMAT`（`srv_param.c:324/327`），别名查找分别命中两个配置项；两行不代表参数联动。
+**配置建议**：**file 模式风险**：本参数默认值 `arch_%t_%r_%s_%d_%e.arc` 含 `%d/%e`；在非 DBS（file）模式下执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 会立即把该格式串写入内核归档格式字段，下一次 file 归档落盘时 `%d/%e` 无法展开，归档线程报 `ABORT INFO: ARCHIVE_FORMAT '<格式串>' has wrong format '<占位符>' for ARCHIVE_FORMAT`（`knl_archive.c:458`）并终止实例；file 模式请勿修改本参数。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 返回两行，是因为 `ARCHIVE_FORMAT` 与 `ARCHIVE_FORMAT_WITH_LSN` 都注册了别名 `LOG_ARCHIVE_FORMAT`（`srv_param.c:324/327`），别名查找分别命中两个配置项；两行不代表参数联动。
 
 **示例**：
 
