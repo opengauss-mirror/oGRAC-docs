@@ -1933,14 +1933,16 @@ OG-00842, Invalid parameter('v63lsn_%e.arc' does not contains asn[s], resetlog[r
 
 **配置建议**：**file 模式风险**：本参数默认值 `arch_%t_%r_%s_%d_%e.arc` 含 `%d/%e`；在非 DBS（file）模式下执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 会立即把该格式串写入内核归档格式字段，下一次 file 归档落盘时 `%d/%e` 无法展开，归档线程报 `ABORT INFO: ARCHIVE_FORMAT '<格式串>' has wrong format '<占位符>' for ARCHIVE_FORMAT`（`knl_archive.c:458`）并终止实例；file 模式请勿修改本参数。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 返回两行，是因为 `ARCHIVE_FORMAT` 与 `ARCHIVE_FORMAT_WITH_LSN` 都注册了别名 `LOG_ARCHIVE_FORMAT`（`srv_param.c:324/327`），别名查找分别命中两个配置项；两行不代表参数联动。
 
-**示例**：
+**示例（仅 DBS 模式）**：
+
+> **仅 DBS 模式**：以下语句在非 DBS（file）模式执行会触发归档线程 ABORT 并终止实例；file 模式请勿执行。“还原默认值”同样含 `%d/%e`，在 file 模式下不是安全回退。
 
 ```sql
-ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'arch_test_%t_%r_%s_%d_%e.arc';   -- 持久化
+ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'arch_test_%t_%r_%s_%d_%e.arc';   -- 仅 DBS 模式：持久化
 -- deploy stop / deploy start 重启后读回：
 -- VALUE = RUNTIME_VALUE = arch_test_%t_%r_%s_%d_%e.arc
 
-ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'arch_%t_%r_%s_%d_%e.arc';        -- 还原默认值
+ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'arch_%t_%r_%s_%d_%e.arc';        -- 仅 DBS 模式：还原默认值
 ```
 
 ## **ARCHIVE_MAX_THREADS**
