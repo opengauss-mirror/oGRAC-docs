@@ -21,6 +21,8 @@ sections:
         href: ./product_architecture/online_ddl.md
       - label: Redo
         href: ./product_architecture/redo.md
+      - label: Parallel REDO Persistence
+        href: ./product_architecture/para_log.md
   - label: Specifications
     sections: 
       - label: Specifications
