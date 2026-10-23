@@ -1489,6 +1489,146 @@ SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME
 ALTER SYSTEM SET ARCHIVE_DEST_3 = '' SCOPE=MEMORY;   -- 置空
 ```
 
+## **ARCHIVE_DEST_4**
+
+**参数说明**：设置归档目标 4，取值格式为 `location=<目录>`；当前未配置（空）。
+
+**当前限制**：实例启动时（源码 `arch_init_single_proc_ctx`）对编号大于 1 的归档目标逐一检查；同时满足“路径非空 + 对应 `ARCHIVE_DEST_STATE_n=ENABLE`（默认 ENABLE）”即判定启动失败；状态为 `DEFER`/`ALTERNATE` 的目标不触发该检查。该检查只针对编号大于 1 的目标，`ARCHIVE_DEST_1` 不参与该判定。失败时运行日志为 `Multiple ARCHIVE_DEST not supported`；启动过程报 `OG-00130 : Operation Set multiple ARCHIVE_DEST is not supported on the situation when ARCHIVE_DEST is set`。该检查发生在实例启动阶段。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：带 `location=` 前缀设置成功，读回 `VALUE` 与 `RUNTIME_VALUE` 同步更新；**不带 `location=` 前缀的裸路径会被拒绝**，报错中的参数名为占位名 `ARCHIVE_DEST_n`：
+
+```
+ALTER SYSTEM SET ARCHIVE_DEST_4 = '/path/to/archive_dest_4';
+OG-00202, The parameter value "ARCHIVE_DEST_n" was invalid
+```
+
+**配置建议**：取值须为 `location=<目录>` 形式；目录须已存在且具备写权限。本参数只建议用 `SCOPE=MEMORY` 做临时验证，不要写入配置文件；该方式只改内存，不会在下次启动触发。持久化为非空值且对应状态保持默认 `ENABLE` 时，重启会触发上述启动失败。`LOG_ARCHIVE_DEST_4` 是 `ARCHIVE_DEST_4` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+-- 临时验证（不写入配置文件）
+ALTER SYSTEM SET ARCHIVE_DEST_4 = 'location=/path/to/archive_dest_4' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_4';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_4
+
+ALTER SYSTEM SET ARCHIVE_DEST_4 = '' SCOPE=MEMORY;   -- 置空
+```
+
+## **ARCHIVE_DEST_5**
+
+**参数说明**：设置归档目标 5，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致：带 `location=` 前缀设置成功并立即读回；裸路径被拒绝（报错中的参数名为占位名 `ARCHIVE_DEST_n`）。
+
+**配置建议**：同 `ARCHIVE_DEST_4`（目录须已存在且具备写权限；只建议 `SCOPE=MEMORY` 临时验证，不写入配置文件；该方式只改内存，不会在下次启动触发）。`LOG_ARCHIVE_DEST_5` 是 `ARCHIVE_DEST_5` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_5 = 'location=/path/to/archive_dest_5' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_5';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_5
+
+ALTER SYSTEM SET ARCHIVE_DEST_5 = '' SCOPE=MEMORY;   -- 置空
+```
+
+## **ARCHIVE_DEST_6**
+
+**参数说明**：设置归档目标 6，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
+
+**配置建议**：同 `ARCHIVE_DEST_4`（目录须已存在且具备写权限；只建议 `SCOPE=MEMORY` 临时验证，不写入配置文件；该方式只改内存，不会在下次启动触发）。`LOG_ARCHIVE_DEST_6` 是 `ARCHIVE_DEST_6` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_6 = 'location=/path/to/archive_dest_6' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_6';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_6
+
+ALTER SYSTEM SET ARCHIVE_DEST_6 = '' SCOPE=MEMORY;   -- 置空
+```
+
+## **ARCHIVE_DEST_7**
+
+**参数说明**：设置归档目标 7，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
+
+**配置建议**：同 `ARCHIVE_DEST_4`（目录须已存在且具备写权限；只建议 `SCOPE=MEMORY` 临时验证，不写入配置文件；该方式只改内存，不会在下次启动触发）。`LOG_ARCHIVE_DEST_7` 是 `ARCHIVE_DEST_7` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_7 = 'location=/path/to/archive_dest_7' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_7';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_7
+
+ALTER SYSTEM SET ARCHIVE_DEST_7 = '' SCOPE=MEMORY;   -- 置空
+```
+
+## **ARCHIVE_DEST_8**
+
+**参数说明**：设置归档目标 8，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
+
+**配置建议**：同 `ARCHIVE_DEST_4`（目录须已存在且具备写权限；只建议 `SCOPE=MEMORY` 临时验证，不写入配置文件；该方式只改内存，不会在下次启动触发）。`LOG_ARCHIVE_DEST_8` 是 `ARCHIVE_DEST_8` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_8 = 'location=/path/to/archive_dest_8' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_8';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_8
+
+ALTER SYSTEM SET ARCHIVE_DEST_8 = '' SCOPE=MEMORY;   -- 置空
+```
+
+## **ARCHIVE_DEST_9**
+
+**参数说明**：设置归档目标 9，取值格式为 `location=<目录>`；当前未配置（空）。当前限制同 `ARCHIVE_DEST_4`。
+
+**取值范围**：字符串，格式为 `location=<目录>`；参数视图未提供范围。
+
+**默认值**：（空）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。取值格式与 `ARCHIVE_DEST_4` 一致。
+
+**配置建议**：同 `ARCHIVE_DEST_4`（目录须已存在且具备写权限；只建议 `SCOPE=MEMORY` 临时验证，不写入配置文件；该方式只改内存，不会在下次启动触发）。`LOG_ARCHIVE_DEST_9` 是 `ARCHIVE_DEST_9` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_9 = 'location=/path/to/archive_dest_9' SCOPE=MEMORY;
+SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_9';
+-- VALUE = RUNTIME_VALUE = location=/path/to/archive_dest_9
+
+ALTER SYSTEM SET ARCHIVE_DEST_9 = '' SCOPE=MEMORY;   -- 置空
+```
+
 ## **ARCHIVE_DEST_10**
 
 **参数说明**：设置归档目标 10，取值格式为 `location=<目录>`；当前未配置（空）。引擎注册了 `ARCHIVE_DEST_1` 至 `ARCHIVE_DEST_10` 共十个归档目标参数（master 源码 `srv_param.c:262-291`），编号连续；本 issue 的参数清单覆盖其中的 1、2、3、10 四个，其余编号不在本 issue 范围。
@@ -1510,6 +1650,334 @@ SELECT NAME, DATATYPE, RANGE, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME
 
 ALTER SYSTEM SET ARCHIVE_DEST_10 = '' SCOPE=MEMORY;   -- 置空
 ```
+
+## **ARCHIVE_DEST_STATE_1**
+
+**参数说明**：设置归档目标 1 的状态。取值为枚举 `ENABLE`、`DEFER`、`ALTERNATE`（参数视图 `RANGE` 原文）。`ENABLE` 表示启用该归档目标；`DEFER` 与 `ALTERNATE` 都保留目标定义但不启用（源码 `arch_set_dest_state` 仅对 `ENABLE` 置启用）。`ALTERNATE` 是合法枚举值，当前版本没有“主目标失效后自动转为 `ENABLE`”的切换；默认值为 `ENABLE`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。实测归档目标 1 处于使用中（归档已启用）时，修改本参数**不被拒绝**——与 `ARCHIVE_DEST_1` 的取值本身在使用中被 `OG-00857` 拒绝形成对照：目标取值在使用中不可改，目标状态可修改。设为 `DEFER` 的实测输出：
+
+```
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_1 = 'DEFER' SCOPE=MEMORY;   -- Succeed.，即时读回 DEFER/DEFER
+```
+
+取值范围外的值同样被拒绝，报错中的参数名为占位名 `archive_dest_state_n`。
+
+**配置建议**：修改立即生效，调整前请确认目标部署形态下的归档行为。`LOG_ARCHIVE_DEST_STATE_1` 是 `ARCHIVE_DEST_STATE_1` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_1 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_1';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_1 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_2**
+
+**参数说明**：设置归档目标 2 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_2` 是 `ARCHIVE_DEST_STATE_2` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_2 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_2';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_2 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_3**
+
+**参数说明**：设置归档目标 3 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_3` 是 `ARCHIVE_DEST_STATE_3` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_3 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_3';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_3 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_4**
+
+**参数说明**：设置归档目标 4 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：`DEFER` 与 `ALTERNATE` 两个枚举值均可设置并即时读回（`VALUE=RUNTIME_VALUE` 同步更新）；取值范围外的值被拒绝，报错中的参数名为占位名 `archive_dest_state_n`：
+
+```
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'ALTERNATE' SCOPE=MEMORY;   -- Succeed.，即时读回 ALTERNATE/ALTERNATE
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'BOGUS_TEST' SCOPE=MEMORY;
+OG-00202, The parameter value "archive_dest_state_n" was invalid
+```
+
+**说明**：上述“设置成功/读回”是参数值层面的结果，不代表归档目标被启用，也不代表发生自动切换。
+
+**配置建议**：源码中 `arch_set_dest_state` 仅对 `ENABLE` 使该目标处于启用状态；`DEFER` 与 `ALTERNATE` 保留目标定义但不启用，当前版本未实现“主目标失效后自动转为 `ENABLE`”的切换。`ALTERNATE` 是合法枚举值，在启用判定上与 `DEFER` 相同，不会自动切换。`LOG_ARCHIVE_DEST_STATE_4` 是 `ARCHIVE_DEST_STATE_4` 的别名（同一配置项注册两个名字），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'ALTERNATE' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_4';
+-- ALTERNATE / ALTERNATE
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_4 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_5**
+
+**参数说明**：设置归档目标 5 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_5` 是 `ARCHIVE_DEST_STATE_5` 的别名（同一配置项注册两个名字），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_5 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_5';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_5 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_6**
+
+**参数说明**：设置归档目标 6 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_6` 是 `ARCHIVE_DEST_STATE_6` 的别名（同一配置项注册两个名字），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_6 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_6';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_6 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_7**
+
+**参数说明**：设置归档目标 7 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_7` 是 `ARCHIVE_DEST_STATE_7` 的别名（同一配置项注册两个名字），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_7 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_7';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_7 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_8**
+
+**参数说明**：设置归档目标 8 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_8` 是 `ARCHIVE_DEST_STATE_8` 的别名（同一配置项注册两个名字），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_8 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_8';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_8 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_9**
+
+**参数说明**：设置归档目标 9 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_9` 是 `ARCHIVE_DEST_STATE_9` 的别名（同一配置项注册两个名字），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_9 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_9';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_9 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_DEST_STATE_10**
+
+**参数说明**：设置归档目标 10 的状态。取值枚举与语义见 `ARCHIVE_DEST_STATE_1`。`ARCHIVE_DEST_STATE` 系列 1~10 在参数视图中连续注册，该编号可正常设置。
+
+**取值范围**：`ENABLE,DEFER,ALTERNATE`（参数视图 `RANGE` 原文）。
+
+**默认值**：`ENABLE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。实测：设为 `DEFER` → 立即读回 `VALUE=RUNTIME_VALUE=DEFER`；还原 `ENABLE` → 立即读回 ENABLE/ENABLE。
+
+**配置建议**：同 `ARCHIVE_DEST_STATE_1`。`LOG_ARCHIVE_DEST_STATE_10` 是 `ARCHIVE_DEST_STATE_10` 的**别名**（同一配置项的两个名字，`config_item_t.alias`），取值天然一致。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_10 = 'DEFER' SCOPE=MEMORY;   -- 立即生效
+SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='ARCHIVE_DEST_STATE_10';
+-- DEFER / DEFER
+
+ALTER SYSTEM SET ARCHIVE_DEST_STATE_10 = 'ENABLE' SCOPE=MEMORY;   -- 还原
+```
+
+## **ARCHIVE_FORMAT**
+
+**参数说明**：设置归档文件的命名格式。默认值 `arch_%t_%r_%s.arc`。非 DBS（file）模式启动时读入本参数值作为内核归档格式；DBS 模式启动时读入 `ARCHIVE_FORMAT_WITH_LSN`。
+
+**取值范围**：字符串；参数视图未提供范围。源码校验（`arch_set_format`；`knl_archive.c:3953`）在非 DBS 模式下只强制 `%s`（asn）与 `%r`（resetlog）；`%t`（instance）不在强制条件内，报错文案中的 `instance[t]` 与实际判定不一致。`%d`（start LSN）/`%e`（end LSN）能通过参数校验，但 file 模式的落盘函数 `arch_set_archive_log_name` 只展开 `%s/%S`、`%t/%T`、`%r/%R`；`%d/%e` 无法展开，归档线程报 `ABORT INFO: ARCHIVE_FORMAT '<格式串>' has wrong format '<占位符>' for ARCHIVE_FORMAT`（`knl_archive.c:458`）并终止实例（ogracd 进程退出）。因此 file 模式请勿使用含 `%d/%e` 的取值（参数校验不会拦截，风险发生在归档落盘阶段）。DBS 模式则强制包含 `%d/%e`（`knl_archive.c:3944`）；其报错文案写作 `start_lsn[s], end_lsn[r]`，括号字母与实际占位符不一致，与 `instance[t]` 属同类文案问题。
+
+**默认值**：`arch_%t_%r_%s.arc`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式缺强制要素（`%s`、`%r`）时设置被拒（下例被拒原因是缺 `%r`；报错文案列出的 `instance[t]` 与实际校验条件不符）：
+
+```text
+ALTER SYSTEM SET ARCHIVE_FORMAT = 'v63fmt_%s.arc';
+OG-00842, Invalid parameter('v63fmt_%s.arc' does not contains asn[s], resetlog[r] or instance[t] option for ARCHIVE_FORMAT)
+```
+
+**说明**：`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核归档格式串在 SET 成功时已由 notify（`arch_set_format`）更新。
+
+**配置建议**：调整归档文件命名格式前请确认归档目录的写权限与磁盘容量；本参数重启生效，请安排在维护窗口操作。file 模式不要使用含 `%d/%e` 的格式串（见取值范围）。
+
+**示例**：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_FORMAT = 'arch_test_%t_%r_%s.arc';   -- 持久化（默认 SCOPE=BOTH）
+-- deploy stop / deploy start 重启后读回：
+-- VALUE = RUNTIME_VALUE = arch_test_%t_%r_%s.arc
+
+ALTER SYSTEM SET ARCHIVE_FORMAT = 'arch_%t_%r_%s.arc';        -- 还原默认值
+```
+
+## **ARCHIVE_FORMAT_WITH_LSN**
+
+**参数说明**：设置含日志序列信息的归档文件命名格式。默认值 `arch_%t_%r_%s_%d_%e.arc`。本参数与 `ARCHIVE_FORMAT` 的关系（源码启动/变更规则）：启动时 `arch_init` 按部署形态二选一读取——非 DBS（file）模式读 `ARCHIVE_FORMAT`，DBS 模式读本参数；读到的值写入 `arch_ctx->arch_format`。运行期对任一参数执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 时，`sql_set_param` 会立即调用 notify（不看 `EFFECT_REBOOT`），notify 调用 `arch_set_format` 覆盖该内核字段。`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核格式串在 SET 成功时已更新。强制归档流程还会直接读取本参数的配置值。
+
+**取值范围**：字符串；参数视图未提供范围。格式校验与 `ARCHIVE_FORMAT` 一致：非 DBS 只强制 `%s/%r`；`%d/%e` 能通过校验，但 file 落盘时 `%d/%e` 无法展开，归档线程报 `ABORT INFO: ARCHIVE_FORMAT '<格式串>' has wrong format '<占位符>' for ARCHIVE_FORMAT`（`knl_archive.c:458`）并终止实例；DBS 模式强制 `%d/%e`，报错文本中的参数名显示为 `ARCHIVE_FORMAT`，括号字母与实际占位符不一致。
+
+**默认值**：`arch_%t_%r_%s_%d_%e.arc`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。实测：设置含 `%t_%r_%s_%d_%e` 要素的合法测试值并持久化 → 重启 → `RUNTIME_VALUE` 更新为测试值；还原默认值 → 重启 → 读回默认值。格式缺强制要素（`%s`、`%r`）时设置被拒（报错文本中的参数名显示为 `ARCHIVE_FORMAT`）：
+
+```text
+ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'v63lsn_%e.arc';
+OG-00842, Invalid parameter('v63lsn_%e.arc' does not contains asn[s], resetlog[r] or instance[t] option for ARCHIVE_FORMAT)
+```
+
+**说明**：`DV_PARAMETERS.RUNTIME_VALUE` 对重启生效参数读取 `runtime_value`，`ALTER SYSTEM SET` 成功后仍显示重启前的值；内核格式串在 SET 成功时已由 notify（`arch_set_format`）更新。本节 `%t_%r_%s_%d_%e` 测试值只验证参数设置/持久化/读回，不代表 file 模式落盘安全。
+
+**配置建议**：**file 模式风险**：本参数默认值 `arch_%t_%r_%s_%d_%e.arc` 含 `%d/%e`；在非 DBS（file）模式下执行 `SCOPE` 非 `DISK` 的 `ALTER SYSTEM SET` 会立即把该格式串写入内核归档格式字段，下一次 file 归档落盘时 `%d/%e` 无法展开，归档线程报 `ABORT INFO: ARCHIVE_FORMAT '<格式串>' has wrong format '<占位符>' for ARCHIVE_FORMAT`（`knl_archive.c:458`）并终止实例；file 模式请勿修改本参数。另：查询 `NAME='LOG_ARCHIVE_FORMAT'` 返回两行，是因为 `ARCHIVE_FORMAT` 与 `ARCHIVE_FORMAT_WITH_LSN` 都注册了别名 `LOG_ARCHIVE_FORMAT`（`srv_param.c:324/327`），别名查找分别命中两个配置项；两行不代表参数联动。
+
+**示例（仅 DBS 模式）**：
+
+> **仅 DBS 模式**：以下语句在非 DBS（file）模式执行会触发归档线程 ABORT 并终止实例；file 模式请勿执行。“还原默认值”同样含 `%d/%e`，在 file 模式下不是安全回退。
+
+```sql
+ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'arch_test_%t_%r_%s_%d_%e.arc';   -- 仅 DBS 模式：持久化
+-- deploy stop / deploy start 重启后读回：
+-- VALUE = RUNTIME_VALUE = arch_test_%t_%r_%s_%d_%e.arc
+
+ALTER SYSTEM SET ARCHIVE_FORMAT_WITH_LSN = 'arch_%t_%r_%s_%d_%e.arc';        -- 仅 DBS 模式：还原默认值
+```
+
+## **ARCHIVE_MAX_THREADS**
+
+**参数说明**：设置归档的线程数量（参数名语义）。当前版本未发现内核消费该参数值的实现，具体生效机制待确认。
+
+**取值范围**：整数；参数视图未提供范围。
+
+**默认值**：`1`。
+
+**生效方式**：**只读参数**（`MODIFIABLE=FALSE`、`EFFECTIVE=immediately`），不能通过 SQL 修改：
+
+```
+ALTER SYSTEM SET ARCHIVE_MAX_THREADS = 2;
+OG-00626, Set ARCHIVE_MAX_THREADS is not supported
+```
+
+**配置建议**：只读参数，不能通过 SQL 修改（报 `OG-00626`）。当前版本的设置处理函数直接返回不支持，未发现消费该参数值的实现；通过配置文件调整的路径与效果待确认，请勿据此调整生产配置。
+
+## **ARCHIVE_MIN_SUCCEED_DEST**
+
+**参数说明**：设置归档的最少成功目标数（参数名语义）。当前版本未发现内核消费该参数值的实现，与 `ARCHIVE_DEST_n` 系列的联动关系及生效机制待确认。
+
+**取值范围**：整数；参数视图未提供范围。
+
+**默认值**：`1`。
+
+**生效方式**：**只读参数**（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），不能通过 SQL 修改：
+
+```
+ALTER SYSTEM SET ARCHIVE_MIN_SUCCEED_DEST = 2;
+OG-00626, Set ARCHIVE_MIN_SUCCEED_DEST is not supported
+```
+
+**配置建议**：只读参数，不能通过 SQL 修改（报 `OG-00626`）。「影响归档成功判定」为参数名语义推断，当前版本的设置处理函数直接返回不支持，未发现消费该参数值的实现；通过配置文件调整的路径与效果待确认，请勿据此调整生产配置。
 
 ## **RAFT_PEER_ADDRS**
 
