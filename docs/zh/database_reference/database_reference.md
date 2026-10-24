@@ -2773,6 +2773,158 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 - 仅在需要控制提交顺序，或排查与并发提交相关的确定性问题时临时设置为 `TRUE`。
 - 开启后会降低提交并发度，且事务回滚收尾、XA prepare 也会参与排队，因此大回滚、XA 事务较多的业务受影响更明显，不建议在生产环境长期使用。
 
+> **本批参数的说明**
+>
+> 以下 9 个参数小节为本次新增（issue #65）。**类型与取值范围**照录实例
+> `DV_PARAMETERS` 视图的 `DATATYPE`、`RANGE` 列；视图 `RANGE` 列为 `-` 或为空时，
+> 正文写「视图未提供取值范围」。
+> **默认值与「本实例当前值」分列**：后者可能由部署工具或自动调优写入，**不等于内核默认值**。
+> 本批两者不一致的 1 个参数（`LOG_REPLAY_PROCESSES`）已在各节分别注明。
+> **参数描述**基于参数名语义与官网可得资料整理；参考手册对 `LOG_*`、`ENABLE_*`、`REPL_*`、
+> `SSL_*` 等系列尚未提供条目，这部分属语义解读，**非官方定义**。**实测行为**一段为真机执行
+> 结果，报错码为原文；标注「未做设置验证」/「未做修改验证」的条目只给出视图元数据，未执行设置。
+> 采集环境：oGRAC 7.0.0-LTS / aarch64 / openEuler 20.03 (LTS) / 单节点，`DV_PARAMETERS` 共 442 项。
+
+## **ARCHIVE_TRACE**
+
+**参数描述**：归档过程追踪开关。
+
+**类型与取值范围**：类型 `OG_TYPE_INTEGER`；取值范围 视图未提供取值范围（视图 `RANGE` 列为 `-`）。
+
+**默认值**：`0`；本实例当前值 `0`。
+
+**生效方式**：重启生效（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），只读，不可修改。
+
+**实测行为**：已实测设置被拒绝：`ALTER SYSTEM SET ARCHIVE_TRACE = 1` 返回 `OG-00626, Set ARCHIVE_TRACE is not supported`，与只读参数 `HAVE_SSL` 的 `OG-00203` 拒绝码不同。
+
+**配置建议**：本参数本版本不支持修改，保持默认 `0` 即可。
+
+## **ARCH_LOG_CHECK**
+
+**参数描述**：归档日志一致性检查开关。
+
+**类型与取值范围**：类型 `OG_TYPE_BOOLEAN`；取值范围 `FALSE,TRUE`。
+
+**默认值**：`TRUE`；本实例当前值 `TRUE`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`），可修改。
+
+**实测行为**：设为 `FALSE` 后立即生效，`VALUE` 与 `RUNTIME_VALUE` 同步变为 `FALSE`；还原为 `TRUE` 亦立即生效。
+
+**配置建议**：归档频繁或归档目录 I/O 紧张时，可临时关闭以减少检查开销；关闭期间不能及时发现归档日志损坏。
+
+## **AUDIT_SYSLOG_LEVEL**
+
+**参数描述**：审计日志输出到 syslog 的级别，取「syslog 设施.级别」形式。
+
+**类型与取值范围**：类型 `OG_TYPE_VARCHAR`；取值范围 视图未提供取值范围（该行 `RANGE` 列为空）。
+
+**默认值**：`LOCAL0.DEBUG`；本实例当前值 `LOCAL0.DEBUG`。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`），可修改。
+
+**实测行为**：由 `LOCAL0.DEBUG` 改为 `LOCAL0.INFO` 后立即生效，读回值为 `LOCAL0.INFO`；已还原。
+
+**配置建议**：生产环境建议用 `LOCAL0.INFO` 级，避免审计日志量过大；排查问题时临时降到 `DEBUG`。
+
+## **CTRLLOG_BACKUP_LEVEL**
+
+**参数描述**：控制日志的备份级别。
+
+**类型与取值范围**：类型 `OG_TYPE_VARCHAR`；取值范围 `NONE,TYPICAL,FULL`。
+
+**默认值**：`NONE`；本实例当前值 `NONE`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`），可修改。
+
+**实测行为**：`NONE` 改为 `TYPICAL` 后 `VALUE` 更新为 `TYPICAL`，`RUNTIME_VALUE` 保持 `NONE`，需重启生效；已还原。
+
+**配置建议**：需保留历史控制日志用于问题追溯时设为 `TYPICAL` 或 `FULL`；普通部署保持 `NONE` 节省空间。
+
+## **LOG_FILE_NAME_CONVERT**
+
+**参数描述**：日志文件名转换规则。
+
+**类型与取值范围**：类型 `OG_TYPE_VARCHAR`；取值范围 视图未提供取值范围（视图 `RANGE` 列为 `-`）。
+
+**默认值**：（空）；本实例当前值为空。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`），可修改。
+
+**实测行为**：已实测：设为格式串 `ogracd_%Y%m%d.rlog` 被拒绝，返回 `OG-00202, The parameter value "LOG_FILE_NAME_CONVERT" was invalid`；置空可成功。**合法的转换规则写法本实例未探索出**，需参考引擎实现或向社区确认。
+
+**配置建议**：无明确转换需求时保持为空；配置前应先确认目标格式串被引擎接受，否则重启后可能不生效。
+
+## **LOG_HOME**
+
+**参数描述**：日志根目录，变更会影响 RUN、DEBUG、审计、操作、黑匣子、LONGSQL 等日志的上层目录。
+
+**类型与取值范围**：类型 `OG_TYPE_VARCHAR`；取值范围 视图未提供取值范围（视图 `RANGE` 列为 `-`）。
+
+**默认值**：（空）；本实例当前值 `/opt/ograc/log/ograc`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`），可修改。
+
+**实测行为**：**未做修改验证**。改为其他路径会影响运行期日志写入，且需重启生效，风险较高故未实测。
+
+**配置建议**：需要把日志落到独立磁盘或更大分区时才调整；修改后务必重启并确认各日志文件已在新目录生成，否则可能丢失故障现场。
+
+## **LOG_REPLAY_PROCESSES**
+
+**参数描述**：日志并行回放的进程数。官网 `SESSIONS` 条目在计算备机可用会话数时引用了本参数。
+
+**类型与取值范围**：类型 `OG_TYPE_INTEGER`；取值范围 `[1,128]`。
+
+**默认值**：`1`；本实例当前值 `64`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`），可修改。
+
+**实测行为**：`64` 改为 `32` 后 `VALUE` 更新、`RUNTIME_VALUE` 仍为 `64`，需重启生效；已还原。
+
+**配置建议**：备机并行回放能力与 CPU 核数相关，通常不超过可用核数；本实例当前值 64 由 auto_tune 规划，与内核默认值 1 相差较大，调整前应评估 CPU 余量。
+
+## **RAFT_LOG_ASYNC_BUF_NUM**
+
+**参数描述**：RAFT 日志异步缓冲区数量。
+
+**类型与取值范围**：类型 `OG_TYPE_INTEGER`；取值范围 `[1,128]`。
+
+**默认值**：`16`；本实例当前值 `16`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`），可修改。
+
+**实测行为**：`16` 改为 `32` 后 `VALUE` 更新、`RUNTIME_VALUE` 仍为 `16`；已还原。
+
+**配置建议**：RAFT 日志写入压力大、出现等待时可适当增大；增大占用更多内存。
+
+## **RAFT_LOG_LEVEL**
+
+**参数描述**：RAFT 日志级别，取值 0~6，数值越大输出越详细。
+
+**类型与取值范围**：类型 `OG_TYPE_INTEGER`；取值范围 `[0,6]`。
+
+**默认值**：`2`；本实例当前值 `2`。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`），可修改。
+
+**实测行为**：`2` 改为 `3` 后 `VALUE` 更新、`RUNTIME_VALUE` 仍为 `2`；已还原。
+
+**配置建议**：日常保持默认；排查 RAFT 复制异常时临时调大，问题定位后及时调回，避免日志量激增。
+
+## 附录：本部署形态未注册的参数
+
+以下参数出现在 issue #65 的点名清单中，但在本安装包 `DV_PARAMETERS`（共 442 项）
+中查询不到。**此处只陈述观测事实，不对成因下结论**。
+
+### `DSS_LOG_LEVEL`（issue #65 第 5 项）
+
+- 模糊查询 `NAME like '%DSS%'` 仅返回 `ENABLE_DSS`（BOOLEAN，默认 `FALSE`，`reboot` 生效）
+- `show parameter DSS_LOG_LEVEL` 无返回
+- 实例存在 `/opt/ograc/dss` 组件目录，但无 dss 进程运行
+
+> 上述参数在本单节点实例中不可验证，如何处理（补环境验证 / 按不存在声明 / 延后）
+> 需由导师 @luodongxu 裁定。
+
 ## 数据库参数配置说明
 
 ### 1. 全局共享内存
