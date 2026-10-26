@@ -123,49 +123,61 @@ wget https://opengauss.obs.cn-south-1.myhuaweicloud.com/7.0.0-RC3/oGRAC/openGaus
 
 The oGRAC two-node cluster requires shared storage. Prepare **4 LUNs** on the storage side in advance and complete host group mapping so that both nodes can access these four disks.
 
-The recommended planning is as follows (example):
+The following capacity plan is an example and can be adjusted based on business requirements:
 
+* 1 × 4 TB: data disk
+* 1 × 2 TB: redo disk
+* 1 × 2 TB: archive disk
 * 1 × 5 GB: CM quorum disk
-* 1 × 4 TB: redo disk
-* 2 × 2 TB: data disk and archive disk
 
-The LUN capacity can be adjusted appropriately based on actual service requirements. For performance-sensitive environments, ensure that the data disk and redo disk have sufficient capacity to meet log and service data demands. It is recommended that the disk sizes satisfy the following: `data disk > redo disk > archive disk > CM quorum disk`.
+The LUN capacity can be adjusted appropriately based on actual service requirements. For performance-sensitive environments, ensure that the data disk and redo disk have sufficient capacity to meet log and service data demands. As a general guideline, the data disk should be larger than the redo disk. Plan the archive disk according to business requirements and configure the CM quorum disk according to cluster requirements.
 
-Query the four allocated disks using the following command to obtain the device identifiers starting with `scsi` or `wwn`:
+Run the following discovery, link creation, and verification steps on both nodes. Use WWN identifiers under `/dev/disk/by-id/` to identify LUNs instead of treating system-assigned `/dev/sdX` names as permanent paths.
 
-```shell
-ll /dev/disk/by-id
-```
+A WWN (World Wide Name) identifies a storage device or LUN. Linux usually creates symbolic links under `/dev/disk/by-id/wwn-*` that point to the current block device (for example, `/dev/sdb`). Entries named `scsi-*` are another type of link generated from SCSI device identifiers in the same directory. The same LUN may have both `wwn-*` and `scsi-*` links, which point to the same device. The system assigns `/dev/sdX` names according to device discovery order, so they can change after a reboot or device changes. For example, the same LUN may appear as `/dev/sda` on node 0 and `/dev/sdb` on node 1; compare WWNs to confirm that they are the same disk. A shared LUN should have the same WWN on both nodes. If a device does not expose a WWN, ask the storage administrator to confirm the persistent device identifier to use; do not identify it by `/dev/sdX` alone.
 
-Then link the four disks to the following directories:
+Use the following commands to view WWN links and device information. Identify each LUN by comparing its capacity and WWN with the storage-side mapping:
 
 ```shell
-ln -s /dev/disk/by-id/scsi-disk1 /dev/dss-disk1 # Data disk
-ln -s /dev/disk/by-id/scsi-disk2 /dev/dss-disk2 # Redo disk
-ln -s /dev/disk/by-id/scsi-disk3 /dev/dss-disk3 # Archive disk
-ln -s /dev/disk/by-id/scsi-disk4 /dev/gcc-disk # CM quorum disk
+ls -l /dev/disk/by-id/
+lsblk -d -o NAME,SIZE,TYPE,WWN,MODEL
 ```
+
+After confirming which LUN is the data disk, redo disk, archive disk, and CM quorum disk, create symbolic links using their WWN paths. Replace `/dev/disk/by-id/wwn-0x...` in each example with the complete WWN path for that disk shown by `ls -l /dev/disk/by-id/`. Run these commands on both nodes.
+
+```shell
+ln -s /dev/disk/by-id/wwn-0x... /dev/dss-disk1 # Data disk
+ln -s /dev/disk/by-id/wwn-0x... /dev/dss-disk2 # Redo disk
+ln -s /dev/disk/by-id/wwn-0x... /dev/dss-disk3 # Archive disk
+ln -s /dev/disk/by-id/wwn-0x... /dev/gcc-disk # CM quorum disk
+```
+
+If a target symbolic link already exists, check where it points before deciding whether to change it. This avoids mapping a different device to the path by mistake.
 
 The purposes of the four disks are described in the following table:
 
 | Symbolic Link | Purpose     | DSS Volume   | Recommended Size |
 | ------------- | ----------- | ------------ | ----------------- |
 | gcc-disk      | CM quorum disk | Not managed by the LUN management component | 5 GB                |
-| dss-disk1     | Data disk    | vg1          | 2 TB                |
-| dss-disk2     | Redo disk    | vg2          | 4 TB                |
+| dss-disk1     | Data disk    | vg1          | 4 TB                |
+| dss-disk2     | Redo disk    | vg2          | 2 TB                |
 | dss-disk3     | Archive disk | vg3          | 2 TB                |
 
 > **NOTE**: `gcc` is the internal name of the CM component and is unrelated to the compiler.
 
-Authorize these four disks so that the `DSS` component can access them. Run the following command:
+After creating the symbolic links, verify their targets and corresponding WWNs on both nodes:
 
 ```shell
-ll /dev/disk/by-id/scsi-disk1
-# Obtain the target disk device that the /dev/sdx symbolic link points to.
-chmod 777 /dev/sdx
+readlink -f /dev/dss-disk1
+readlink -f /dev/dss-disk2
+readlink -f /dev/dss-disk3
+readlink -f /dev/gcc-disk
+lsblk -d -o NAME,SIZE,TYPE,WWN,MODEL
 ```
 
-Then proceed with the subsequent installation steps.
+Both nodes should show the same four LUN WWNs, with each symbolic link pointing to the intended device. The installation process initializes these disks, so confirm that they contain no data that needs to be retained before installation.
+
+For DSS mode, the installation script changes the ownership of the devices specified by `dss_vg_list` and `gcc_home` to the oGRAC installation user and group. There is no need to manually set disk permissions to `777`.
 
 ---
 
@@ -223,6 +235,8 @@ chronyc tracking
 
 ### 6.1 Modifying the Configuration File
 
+> **Important: `config_params_lun.json` is required for installation. Check this file on both nodes; do not use the node 0 example unchanged on node 1. Verify the node-specific and environment-specific settings in the checklist below before installation.**
+
 Go to the `action` directory and edit `config_params_lun.json`:
 
 ```shell
@@ -230,13 +244,17 @@ cd /data/ograc/ograc_connector/action
 vim config_params_lun.json
 ```
 
-Key configuration notes:
+Key configuration items to verify:
 
-1. The `node_id` values for both nodes must be `0` and `1`, respectively.
-2. For machines with smaller memory (such as DCS virtual machines or physical machines with less than 300 GB of memory), set `auto_tune = 1`.
-3. `redo_num × redo_size × 2` should be less than the redo disk size.
+1. Set `node_id` to `0` and `1` on the two nodes, respectively.
+2. Set `cms_ip` to the actual IP addresses used by both nodes.
+3. The `vg1`, `vg2`, and `vg3` paths in `dss_vg_list` must match the data, redo, and archive disk links described above. `gcc_home` must match the CM quorum disk link.
+4. Set the installation directory, data directory, and database user in `module_config` according to the deployment plan.
+5. Change a port if it conflicts with an existing service. When deploying multiple databases in the same environment, use a different `_SHM_KEY` for each database.
+6. For machines with smaller memory (such as DCS virtual machines or physical machines with less than 300 GB of memory), set `auto_tune = 1`.
+7. `redo_num × redo_size × 2` should be less than the redo disk size.
 
-Example for node 0 (for node 1, only `node_id` needs to be changed to `1`):
+Example for node 0. Set `node_id` to `1` on node 1, and verify the other parameters on both nodes against the checklist above:
 
 ```json
 {
