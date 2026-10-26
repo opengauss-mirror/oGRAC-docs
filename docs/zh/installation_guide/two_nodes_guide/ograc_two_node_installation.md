@@ -115,49 +115,61 @@ wget https://opengauss.obs.cn-south-1.myhuaweicloud.com/7.0.0-RC3/oGRAC/openGaus
 
 oGRAC 两节点集群需要使用共享存储，请提前在存储侧准备 **4 个 LUN** 并完成主机组映射，使得两个节点均能访问到这四块盘。
 
-推荐规划如下（示例）：
+以下容量为规划示例，可根据业务需要调整：
 
+* 1 × 4T：数据盘
+* 1 × 2T：Redo 盘
+* 1 × 2T：归档盘
 * 1 × 5G：CM 仲裁盘
-* 1 × 4T：Redo 盘
-* 2 × 2T：数据盘、归档盘
 
-LUN 容量可根据实际业务需要进行适当调整。对于性能敏感环境，应保证数据盘和 Redo 盘容量充足，以避免无法满足日志和业务数据需求。常规大小关系建议满足 `数据盘 > Redo 盘 > 归档盘 > CM 仲裁盘`。
+LUN 容量可根据实际业务需要进行适当调整。对于性能敏感环境，应保证数据盘和 Redo 盘容量充足，以避免无法满足日志和业务数据需求。常规大小关系建议满足 `数据盘 > Redo 盘`；归档盘容量根据业务需求规划，CM 仲裁盘按集群要求配置。
 
-通过下列命令查询分配的四块盘，获取以 `scsi` 或 `wwn` 开头的设备编号：
+以下查询、创建软链接和核验步骤需要在两台节点上分别执行。建议使用 `/dev/disk/by-id/` 下的 WWN 标识识别 LUN，避免把系统分配的 `/dev/sdX` 名称当作固定盘符。
 
-```shell
-ll /dev/disk/by-id
-```
+WWN（World Wide Name）是用于识别存储设备或 LUN 的标识。Linux 通常会在 `/dev/disk/by-id/wwn-*` 下创建指向当前块设备（例如 `/dev/sdb`）的符号链接；`scsi-*` 是该目录下按 SCSI 设备标识生成的另一类链接名。同一 LUN 可能同时有 `wwn-*` 和 `scsi-*` 两个链接，它们指向同一设备。`/dev/sdX` 名称由系统发现设备的顺序分配，可能在重启或设备变化后改变。例如，同一块 LUN 可能在节点 0 上对应 `/dev/sda`，在节点 1 上对应 `/dev/sdb`；应通过 WWN 确认它们是同一块盘。两台节点上同一块共享 LUN 的 WWN 应相同。如果设备没有 WWN 标识，请先向存储管理员确认可用的持久设备标识，不要仅凭 `/dev/sdX` 名称判断。
 
-然后将四块盘链接到如下目录：
+使用下列命令查看 WWN 链接及设备信息，并根据容量、WWN 和存储侧映射确认每块 LUN 的用途：
 
 ```shell
-ln -s /dev/disk/by-id/scsi-disk1 /dev/dss-disk1 # 数据盘
-ln -s /dev/disk/by-id/scsi-disk2 /dev/dss-disk2 # Redo 盘
-ln -s /dev/disk/by-id/scsi-disk3 /dev/dss-disk3 # 归档盘
-ln -s /dev/disk/by-id/scsi-disk4 /dev/gcc-disk # CM 仲裁盘
+ls -l /dev/disk/by-id/
+lsblk -d -o NAME,SIZE,TYPE,WWN,MODEL
 ```
+
+确认四块 LUN 分别对应数据盘、Redo 盘、归档盘和 CM 仲裁盘后，使用其实际 WWN 路径创建软链接。将每行示例中的 `/dev/disk/by-id/wwn-0x...` 替换为 `ls -l /dev/disk/by-id/` 输出的该盘完整 WWN 路径；以下命令需要在两台节点上各执行一次。
+
+```shell
+ln -s /dev/disk/by-id/wwn-0x... /dev/dss-disk1 # 数据盘
+ln -s /dev/disk/by-id/wwn-0x... /dev/dss-disk2 # Redo 盘
+ln -s /dev/disk/by-id/wwn-0x... /dev/dss-disk3 # 归档盘
+ln -s /dev/disk/by-id/wwn-0x... /dev/gcc-disk # CM 仲裁盘
+```
+
+如果目标软链接已经存在，先检查其当前指向，再决定是否调整，避免误将其他设备映射到该路径。
 
 四块盘用途说明如下表所示：
 
 | 软链接       | 用途     | DSS 卷   | 建议大小 |
 | --------- | ------ | ------- | ---- |
 | gcc-disk  | CM 仲裁盘 | 不纳入 LUN 管理组件管理 | 5G   |
-| dss-disk1 | 数据盘    | vg1     | 2T   |
-| dss-disk2 | Redo 盘 | vg2     | 4T   |
+| dss-disk1 | 数据盘    | vg1     | 4T   |
+| dss-disk2 | Redo 盘 | vg2     | 2T   |
 | dss-disk3 | 归档盘    | vg3     | 2T   |
 
 > **说明**：`gcc` 为 CM 组件内部名称，与编译器无关。
 
-之后需要对这四块盘进行授权，使 `DSS` 组件能够访问这些磁盘。执行如下命令：
+创建软链接后，在两台节点上分别核对链接目标及对应 WWN，确认磁盘用途与上表一致：
 
 ```shell
-ll /dev/disk/by-id/scsi-disk1
-# 获取 /dev/sdx 对应的软链接目标盘符
-chmod 777 /dev/sdx
+readlink -f /dev/dss-disk1
+readlink -f /dev/dss-disk2
+readlink -f /dev/dss-disk3
+readlink -f /dev/gcc-disk
+lsblk -d -o NAME,SIZE,TYPE,WWN,MODEL
 ```
 
-然后即可开始后续安装步骤。
+两节点应看到相同的四个 LUN WWN，且每个软链接均指向预期的设备。安装过程会初始化这些磁盘，开始安装前请确认盘上没有需要保留的数据。
+
+DSS 模式安装时，安装脚本会根据配置中的 `dss_vg_list` 和 `gcc_home`，将对应设备的所有者调整为 oGRAC 安装用户和用户组；无需手工将磁盘权限设为 `777`。
 
 ---
 
@@ -215,6 +227,8 @@ chronyc tracking
 
 ### 6.1 修改配置文件
 
+> **重要：`config_params_lun.json` 是安装必需配置。两台节点都要分别检查该文件，不能直接将节点 0 的示例原样用于节点 1。安装前请按下方清单核对本机和本节点参数。**
+
 进入 action 目录并编辑 `config_params_lun.json`：
 
 ```shell
@@ -222,13 +236,17 @@ cd /data/ograc/ograc_connector/action
 vim config_params_lun.json
 ```
 
-配置重点注意事项：
+配置重点核对项：
 
-1. 两节点 `node_id` 必须分别为 `0` 和 `1`
-2. 内存较小的机器（如 DCS 虚拟机、内存小于 300 GB 的物理机等）请设置 `auto_tune = 1`
-3. `redo_num × redo_size × 2` 应小于 Redo 盘大小。
+1. 两节点的 `node_id` 必须分别设置为 `0` 和 `1`。
+2. `cms_ip` 应填写两节点实际使用的 IP 地址。
+3. `dss_vg_list` 中 `vg1`、`vg2`、`vg3` 的设备路径应分别对应上文的数据盘、Redo 盘和归档盘软链接；`gcc_home` 应对应 CM 仲裁盘软链接。
+4. `module_config` 中的安装目录、数据目录和数据库用户应符合本机部署规划。
+5. 如端口与现有服务冲突，需调整对应端口；同一环境部署多套数据库时，`_SHM_KEY` 应使用不同值。
+6. 内存较小的机器（如 DCS 虚拟机、内存小于 300 GB 的物理机等）请设置 `auto_tune = 1`。
+7. `redo_num × redo_size × 2` 应小于 Redo 盘大小。
 
-节点 0 示例（节点 1 仅需将 `node_id` 修改为 `1`）：
+节点 0 示例。节点 1 的 `node_id` 需设置为 `1`；两节点的其余参数也应按上方清单逐项核对：
 
 ```json
 {
