@@ -1989,7 +1989,7 @@ OG-00626, Set ARCHIVE_MIN_SUCCEED_DEST is not supported
 
 **生效方式**：重启生效（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），**只读参数**，设置会被拒绝：
 
-```
+```sql
 ALTER SYSTEM SET ARCHIVE_TRACE = 1;
 OG-00626, Set ARCHIVE_TRACE is not supported
 ```
@@ -2054,7 +2054,7 @@ OG-00626, Set ARCHIVE_TRACE is not supported
 
 **生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。取值不是「路径对」时会被拒绝：
 
-```
+```sql
 ALTER SYSTEM SET LOG_FILE_NAME_CONVERT = 'ogracd_%Y%m%d.rlog';
 OG-00202, The parameter value "LOG_FILE_NAME_CONVERT" was invalid
 ```
