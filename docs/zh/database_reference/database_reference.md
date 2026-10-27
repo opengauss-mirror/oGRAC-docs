@@ -231,7 +231,30 @@ OG-00209, The value of parameter "CHECKPOINT_PAGES" is too small, at least 1
 [1, 10000]
 
 **默认值**  
-`1`
+`2`
+
+## **REACTOR_THREAD_NUM**
+
+**参数描述**
+
+设置集群多实例互联（MES）中接收消息的 reactor 线程数量。该参数仅在集群部署（`CLUSTER_DATABASE=TRUE`）下生效，用于 UC/RDMA 传输方式的接收线程；与用于分发客户端连接的 `REACTOR_THREADS` 不同。
+
+**取值范围**
+
+- 整数，`[1, 32]`。
+
+**默认值**
+
+`2`
+
+**生效方式**
+
+重启生效。
+
+**配置建议**
+
+- 一般保持默认值。
+- 集群消息接收压力较大、网络能力充足时，可适当调大；调大会增加线程资源占用。
 
 ## **OPTIMIZED_WORKER_THREADS**
 
@@ -304,6 +327,51 @@ OG-00209, The value of parameter "MAX_WORKER_THREADS" is too small, at least 200
 ```
 
 即该版本存在动态下限（实测不低于当时的 `OPTIMIZED_WORKER_THREADS` 值），该动态下限的来源在 master 源码中未见对应实现（master 仅做静态范围校验），**来源待确认**。另设置 `10001` 报 `OG-00202, The parameter value "MAX_WORKER_THREADS" was invalid`，与取值范围上限 `10000` 一致。
+
+## **WORKER_THREADS**
+
+**参数描述**
+
+隐藏的工作线程数量参数。当前版本中该参数不参与工作线程池的管理，设置后不产生实际作用；工作线程数量由 `OPTIMIZED_WORKER_THREADS` 与 `MAX_WORKER_THREADS` 控制。
+
+**取值范围**
+
+- 整数，`[0, 10000]`。
+
+**默认值**
+
+`100`
+
+**生效方式**
+
+重启生效。
+
+**配置建议**
+
+- 该参数当前不生效，不建议使用。
+
+## **WORKER_THREADS_SHRINK_THRESHOLD**
+
+**参数描述**
+
+设置扩展出来的工作线程（agent）空闲收缩阈值，单位为秒。工作线程在会话数超过 `OPTIMIZED_WORKER_THREADS` 扩展出来后，若空闲持续超过该阈值，会被收缩回收，以降低资源占用。
+
+**取值范围**
+
+- 整数，`[0, 4000000]`，单位为秒。
+
+**默认值**
+
+`1800`
+
+**生效方式**
+
+重启生效。
+
+**配置建议**
+
+- 一般保持默认值。
+- 调小该值会更快回收空闲工作线程，降低资源占用，但并发波动时可能频繁创建与回收线程；调大则相反。
 
 ## **AUTONOMOUS_SESSIONS**
 
@@ -448,6 +516,7 @@ SELECT NAME, VALUE, RUNTIME_VALUE FROM DV_PARAMETERS WHERE NAME='OPEN_CURSORS';
 -- 恢复安装后原值（7.0.0-LTS 实例安装后原值为 2000，请与实际实例核对后再执行）
 ALTER SYSTEM SET OPEN_CURSORS = 2000 SCOPE=MEMORY;
 ```
+
 
 ## **STATS_LEVEL**
 
@@ -1202,6 +1271,52 @@ ALTER SYSTEM SET MES_SSL_SWITCH = TRUE;    -- 持久化（默认 SCOPE=BOTH）
 下限 = `33 + PARALLEL_MAX_THREADS + SUPER_USER_RESERVED_SESSIONS`，  
 上限 = 16320  
 **默认值**：200  
+
+## **SUPER_USER_RESERVED_SESSIONS**
+
+**参数描述**
+
+设置实例为超级用户预留的应急会话数量。当普通会话资源耗尽时，超级用户（如 SYSDBA）仍可登录，用于应急处置。
+
+**取值范围**
+
+- 整数，`[1, 32]`。
+
+**默认值**
+
+`10`
+
+**生效方式**
+
+重启生效。
+
+**配置建议**
+
+- 一般保持默认值。
+- 预留过大会占用会话资源，减少普通用户可用会话数；过小则可能在资源紧张时无法保证超级用户登录。
+
+## **UNAUTH_SESSION_EXPIRE_TIME**
+
+**参数描述**
+
+设置未完成认证的会话允许存活的最长时间，单位为秒。会话建立后若未在该时间内完成认证，会被断开。
+
+**取值范围**
+
+- 无符号整数，`[0, 4294967295]`，单位为秒。
+
+**默认值**
+
+`60`
+
+**生效方式**
+
+立即生效。
+
+**配置建议**
+
+- 一般保持默认值。
+- 取值过小可能导致正常认证流程被误断开；取值过大则未认证连接占用资源的时间变长。
 
 ## **XA_SUSPEND_TIMEOUT**
 
