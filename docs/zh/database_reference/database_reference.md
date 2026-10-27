@@ -1318,6 +1318,124 @@ ALTER SYSTEM SET MES_SSL_SWITCH = TRUE;    -- 持久化（默认 SCOPE=BOTH）
 - 一般保持默认值。
 - 取值过小可能导致正常认证流程被误断开；取值过大则未认证连接占用资源的时间变长。
 
+## **ENABLE_ACCESS_DC**
+
+**参数说明**：控制访问 SYS 数据字典对象时，ANY 类系统权限是否生效。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：内核默认值 `TRUE`；7.0.0-LTS 安装值为 `FALSE`（部署覆盖）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：按数据字典访问权限要求决定；调整前确认依赖 ANY 类系统权限的访问路径受影响范围。
+
+## **ENABLE_PASSWORD_CIPHER**
+
+**参数说明**：控制 `CREATE USER` / `ALTER USER` 是否允许使用密文口令。为 `FALSE` 时使用密文口令会被拒绝；该参数不改变口令的存储方式。
+
+**取值范围**：布尔值，`FALSE, TRUE`。
+
+**默认值**：`TRUE`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：保持默认 `TRUE`。关闭后不允许用密文口令建用户或改口令。
+
+## **ENABLE_SYSDBA_LOGIN**
+
+**参数说明**：是否允许 SYSDBA 身份登录。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：`TRUE`
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：关闭可提升安全性，但必须同时确保有其他管理通道可用；生产环境调整前先备份配置文件。
+
+## **ENABLE_SYSDBA_REMOTE_LOGIN**
+
+**参数说明**：是否允许 SYSDBA 远程登录。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：`FALSE`
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：默认仅允许本机 SYSDBA 登录，安全性更高；确需远程运维时再开启，并配合网络访问控制。
+
+## **HAVE_SSL**
+
+**参数说明**：SSL 运行状态位，由实例在 SSL 初始化成功或失败后回写；证书与套件由 `SSL_*` 系列参数配置。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：`FALSE`
+
+**生效方式**：**只读参数**（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），不能通过 `ALTER SYSTEM` 打开：
+
+```sql
+ALTER SYSTEM SET HAVE_SSL = TRUE;
+OG-00203, HAVE_SSL is a readonly parameter
+```
+
+**配置建议**：启用 SSL 需配置 `SSL_*` 系列与证书文件，实例 SSL 初始化成功后该状态位随之为 `TRUE`。
+
+## **KMC_KEY_FILES**
+
+**参数说明**：KMC 密钥文件路径，由密钥管理组件维护。
+
+**取值范围**：字符串（文件路径）；参数视图未提供范围。
+
+**默认值**：（空）
+
+**生效方式**：**只读参数**（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），不能通过 `ALTER SYSTEM` 修改：
+
+```sql
+ALTER SYSTEM SET KMC_KEY_FILES = '/tmp/x.key';
+OG-00203, KMC_KEY_FILES is a readonly parameter
+```
+
+**配置建议**：本参数由密钥管理组件维护，不需要手工设置。
+
+## **REPLACE_PASSWORD_VERIFY**
+
+**参数说明**：修改密码时的校验开关。
+
+**取值范围**：布尔值，`FALSE, TRUE`。
+
+**默认值**：内核默认值 `FALSE`；7.0.0-LTS 安装值为 `TRUE`（部署覆盖）。
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：开启后改密码需提供原密码校验，安全性更高；按运维流程要求决定。
+
+## **REPLAY_PRELOAD_PROCESSES**
+
+**参数说明**：回放预加载进程数。官网 `SESSIONS` 条目在计算备机可用会话数时引用了本参数。
+
+**取值范围**：整数，`[0,128]`。
+
+**默认值**：`0`
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：备机预加载可缩短回放启动时间，按 I/O 能力取值；会增加启动期资源占用。
+
+## **REPL_ADDR**
+
+**参数说明**：复制的监听地址。
+
+**取值范围**：字符串（地址）；参数视图未提供范围。
+
+**默认值**：（空）
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：规划多节点复制时再配置，须与对端 `REPL_PORT` 和网络策略一致。
+
 ## **XA_SUSPEND_TIMEOUT**
 
 **参数描述**
@@ -2386,6 +2504,10 @@ RBP 总开关。开启后，数据库可与 RBPS 配合保存和读取恢复所�
 
 **生效方式**  
 重启生效。
+
+**部署形态**
+
+该参数在内核中已注册（`srv_param.c:1200`，默认 `TRUE`，取值 `FALSE,TRUE,OFF,ON,0,1`，重启生效）。本安装包的单节点部署未部署 RBPS，参数视图（共 442 项）中 `RBP_FOR_RECOVERY` 零命中，`%RBP%` 与 `%RECOVERY%` 均无匹配项，`show parameter RBP_FOR_RECOVERY` 亦无返回。
 
 **配置建议**
 
