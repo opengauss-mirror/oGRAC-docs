@@ -577,6 +577,139 @@ ALTER SYSTEM SET OPEN_CURSORS = 2000 SCOPE=MEMORY;
 
 一般保持 `OFF`。`PUBLIC` 代表所有数据库用户，开启自动授权前应审查权限继承需求及现有授权策略。可通过 `DV_PARAMETERS` 查询参数状态；仅设置成功不能证明实际权限授予行为。
 
+## **ARRAY_STORAGE_OPTIMIZATION**
+
+**参数说明**：数组存储优化开关。单向开关：同一次运行内由 `TRUE` 设回 `FALSE` 会被拒绝。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：`FALSE`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。`SCOPE=MEMORY` 只改内存，重启后回到配置文件中的值；以默认 scope 或 `SCOPE=PFILE` 持久化为 `TRUE` 后，重启仍为 `TRUE`。同一次运行内关闭会被拒绝：
+
+```sql
+ALTER SYSTEM SET ARRAY_STORAGE_OPTIMIZATION = FALSE;
+OG-90002, [NOTICE]parameter ARRAY_STORAGE_OPTIMIZATION is TRUE now, and it is forbidden to set back to FALSE, or there is compatible problem for array data
+```
+
+**配置建议**：启用前必须确认存量数据不含数组类型。回退方式：仅以 `SCOPE=MEMORY` 启用时重启即回到配置文件值；已持久化为 `TRUE` 的，需修改参数配置文件后再重启。
+
+## **BUILD_DATAFILE_PARALLEL**
+
+**参数说明**：是否并行构建数据文件。并行路径在单个数据文件创建或扩展达到 `1 GiB` 时触发，小文件或普通建表不会因此加速。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：`FALSE`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：建库或大批量建表、且单文件规模达到 `1 GiB` 时开启可缩短耗时；并行度受 CPU 与 I/O 限制。
+
+## **CBO**
+
+**参数说明**：基于成本的优化器开关。本版本不提供基于规则的优化器，`CBO` 无法关闭，合法取值只有 `ON`。
+
+**取值范围**：字符串，`ON`。
+
+**默认值**：`ON`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。设为 `OFF` 会被拒绝，写成带引号的 `'OFF'` 则先报语法错误：
+
+```sql
+ALTER SYSTEM SET CBO = OFF;
+OG-00101, Capability: RBO not supported
+
+ALTER SYSTEM SET CBO = 'OFF';
+OG-00601, [1:24]Sql syntax error: OFF or ON expected
+```
+
+**配置建议**：本版本只能使用 CBO，无需也无法调整。
+
+## **CBO_HINT_ENABLED**
+
+**参数说明**：是否启用 CBO 相关的 Hint。
+
+**取值范围**：布尔值，`FALSE, TRUE`。
+
+**默认值**：`TRUE`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：排查 Hint 导致的执行计划异常时可临时关闭做对照测试。
+
+## **CBO_INDEX_CACHING**
+
+**参数说明**：优化器**假定**的索引块缓存命中百分比。该参数只参与索引访问的成本估算，不分配缓存。
+
+**取值范围**：整数，`[0,100]`。
+
+**默认值**：`0`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：仅在需要让优化器更倾向走索引时调整；取值是成本模型的假设，不代表真实缓存大小。
+
+## **CBO_INDEX_COST_ADJ**
+
+**参数说明**：索引访问成本系数。`100` 表示不调整；小于 `100` 降低索引访问成本、更倾向走索引，大于 `100` 提高索引访问成本。
+
+**取值范围**：整数，`[1,10000]`。
+
+**默认值**：`100`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：用于在索引与全表扫描之间偏移成本判断；调整属调优手段，需配合执行计划分析。
+
+## **SSL_KEY**
+
+**参数说明**：SSL 私钥文件路径。
+
+**取值范围**：字符串（文件路径）；参数视图未提供范围。
+
+**默认值**：（空）
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：私钥文件按最小权限设置：运行用户可读，其他用户不可读。
+
+## **SSL_KEY_PASSWORD**
+
+**参数说明**：SSL 私钥密码。取值属于口令，查询结果与日志中避免明文展示。
+
+**取值范围**：字符串（口令）；参数视图未提供范围。
+
+**默认值**：（空）
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：私钥无密码保护时保持为空；有密码保护时通过安全渠道配置，不回显、不入文档。
+
+## **SSL_PERIOD_DETECTION**
+
+**参数说明**：证书检测周期，单位天。检测周期不得大于 `SSL_EXPIRE_ALERT_THRESHOLD`，超出时 SSL 初始化路径会报错并提示 SSL disabled。
+
+**取值范围**：整数，`[1,180]`。
+
+**默认值**：`7`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：检测越频繁越早发现问题但开销略增；设置时同时确认告警阈值不小于检测周期。
+
+## **SSL_VERIFY_PEER**
+
+**参数说明**：是否校验对端证书。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：`FALSE`
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：双向认证场景开启；开启前确认对端证书已被 `SSL_CA` 信任，否则建链失败。
+
 ## **BACKUP_RETRY**
 
 **参数描述**
