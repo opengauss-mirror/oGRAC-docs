@@ -2094,6 +2094,136 @@ OG-00626, Set ARCHIVE_MIN_SUCCEED_DEST is not supported
 
 **配置建议**：只读参数，不能通过 SQL 修改（报 `OG-00626`）。「影响归档成功判定」为参数名语义推断，当前版本的设置处理函数直接返回不支持，未发现消费该参数值的实现；通过配置文件调整的路径与效果待确认，请勿据此调整生产配置。
 
+## **ARCHIVE_TRACE**
+
+**参数说明**：归档过程追踪。该参数已注册，默认为关闭；当前版本的设置处理固定返回不支持，不能通过 `ALTER SYSTEM` 打开或调整。
+
+**取值范围**：整数；参数视图未提供范围。
+
+**默认值**：`0`
+
+**生效方式**：重启生效（`MODIFIABLE=FALSE`、`EFFECTIVE=reboot`），**只读参数**，设置会被拒绝：
+
+```sql
+ALTER SYSTEM SET ARCHIVE_TRACE = 1;
+OG-00626, Set ARCHIVE_TRACE is not supported
+```
+
+**配置建议**：保持默认 `0`。该参数不可修改，不能通过设置非 0 值开启归档追踪。
+
+## **ARCH_LOG_CHECK**
+
+**参数说明**：归档读取 redo 批次时是否做有效性检查。关闭后跳过的是该次读取的校验。
+
+**取值范围**：布尔值，`FALSE,TRUE`。
+
+**默认值**：`TRUE`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：保持默认 `TRUE`。关闭后该次 redo 读取不再做有效性检查，异常数据可能被跳过。
+
+## **AUDIT_SYSLOG_LEVEL**
+
+**参数说明**：审计日志输出到 syslog 的级别，取「syslog 设施.级别」形式。
+
+**取值范围**：字符串；参数视图未提供范围（该行 `RANGE` 列为空）。
+
+**默认值**：`LOCAL0.DEBUG`
+
+**生效方式**：立即生效（`MODIFIABLE=TRUE`、`EFFECTIVE=immediately`）。
+
+**配置建议**：生产环境建议使用 `LOCAL0.INFO`，避免审计日志量过大；排查问题时临时降到 `DEBUG`。
+
+## **CTRLLOG_BACKUP_LEVEL**
+
+**参数说明**：控制日志的备份级别。
+
+**取值范围**：字符串，`NONE,TYPICAL,FULL`。
+
+**默认值**：`NONE`
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：需保留历史控制日志用于问题追溯时设为 `TYPICAL` 或 `FULL`；该功能仅在集群且启用 DBS 的条件下生效，单节点或未启用 DBS 的部署设置后不会起作用；普通部署保持 `NONE` 节省空间。
+
+## **DSS_LOG_LEVEL**
+
+**参数说明**：DSS 日志级别。该参数在内核中已注册；未部署 DSS 的安装包中不出现在参数视图。
+
+**取值范围**：整数，`[0,65535]`。
+
+**默认值**：`7`
+
+**生效方式**：重启生效（`EFFECTIVE=reboot`）。
+
+**配置建议**：仅在部署 DSS 的形态下可用。未部署 DSS 时，参数视图（本安装包单节点共 442 项）中查询不到该参数，`show parameter DSS_LOG_LEVEL` 亦无返回。
+
+## **LOG_FILE_NAME_CONVERT**
+
+**参数说明**：日志文件名转换规则，按逗号分隔的主备路径对（主路径与备路径成对出现）解析并替换。
+
+**取值范围**：字符串，取「主路径,备路径」形式；参数视图未提供范围。
+
+**默认值**：（空）
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。取值不是「路径对」时会被拒绝：
+
+```sql
+ALTER SYSTEM SET LOG_FILE_NAME_CONVERT = 'ogracd_%Y%m%d.rlog';
+OG-00202, The parameter value "LOG_FILE_NAME_CONVERT" was invalid
+```
+
+**配置建议**：无明确转换需求时保持为空；配置时按「主路径,备路径」成对填写。
+
+## **LOG_HOME**
+
+**参数说明**：日志根目录，变更会影响 RUN、DEBUG、审计、操作、黑匣子、LONGSQL 等日志的上层目录。
+
+**取值范围**：字符串（目录路径）；参数视图未提供范围。
+
+**默认值**：内核默认值（空）；未配置时由部署目录决定。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：需要把日志落到独立磁盘或更大分区时才调整；修改后务必重启并确认各日志文件已在新目录生成，否则可能丢失故障现场。
+
+## **LOG_REPLAY_PROCESSES**
+
+**参数说明**：日志并行回放的进程数。官网 `SESSIONS` 条目在计算备机可用会话数时引用了本参数。
+
+**取值范围**：整数，`[1,128]`。
+
+**默认值**：内核默认值 `1`；7.0.0-LTS 安装值为 `64`（部署时由自动调优写入）。
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：备机并行回放能力与 CPU 核数相关，通常不超过可用核数；安装值 64 与内核默认值 1 相差较大，调整前应评估 CPU 余量。
+
+## **RAFT_LOG_ASYNC_BUF_NUM**
+
+**参数说明**：RAFT 日志异步缓冲区数量。
+
+**取值范围**：整数，`[1,128]`。
+
+**默认值**：`16`
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：RAFT 日志写入压力大、出现等待时可适当增大；增大占用更多内存。
+
+## **RAFT_LOG_LEVEL**
+
+**参数说明**：RAFT 日志级别，数值越大输出越详细。
+
+**取值范围**：整数，`[0,6]`。
+
+**默认值**：`2`
+
+**生效方式**：重启生效（`MODIFIABLE=TRUE`、`EFFECTIVE=reboot`）。
+
+**配置建议**：日常保持默认；排查 RAFT 复制异常时临时调大，问题定位后及时调回，避免日志量激增。
+
 ## **RAFT_PEER_ADDRS**
 
 **参数描述**
