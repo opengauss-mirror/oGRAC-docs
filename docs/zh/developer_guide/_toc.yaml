@@ -24,11 +24,13 @@ sections:
       - label: JDBC接口参考
         sections:
           - label: 概览
-            href: ./jdbc/jdbc_api_overview.md  
+            href: ./jdbc/jdbc_api_overview.md
           - label: java.sql.Connection
             href: ./jdbc/java_sql_connection.md
           - label: java.sql.CallableStatement
             href: ./jdbc/java_sql_callable_statement.md
+          - label: java.sql.DatabaseMetaData
+            href: ./jdbc/java_sql_database_metadata.md
           - label: java.sql.Driver
             href: ./jdbc/java_sql_driver.md
           - label: java.sql.PreparedStatement
@@ -47,6 +49,8 @@ sections:
         href: ./odbc/linux_configure_data_source.md
       - label: 开发流程
         href: ./odbc/development_process_odbc.md
+      - label: 多节点负载均衡
+        href: ./odbc/multi_node_load_balance.md
       - label: ODBC接口参考
         sections:
           - label: 概览
