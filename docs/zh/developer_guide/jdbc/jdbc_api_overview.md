@@ -6,6 +6,8 @@ JDBC接口是一套提供给用户的API方法，本节将对部分常用接口�
 
 - **[java.sql.CallableStatement](java_sql_callable_statement.md)**
 
+- **[java.sql.DatabaseMetaData](java_sql_database_metadata.md)**
+
 - **[java.sql.Driver](java_sql_driver.md)**
 
 - **[java.sql.PreparedStatement](java_sql_prepared_statement.md)**

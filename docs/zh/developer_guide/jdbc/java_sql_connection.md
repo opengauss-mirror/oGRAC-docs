@@ -13,7 +13,13 @@ java.sql.Connection是数据库连接接口。
 </th>
 </tr>
 </thead>
-<tbody>
+<tbody><tr id="row159621201259"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p209638042510"><a name="p209638042510"></a><a name="p209638042510"></a>abort(Executor executor)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p2963804256"><a name="p2963804256"></a><a name="p2963804256"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p396317018257"><a name="p396317018257"></a><a name="p396317018257"></a>Yes</p>
+</td>
+</tr>
 <tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row49833243"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p5824408"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p5824408"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p5824408"></a>close()</p>
 </td>
 <td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p56073550"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p56073550"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p56073550"></a>void</p>
@@ -26,6 +32,27 @@ java.sql.Connection是数据库连接接口。
 <td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p52508754"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p52508754"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p52508754"></a>void</p>
 </td>
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p13213809"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p13213809"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p13213809"></a>Yes</p>
+</td>
+</tr>
+<tr id="row981320433428"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p88131143154216"><a name="p88131143154216"></a><a name="p88131143154216"></a>createArrayOf​(String typeName, Object[] elements)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p1981324324213"><a name="p1981324324213"></a><a name="p1981324324213"></a>Array</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p9813144384214"><a name="p9813144384214"></a><a name="p9813144384214"></a>Yes</p>
+</td>
+</tr>
+<tr id="row263611418431"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p13636643436"><a name="p13636643436"></a><a name="p13636643436"></a>createBlob()</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p176361434314"><a name="p176361434314"></a><a name="p176361434314"></a>Blob</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p196365416431"><a name="p196365416431"></a><a name="p196365416431"></a>Yes</p>
+</td>
+</tr>
+<tr id="row149271920439"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p6492619174311"><a name="p6492619174311"></a><a name="p6492619174311"></a>createClob()</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p449211924313"><a name="p449211924313"></a><a name="p449211924313"></a>Clob</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p049271964318"><a name="p049271964318"></a><a name="p049271964318"></a>Yes</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row53591231"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p805204"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p805204"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p805204"></a>createStatement()</p>
@@ -84,6 +111,13 @@ java.sql.Connection是数据库连接接口。
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p49498511502"><a name="p49498511502"></a><a name="p49498511502"></a>Yes</p>
 </td>
 </tr>
+<tr id="row680714571003"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p1807145710013"><a name="p1807145710013"></a><a name="p1807145710013"></a>getMetaData()</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p4807757401"><a name="p4807757401"></a><a name="p4807757401"></a>DatabaseMetaData</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p980720571508"><a name="p980720571508"></a><a name="p980720571508"></a>Yes</p>
+</td>
+</tr>
 <tr id="row147754141219"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p18775181411119"><a name="p18775181411119"></a><a name="p18775181411119"></a>getNetworkTimeout()</p>
 </td>
 <td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p577531414112"><a name="p577531414112"></a><a name="p577531414112"></a>int</p>
@@ -91,11 +125,25 @@ java.sql.Connection是数据库连接接口。
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p977519149115"><a name="p977519149115"></a><a name="p977519149115"></a>Yes</p>
 </td>
 </tr>
+<tr id="row555812191518"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p2559181910118"><a name="p2559181910118"></a><a name="p2559181910118"></a>getSchema()</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p65591196116"><a name="p65591196116"></a><a name="p65591196116"></a>String</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p2055971911112"><a name="p2055971911112"></a><a name="p2055971911112"></a>Yes</p>
+</td>
+</tr>
 <tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row51944401"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p8362188"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p8362188"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p8362188"></a>getTransactionIsolation()</p>
 </td>
 <td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p61512789"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p61512789"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p61512789"></a>int</p>
 </td>
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p54416005"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p54416005"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p54416005"></a>Yes</p>
+</td>
+</tr>
+<tr id="row202805561537"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p0281165616310"><a name="p0281165616310"></a><a name="p0281165616310"></a>getTypeMap()</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p4281115617311"><a name="p4281115617311"></a><a name="p4281115617311"></a>Map&lt;String,​Class&lt;?&gt;&gt;</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p16281175617311"><a name="p16281175617311"></a><a name="p16281175617311"></a>Yes</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row47379456"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p14422647"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p14422647"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p14422647"></a>isClosed()</p>
@@ -182,11 +230,25 @@ java.sql.Connection是数据库连接接口。
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p569218187"><a name="p569218187"></a><a name="p569218187"></a>Yes</p>
 </td>
 </tr>
+<tr id="row1751410014115"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p45140015113"><a name="p45140015113"></a><a name="p45140015113"></a>releaseSavepoint​(Savepoint savepoint)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p1251412015112"><a name="p1251412015112"></a><a name="p1251412015112"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p1951416014114"><a name="p1951416014114"></a><a name="p1951416014114"></a>Yes</p>
+</td>
+</tr>
 <tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row54724596"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p9420114"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p9420114"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p9420114"></a>rollback()</p>
 </td>
 <td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p51509410"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p51509410"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p51509410"></a>void</p>
 </td>
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p52133832"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p52133832"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p52133832"></a>Yes</p>
+</td>
+</tr>
+<tr id="row587620205115"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p1787682081120"><a name="p1787682081120"></a><a name="p1787682081120"></a>rollback​(Savepoint savepoint)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p487613207115"><a name="p487613207115"></a><a name="p487613207115"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p15876120101119"><a name="p15876120101119"></a><a name="p15876120101119"></a>Yes</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row33255911"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p34730127"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p34730127"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p34730127"></a>setAutoCommit(boolean autoCommit)</p>
@@ -196,6 +258,34 @@ java.sql.Connection是数据库连接接口。
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p11063043"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p11063043"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p11063043"></a>Yes</p>
 </td>
 </tr>
+<tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row48009195"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p19413500"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p19413500"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p19413500"></a>setClientInfo(Properties properties)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p40405489"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p40405489"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p40405489"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p29668431"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p29668431"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p29668431"></a>Yes</p>
+</td>
+</tr>
+<tr id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_row49399872"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p16556343"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p16556343"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p16556343"></a>setClientInfo(String name,String value)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p58968000"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p58968000"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p58968000"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p20387308"><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p20387308"></a><a name="zh-cn_topic_0237120391_zh-cn_topic_0213179157_zh-cn_topic_0189251860_zh-cn_topic_0059778938_zh-cn_topic_0058965163_p20387308"></a>Yes</p>
+</td>
+</tr>
+<tr id="row94161512126"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p2041915131217"><a name="p2041915131217"></a><a name="p2041915131217"></a>setHoldability​(int holdability)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p441111581219"><a name="p441111581219"></a><a name="p441111581219"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p12411815191215"><a name="p12411815191215"></a><a name="p12411815191215"></a>Yes</p>
+</td>
+</tr>
+<tr id="row1744172011211"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p15441420181212"><a name="p15441420181212"></a><a name="p15441420181212"></a>setNetworkTimeout​(Executor executor, int milliseconds)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p1944117204127"><a name="p1944117204127"></a><a name="p1944117204127"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p134411720151214"><a name="p134411720151214"></a><a name="p134411720151214"></a>Yes</p>
+</td>
+</tr>
 <tr id="row945855312124"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p184582539126"><a name="p184582539126"></a><a name="p184582539126"></a>setReadOnly​(boolean readOnly)</p>
 </td>
 <td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p19458185331213"><a name="p19458185331213"></a><a name="p19458185331213"></a>void</p>
@@ -203,9 +293,33 @@ java.sql.Connection是数据库连接接口。
 <td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p15459125320122"><a name="p15459125320122"></a><a name="p15459125320122"></a>Yes</p>
 </td>
 </tr>
+<tr id="row68731459191214"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p18873165991213"><a name="p18873165991213"></a><a name="p18873165991213"></a>setSavepoint()</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p11873459121218"><a name="p11873459121218"></a><a name="p11873459121218"></a>Savepoint</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p118743593122"><a name="p118743593122"></a><a name="p118743593122"></a>Yes</p>
+</td>
+</tr>
+<tr id="row917911121319"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p6179191119132"><a name="p6179191119132"></a><a name="p6179191119132"></a>setSavepoint​(String name)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p18179161115136"><a name="p18179161115136"></a><a name="p18179161115136"></a>Savepoint</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p141799117139"><a name="p141799117139"></a><a name="p141799117139"></a>Yes</p>
+</td>
+</tr>
+<tr id="row206301946101219"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p66311046161216"><a name="p66311046161216"></a><a name="p66311046161216"></a>setSchema​(String schema)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p156311446201217"><a name="p156311446201217"></a><a name="p156311446201217"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p12631104681219"><a name="p12631104681219"></a><a name="p12631104681219"></a>Yes</p>
+</td>
+</tr>
+<tr id="row174221941201213"><td class="cellrowborder" valign="top" width="37.86%" headers="mcps1.2.4.1.1 "><p id="p842364121212"><a name="p842364121212"></a><a name="p842364121212"></a>setTransactionIsolation​(int level)</p>
+</td>
+<td class="cellrowborder" valign="top" width="32.29%" headers="mcps1.2.4.1.2 "><p id="p042334116128"><a name="p042334116128"></a><a name="p042334116128"></a>void</p>
+</td>
+<td class="cellrowborder" valign="top" width="29.849999999999998%" headers="mcps1.2.4.1.3 "><p id="p1942304116127"><a name="p1942304116127"></a><a name="p1942304116127"></a>Yes</p>
+</td>
+</tr>
 </tbody>
 </table>
-
-> [!TIP]须知
->
->接口内部默认使用自动提交模式，若通过setAutoCommit\(false\)关闭自动提交，将会导致后面执行的语句都受到显式事务包裹，数据库中不支持事务中执行的语句不能在此模式下执行。
