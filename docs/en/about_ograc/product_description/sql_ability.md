@@ -35,7 +35,7 @@
 ## SQL Processing Flow
 
 The SQL processing flow in oGRAC includes syntax parsing, query rewriting, query optimization, execution plan creation, and execution plan. Depending on the statement, the database may skip certain steps. As shown in the following figure:
-![SQL Processing Flow](../public_sys-resources/sql_process0.svg "SQL Processing Flow")
+![SQL Processing Flow](./figures/sql_process0.svg "SQL Processing Flow")
 
 - SQL parsing
 
