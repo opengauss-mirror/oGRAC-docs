@@ -143,7 +143,7 @@ Multiple performance optimization strategies are implemented in DCS:
 
 #### 2.4.6 DCS Exception Handling
 
-DCS is equipped with a comprehensive exception handling mechanism:
+DCS is equipped with a comprehensive exception handling mechanism and cooperates with cluster `Reform` (see [Section 2.6](#26-cluster-reform-mechanism) "Cluster Reform Mechanism") to complete resource cleanup:
 
 - **Resource cleanup**: Automatically cleans up related resources and locks upon node failure
 - **Deadlock detection**: Provides a distributed deadlock detection and prevention mechanism
