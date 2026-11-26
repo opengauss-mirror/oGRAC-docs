@@ -27,7 +27,7 @@ chown -R user_name:user_name compile_path
 yum install -y libaio-devel openssl openssl-devel ndctl-devel perl \
 ncurses ncurses-devel libtirpc-devel expect ant bison iputils rpm-build \
 iproute wget make gcc gcc-c++ gdb gdb-gdbserver python3 python3-devel \
-git net-tools cmake automake byacc libtool lz4-devel patch \
+git net-tools cmake automake byacc libtool lz4-devel patch numactl numactl-devel \
 --skip-broken unixODBC unixODBC-devel
 ```
 

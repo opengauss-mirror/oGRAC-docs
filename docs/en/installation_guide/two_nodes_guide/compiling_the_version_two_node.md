@@ -65,7 +65,7 @@ oGRAC compilation depends on many system libraries and build tools. Run the foll
 yum install -y libaio-devel openssl openssl-devel ndctl-devel unixODBC-devel unixODBC \
 ncurses ncurses-devel libtirpc-devel expect ant bison iputils  \
 iproute wget make gcc gcc-c++ gdb gdb-gdbserver python3 python3-devel \
-git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex --skip-broken
+git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex numactl numactl-devel --skip-broken
 ```
 
 > [!NOTE]

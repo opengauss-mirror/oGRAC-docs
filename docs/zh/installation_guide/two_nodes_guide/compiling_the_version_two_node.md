@@ -63,7 +63,7 @@ oGRAC 编译依赖较多的系统库及构建工具，请在编译主机上执�
 yum install -y libaio-devel openssl openssl-devel ndctl-devel unixODBC-devel unixODBC \
 ncurses ncurses-devel libtirpc-devel expect ant bison iputils  \
 iproute wget make gcc gcc-c++ gdb gdb-gdbserver python3 python3-devel \
-git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex --skip-broken
+git net-tools cmake automake byacc libtool lz4 lz4-devel patch xz flex numactl numactl-devel --skip-broken
 ```
 
 > [!NOTE]说明
